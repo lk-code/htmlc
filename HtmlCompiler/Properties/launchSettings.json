@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HtmlCompiler": {
+      "commandName": "Project",
+      "commandLineArgs": " D:\\Desktop\\test\\source\\demo.html D:\\Desktop\\test\\output"
+    }
+  }
+}

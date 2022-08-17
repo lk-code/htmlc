@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>htmlc</ToolCommandName>
+		<PackageOutputPath>./nupkg</PackageOutputPath>
+		<AssemblyName>htmlc</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Cocona" Version="2.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\HtmlCompiler.Core\HtmlCompiler.Core.csproj" />
+	</ItemGroup>
+
+</Project>
