@@ -1,7 +1,5 @@
 ﻿using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
-using System;
-using System.Runtime.InteropServices;
 
 namespace HtmlCompiler.Core
 {
@@ -11,14 +9,30 @@ namespace HtmlCompiler.Core
         private string? _baseDirectory = null;
         private string _sourceFileContent = null!;
 
-        public async Task<string> RenderAsync(string sourceFile, string outputFile)
+        public async Task RenderToFileAsync(string sourceFile, string outputFile)
         {
             this._baseDirectory = GetBaseDirectory(sourceFile);
             await LoadSourceContentAsync(sourceFile);
 
             string renderedContent = await this.RenderAsync();
+            await this.WriteOutputContentAsync(renderedContent, outputFile);
+        }
 
-            return renderedContent;
+        private async Task WriteOutputContentAsync(string content, string outputFile)
+        {
+            await File.WriteAllTextAsync(outputFile, content);
+        }
+
+        private async Task LoadSourceContentAsync(string sourceFile)
+        {
+            this._sourceFileContent = await this.LoadFileContent(sourceFile);
+
+            string[] lines = this._sourceFileContent.ToLines();
+
+            this._layoutFile = this.GetLayoutFileFromContent(lines);
+            lines = lines.Where(l => !l.StartsWith("@Layout")).ToArray();
+
+            this._sourceFileContent = lines.ToContent();
         }
 
         private async Task<string> RenderAsync()
@@ -38,18 +52,6 @@ namespace HtmlCompiler.Core
             string renderedContent = layoutContent.Replace("@Body", this._sourceFileContent);
 
             return renderedContent;
-        }
-
-        private async Task LoadSourceContentAsync(string sourceFile)
-        {
-            this._sourceFileContent = await this.LoadFileContent(sourceFile);
-
-            string[] lines = this._sourceFileContent.ToLines();
-
-            this._layoutFile = this.GetLayoutFileFromContent(lines);
-            lines = lines.Where(l => !l.StartsWith("@Layout")).ToArray();
-
-            this._sourceFileContent = lines.ToContent();
         }
 
         private string GetLayoutFileFromContent(string[] lines)

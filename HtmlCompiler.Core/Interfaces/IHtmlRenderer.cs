@@ -2,6 +2,6 @@
 {
     public interface IHtmlRenderer
     {
-        Task<string> RenderAsync(string sourceFile, string outputFile);
+        Task RenderToFileAsync(string sourceFile, string outputFile);
     }
 }

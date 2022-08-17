@@ -22,7 +22,7 @@ app.AddCommand(async (
 
     try
     {
-        string content = await htmlRenderer.RenderAsync(sourceFile, fullOutputFilePath);
+        await htmlRenderer.RenderToFileAsync(sourceFile, fullOutputFilePath);
     }
     catch (FileNotFoundException)
     {
