@@ -1,8 +1,8 @@
 ﻿using Cocona;
 using Cocona.Builder;
+using HtmlCompiler.Core;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
-using HtmlCompiler.Core.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 CoconaAppBuilder? builder = CoconaApp.CreateBuilder();
@@ -22,7 +22,7 @@ app.AddCommand(async (
 
     try
     {
-        string content = await htmlRenderer.RenderAsync(sourceFile);
+        string content = await htmlRenderer.RenderAsync(sourceFile, fullOutputFilePath);
     }
     catch (FileNotFoundException)
     {
