@@ -13,10 +13,10 @@ This is the HTML Compiler Tool for your cli
 ## usage
 
 generates HTML from the template file demo.html and writes it into the folder ".\output" with the same file name ".\output\demo.html":<br />
-`htmlc .\source\demo.html .\output\`
+`htmlc compile .\source\demo.html .\output\`
 
 generates HTML from the template file test.html and writes it into the file ".\output\sample.html":<br />
-`htmlc .\source\test.html .\output\sample.html`
+`htmlc compile .\source\test.html .\output\sample.html`
 
 ### specify a template file
 this file contains only the individual content:
