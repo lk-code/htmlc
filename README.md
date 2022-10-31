@@ -1,5 +1,7 @@
 # html-compiler-tool
 
+![html-compiler-tool](https://raw.githubusercontent.com/lk-code/html-compiler-tool/main/icon_128.png)
+
 This is the HTML Compiler Tool for your cli
 
 ## install the tool
