@@ -9,7 +9,6 @@
 
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=lk-code_html-compiler-tool&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=lk-code_html-compiler-tool)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=lk-code_html-compiler-tool&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=lk-code_html-compiler-tool)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lk-code_html-compiler-tool&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lk-code_html-compiler-tool)
 
 This is the HTML Compiler Tool for your cli
 
