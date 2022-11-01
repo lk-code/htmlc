@@ -2,6 +2,15 @@
 
 ![html-compiler-tool](https://raw.githubusercontent.com/lk-code/html-compiler-tool/main/icon_128.png)
 
+[![License](https://img.shields.io/github/license/lk-code/html-compiler-tool.svg?style=flat-square)](https://github.com/lk-code/html-compiler-tool/blob/master/LICENSE)
+[![Build](https://github.com/lk-code/html-compiler-tool/actions/workflows/dotnet.yml/badge.svg)](https://github.com/lk-code/html-compiler-tool/actions/workflows/dotnet.yml)
+[![Downloads](https://img.shields.io/nuget/dt/htmlc.svg?style=flat-square)](http://www.nuget.org/packages/htmlc/)
+[![NuGet](https://img.shields.io/nuget/v/htmlc.svg?style=flat-square)](http://nuget.org/packages/htmlc)
+
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=lk-code_html-compiler-tool&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=lk-code_html-compiler-tool)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=lk-code_html-compiler-tool&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=lk-code_html-compiler-tool)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lk-code_html-compiler-tool&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lk-code_html-compiler-tool)
+
 This is the HTML Compiler Tool for your cli
 
 ## install the tool
