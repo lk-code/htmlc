@@ -2,6 +2,7 @@
 
 ![html-compiler-tool](https://raw.githubusercontent.com/lk-code/html-compiler-tool/main/icon_128.png)
 
+[![.NET Version](https://img.shields.io/badge/dotnet%20version-net6.0-blue?style=flat-square)](http://www.nuget.org/packages/hetznercloudapi/)
 [![License](https://img.shields.io/github/license/lk-code/html-compiler-tool.svg?style=flat-square)](https://github.com/lk-code/html-compiler-tool/blob/master/LICENSE)
 [![Build](https://github.com/lk-code/html-compiler-tool/actions/workflows/dotnet.yml/badge.svg)](https://github.com/lk-code/html-compiler-tool/actions/workflows/dotnet.yml)
 [![Downloads](https://img.shields.io/nuget/dt/htmlc.svg?style=flat-square)](http://www.nuget.org/packages/htmlc/)
