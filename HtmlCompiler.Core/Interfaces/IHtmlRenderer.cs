@@ -1,7 +1,6 @@
-﻿namespace HtmlCompiler.Core.Interfaces
+﻿namespace HtmlCompiler.Core.Interfaces;
+
+public interface IHtmlRenderer
 {
-    public interface IHtmlRenderer
-    {
-        Task RenderToFileAsync(string sourceFile, string outputFile);
-    }
+    Task RenderToFileAsync(string sourceFile, string outputFile);
 }
