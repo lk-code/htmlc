@@ -33,6 +33,7 @@ public class HtmlWatcher : IHtmlWatcher
 
     public async Task WatchDirectoryAsync(string? sourcePath, string? outputPath)
     {
+        Console.WriteLine("htmlc is watching :)");
         // prepare
         this.SetProjectPaths(sourcePath, outputPath);
 
@@ -47,16 +48,25 @@ public class HtmlWatcher : IHtmlWatcher
         this._fileDetector = new FileChangeDetector(this._sourceDirectoryPath);
         this._fileDetector.FileChanged += FileChangeDetector_FileChanged;
 
-        ConsoleKeyInfo key = Console.ReadKey(true);
+        ConsoleColor oldColor = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("use CTRL+X to exit htmlc");
+        Console.ForegroundColor = oldColor;
 
-        // wait for Ctrl+C
+        // loop => wait for user input to exit the app
         while (true)
         {
-            if (key.Modifiers == ConsoleModifiers.Control
-                && key.Key == ConsoleKey.C)
+            if (Console.KeyAvailable)
             {
-                Console.WriteLine("exited htmlc");
-                return;
+                ConsoleKeyInfo key = Console.ReadKey(true);
+
+                // CTRL+C doesnt work => use CTRL+X
+                if (key.Modifiers == ConsoleModifiers.Control
+                    && key.Key == ConsoleKey.X)
+                {
+                    Console.WriteLine("htmlc exited");
+                    return;
+                }
             }
         }
     }
