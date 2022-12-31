@@ -15,11 +15,20 @@
 
 This is the HTML Compiler Tool for your cli
 
-## install the tool
+## installation and update
+
+### first: install the .NET Runtime
+you need to install the .NET Runtime (its free and available for macos, linux and windows)
+* [macOS](https://learn.microsoft.com/en-us/dotnet/core/install/macos)
+* [Windows](https://learn.microsoft.com/en-us/dotnet/core/install/windows)
+* [Linux](https://learn.microsoft.com/en-us/dotnet/core/install/linux)
+
+### then: install the tool
+then you can install the html-tool very simple via this command:
 
 `dotnet tool install --global htmlc`
 
-## update the tool
+### update the tool
 
 `dotnet tool update --global htmlc`
 
