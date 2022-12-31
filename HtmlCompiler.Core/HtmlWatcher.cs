@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using HtmlCompiler.Core.Components;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
@@ -41,7 +42,7 @@ public class HtmlWatcher : IHtmlWatcher
         this._outputDirectoryPath.EnsurePath();
 
         // compile files
-        await this.CompileFiles();
+        await this.CompileFilesAsync();
 
         // watch for changes
         this.UnregisterFileDetector();
@@ -87,10 +88,10 @@ public class HtmlWatcher : IHtmlWatcher
         //        break;
         //}
 
-        await this.CompileFiles();
+        await this.CompileFilesAsync();
     }
 
-    private async Task CompileFiles()
+    private async Task CompileFilesAsync()
     {
         Console.WriteLine($"compiling...");
 
@@ -114,7 +115,13 @@ public class HtmlWatcher : IHtmlWatcher
         foreach (string sourceFile in sourceFiles)
         {
             string fileToCompile = sourceFile;
-            string outputFile = Path.Combine(this._outputDirectoryPath, Path.GetFileName(fileToCompile));
+            string outputFile = this.GetOutputPathForSource(sourceFile, this._sourceDirectoryPath, this._outputDirectoryPath);
+
+            string? outputDirectoryName = Path.GetDirectoryName(outputFile);
+            if (!string.IsNullOrEmpty(outputDirectoryName))
+            {
+                outputDirectoryName.EnsurePath();
+            }
 
             Console.WriteLine($"compile {fileToCompile} to {outputFile}");
 
@@ -129,6 +136,14 @@ public class HtmlWatcher : IHtmlWatcher
         }
     }
 
+    internal string GetOutputPathForSource(string sourceFile, string projectPath, string outputPath)
+    {
+        string sourceFilePath = sourceFile.Replace(projectPath, "");
+        string outputFilePath = $"{outputPath}{sourceFilePath}";
+
+        return outputFilePath;
+    }
+
     private List<string> GetHtmlFiles(List<string> files)
     {
         List<string> htmlFilePaths = files.Where(file => Path.GetExtension(file) == ".html")
@@ -138,7 +153,7 @@ public class HtmlWatcher : IHtmlWatcher
             .ToList();
     }
 
-    public List<string> GetLayoutFiles(List<string> files)
+    private List<string> GetLayoutFiles(List<string> files)
     {
         List<string> htmlFiles = files.Where(file => Path.GetExtension(file) == ".html")
             .ToList();
