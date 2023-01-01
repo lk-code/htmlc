@@ -2,5 +2,5 @@
 
 public interface IHtmlRenderer
 {
-    Task RenderToFileAsync(string sourceFile, string outputFile);
+    Task<string> RenderHtmlAsync(string sourceFullFilePath);
 }
