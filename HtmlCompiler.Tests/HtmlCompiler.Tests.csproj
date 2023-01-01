@@ -26,5 +26,9 @@
 
   <ItemGroup>
     <None Remove="Moq" />
+    <None Remove="Helper\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helper\" />
   </ItemGroup>
 </Project>
