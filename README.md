@@ -90,3 +90,20 @@ You can monitor your whole HTML project directory and compile it automatically. 
 2. you specify the source directory and the output directory. These then behave like /src and /dist:
 
 `htmlc watch .\path\to\source\ .\path\to\output\`
+
+#### optional: add a style file to compile
+You can also specify a style file to the watch command. This will then also be monitored and compiled in case of changes. Currently supported are Sass/SCSS and Less.
+
+`htmlc watch [....] -s {relative/path/to/style.scss}`
+
+for example:
+
+`htmlc watch /Users/lk-code/Projects/Website/src /Users/lk-code/Projects/Website/dist -s /styles/main.scss`
+
+htmlc now searches for the style file at /Users/lk-code/Projects/Website/src/styles/main.scss. The content is compiled and then saved to this location: /Users/lk-code/Projects/Website/dist/styles/main.css
+
+## notices
+
+this tool uses:
+* [Cocona (MIT)](https://github.com/mayuki/Cocona) for console app environment
+* [DartSassHost (MIT)](https://github.com/Taritsyn/DartSassHost) for scss compiling
