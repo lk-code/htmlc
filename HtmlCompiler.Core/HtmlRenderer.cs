@@ -11,15 +11,32 @@ namespace HtmlCompiler.Core
         public async Task<string> RenderHtmlAsync(string sourceFullFilePath)
         {
             string baseDirectory = this.GetBaseDirectory(sourceFullFilePath);
-            string content = await this.LoadFileContent(sourceFullFilePath);
+            string originalContent = await this.LoadFileContent(sourceFullFilePath);
+            string renderedContent = string.Empty;
 
             // replace @Layout=...
-            content = await this.ReplaceLayoutPlaceholderAsync(content, baseDirectory);
+            renderedContent = await this.ReplaceLayoutPlaceholderAsync(originalContent, baseDirectory);
+
+            // check if layout-file and source-html-file are on different directories => baseDirectory must be adjusted
+            baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
 
             // replace all @File=...
-            content = await this.ReplaceFilePlaceholdersAsync(content, baseDirectory);
+            renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory);
 
-            return content;
+            return renderedContent;
+        }
+
+        private string AdjustBaseDirectoryToLayoutFile(string content, string baseDirectory)
+        {
+            string? layoutPath = this.GetLayoutFilePath(content);
+            if (string.IsNullOrEmpty(layoutPath))
+            {
+                return baseDirectory;
+            }
+
+            baseDirectory = Path.Combine(baseDirectory, Path.GetDirectoryName(layoutPath));
+
+            return baseDirectory;
         }
 
         private async Task<string> ReplaceFilePlaceholdersAsync(string content, string baseDirectory)
@@ -41,23 +58,34 @@ namespace HtmlCompiler.Core
             return content;
         }
 
-        private async Task<string> ReplaceLayoutPlaceholderAsync(string content, string baseDirectory)
+        private string? GetLayoutFilePath(string content)
         {
             int layoutIndex = content.IndexOf("@Layout");
             if (layoutIndex < 0)
             {
-                return content;
+                return null;
             }
 
             int lineBreakIndex = content.IndexOf(Environment.NewLine, layoutIndex);
             if (lineBreakIndex < 0)
             {
+                return null;
+            }
+
+            string layoutPath = content.Substring(layoutIndex + 8, lineBreakIndex - layoutIndex - 8).Trim();
+
+            return layoutPath;
+        }
+
+        private async Task<string> ReplaceLayoutPlaceholderAsync(string content, string baseDirectory)
+        {
+            string? layoutPath = this.GetLayoutFilePath(content);
+            if (string.IsNullOrEmpty(layoutPath))
+            {
                 return content;
             }
 
-            string layoutValue = content.Substring(layoutIndex + 8, lineBreakIndex - layoutIndex - 8).Trim();
-
-            string fullPath = Path.Combine(baseDirectory, layoutValue);
+            string fullPath = Path.Combine(baseDirectory, layoutPath);
 
             string layoutContent = await File.ReadAllTextAsync(fullPath);
 
