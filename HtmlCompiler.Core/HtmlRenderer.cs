@@ -1,69 +1,101 @@
-﻿using HtmlCompiler.Core.Extensions;
+﻿using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 
 namespace HtmlCompiler.Core
 {
     public class HtmlRenderer : IHtmlRenderer
     {
-        private string? _layoutFile = null;
-        private string? _baseDirectory = null;
-        private string _sourceFileContent = null!;
-
-        public async Task RenderToFileAsync(string sourceFile, string outputFile)
+        public async Task<string> RenderHtmlAsync(string sourceFullFilePath)
         {
-            this._baseDirectory = GetBaseDirectory(sourceFile);
-            await LoadSourceContentAsync(sourceFile);
+            string baseDirectory = this.GetBaseDirectory(sourceFullFilePath);
+            string originalContent = await this.LoadFileContent(sourceFullFilePath);
+            string renderedContent = string.Empty;
 
-            string renderedContent = await this.RenderAsync();
-            await this.WriteOutputContentAsync(renderedContent, outputFile);
-        }
+            // replace @Layout=...
+            renderedContent = await this.ReplaceLayoutPlaceholderAsync(originalContent, baseDirectory);
 
-        private async Task WriteOutputContentAsync(string content, string outputFile)
-        {
-            await File.WriteAllTextAsync(outputFile, content);
-        }
+            // check if layout-file and source-html-file are on different directories => baseDirectory must be adjusted
+            baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
 
-        private async Task LoadSourceContentAsync(string sourceFile)
-        {
-            this._sourceFileContent = await this.LoadFileContent(sourceFile);
-
-            string[] lines = this._sourceFileContent.ToLines();
-
-            this._layoutFile = this.GetLayoutFileFromContent(lines);
-            lines = lines.Where(l => !l.StartsWith("@Layout")).ToArray();
-
-            this._sourceFileContent = lines.ToContent();
-        }
-
-        private async Task<string> RenderAsync()
-        {
-            string layoutContent = string.Empty;
-            if (!string.IsNullOrEmpty(this._layoutFile))
-            {
-                // load layout
-                layoutContent = await this.LoadFileContent(this._layoutFile);
-            }
-
-            if (string.IsNullOrEmpty(layoutContent))
-            {
-                return this._sourceFileContent;
-            }
-
-            string renderedContent = layoutContent.Replace("@Body", this._sourceFileContent);
+            // replace all @File=...
+            renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory);
 
             return renderedContent;
         }
 
-        private string GetLayoutFileFromContent(string[] lines)
+        private string AdjustBaseDirectoryToLayoutFile(string content, string baseDirectory)
         {
-            string? layoutLine = lines.SingleOrDefault(l => l.StartsWith("@Layout"));
-
-            if (!string.IsNullOrEmpty(layoutLine))
+            string? layoutPath = this.GetLayoutFilePath(content);
+            if (string.IsNullOrEmpty(layoutPath))
             {
-                return $"{this._baseDirectory}{Path.DirectorySeparatorChar}{layoutLine.Substring(layoutLine.IndexOf("=") + 1)}";
+                return baseDirectory;
             }
 
-            return string.Empty;
+            baseDirectory = Path.Combine(baseDirectory, Path.GetDirectoryName(layoutPath));
+
+            return baseDirectory;
+        }
+
+        private async Task<string> ReplaceFilePlaceholdersAsync(string content, string baseDirectory)
+        {
+            Regex fileTagRegex = new Regex(@"@File=([^\s]+)", RegexOptions.None, TimeSpan.FromMilliseconds(100));
+
+            foreach (Match match in fileTagRegex.Matches(content))
+            {
+                string fileValue = match.Groups[1].Value;
+
+                string fullPath = Path.Combine(baseDirectory, fileValue);
+
+                // render the new file and return the rendered content
+                string fileContent = await this.RenderHtmlAsync(fullPath);
+
+                content = content.Replace(match.Value, fileContent);
+            }
+
+            return content;
+        }
+
+        private string? GetLayoutFilePath(string content)
+        {
+            int layoutIndex = content.IndexOf("@Layout");
+            if (layoutIndex < 0)
+            {
+                return null;
+            }
+
+            int lineBreakIndex = content.IndexOf(Environment.NewLine, layoutIndex);
+            if (lineBreakIndex < 0)
+            {
+                return null;
+            }
+
+            string layoutPath = content.Substring(layoutIndex + 8, lineBreakIndex - layoutIndex - 8).Trim();
+
+            return layoutPath;
+        }
+
+        private async Task<string> ReplaceLayoutPlaceholderAsync(string content, string baseDirectory)
+        {
+            string? layoutPath = this.GetLayoutFilePath(content);
+            if (string.IsNullOrEmpty(layoutPath))
+            {
+                return content;
+            }
+
+            string fullPath = Path.Combine(baseDirectory, layoutPath);
+
+            string layoutContent = await File.ReadAllTextAsync(fullPath);
+
+            layoutContent = layoutContent.Replace("@Body", content);
+
+            string output = string.Join(Environment.NewLine, layoutContent.Split(Environment.NewLine)
+                .Where(x => x.Trim().ToLowerInvariant().StartsWith("@layout") != true)
+                .ToArray());
+
+            return output;
         }
 
         private async Task<string> LoadFileContent(string sourceFile)
@@ -78,7 +110,7 @@ namespace HtmlCompiler.Core
             return content;
         }
 
-        private static string GetBaseDirectory(string sourceFile)
+        private string GetBaseDirectory(string sourceFile)
         {
             string? baseDirectory = Path.GetDirectoryName(sourceFile);
 

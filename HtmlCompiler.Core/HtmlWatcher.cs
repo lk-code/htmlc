@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Reflection.Metadata;
 using HtmlCompiler.Core.Components;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
@@ -150,7 +151,9 @@ public class HtmlWatcher : IHtmlWatcher
 
             try
             {
-                await this._htmlRenderer.RenderToFileAsync(fileToCompile, outputFile);
+                string renderedContent = await this._htmlRenderer.RenderHtmlAsync(fileToCompile);
+
+                await File.WriteAllTextAsync(outputFile, renderedContent);
             }
             catch (FileNotFoundException err)
             {

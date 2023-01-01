@@ -27,7 +27,9 @@ public class HtmlcCommand
 
         try
         {
-            await this._htmlRenderer.RenderToFileAsync(sourceFile, fullOutputFilePath);
+            string content = await this._htmlRenderer.RenderHtmlAsync(sourceFile);
+
+            await File.WriteAllTextAsync(fullOutputFilePath, content);
         }
         catch (FileNotFoundException)
         {
