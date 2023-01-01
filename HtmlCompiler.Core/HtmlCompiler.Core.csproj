@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -7,6 +7,8 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Components\" />
+		<None Remove="DartSassHost" />
+		<None Remove="JavaScriptEngineSwitcher.V8" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Components\" />
@@ -16,5 +18,9 @@
 			<_Parameter1>HtmlCompiler.Tests</_Parameter1>
 			<!-- We use the value of AssemblyName to declare the value of the attribute -->
 		</AssemblyAttribute>
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="DartSassHost" Version="1.0.1" />
+	  <PackageReference Include="JavaScriptEngineSwitcher.V8" Version="3.20.8" />
 	</ItemGroup>
 </Project>

@@ -37,8 +37,9 @@ public class HtmlcCommand
 
     [Command("watch")]
     public async Task Watch([Argument(Description = "path to the source files. If empty, then the /src is used in the current directory for scanning")] string? sourcePath = null,
-        [Argument(Description = "path for the output. if empty, then the /dist folder is used in the current directory")] string? outputPath = null)
+        [Argument(Description = "path for the output. if empty, then the /dist folder is used in the current directory")] string? outputPath = null,
+        [Option('s', Description = "path to the style file to compile (scss or less)")] string? pathToStyleFile = null)
     {
-        await this._htmlWatcher.WatchDirectoryAsync(sourcePath, outputPath);
+        await this._htmlWatcher.WatchDirectoryAsync(sourcePath, outputPath, pathToStyleFile);
     }
 }
