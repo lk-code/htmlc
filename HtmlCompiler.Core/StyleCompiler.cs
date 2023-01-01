@@ -108,7 +108,7 @@ public class StyleCompiler : IStyleCompiler
         string currentSubDirectory,
         string fileExtension)
     {
-        var importRegex = new Regex(@"@import\s+""([^""]+)""\s*;");
+        var importRegex = new Regex(@"@import\s+""([^""]+)""\s*;", RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
         foreach (Match match in importRegex.Matches(input))
         {
