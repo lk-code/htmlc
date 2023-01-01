@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using DartSassHost;
 using DartSassHost.Helpers;
@@ -61,7 +62,7 @@ public class StyleCompiler : IStyleCompiler
             case ".scss":
             case ".sass":
                 {
-                    await this.CompileSass(inputContent, styleSourceFilePath, outputFileName);
+                    await this.CompileSass(inputContent, sourceFilePath, outputFilePath);
                 }
                 break;
             case ".less":
@@ -126,7 +127,11 @@ public class StyleCompiler : IStyleCompiler
 
     private async Task CompileSass(string inputContent, string styleSourceFilePath, string styleOutputFilePath)
     {
-        var options = new CompilationOptions { SourceMap = true };
+        CompilationOptions options = new CompilationOptions { SourceMap = true };
+
+        string inputFilePath = styleSourceFilePath;
+        string outputFilePath = styleOutputFilePath;
+        string outputMappingFilePath = $"{styleOutputFilePath}.map";
 
         try
         {
@@ -134,16 +139,30 @@ public class StyleCompiler : IStyleCompiler
             {
                 CompilationResult result = sassCompiler.Compile(
                     inputContent,
-                    styleSourceFilePath,
-                    styleOutputFilePath,
-                    $"{styleOutputFilePath}.map",
+                    inputFilePath,
+                    outputFilePath,
+                    outputMappingFilePath,
                     options);
 
-                Console.WriteLine("Compiled content:{1}{1}{0}{1}", result.CompiledContent,
-                    Environment.NewLine);
-                Console.WriteLine("Source map:{1}{1}{0}{1}", result.SourceMap, Environment.NewLine);
-                Console.WriteLine("Included file paths: {0}",
-                    string.Join(", ", result.IncludedFilePaths));
+                string? outputDirectory = Path.GetDirectoryName(outputFilePath);
+                if (!string.IsNullOrEmpty(outputDirectory))
+                {
+                    outputDirectory.EnsurePath();
+                }
+
+                string compiledCss = result.CompiledContent;
+                await File.WriteAllTextAsync(outputFilePath, compiledCss);
+
+                string mappingCss = result.SourceMap;
+                await File.WriteAllTextAsync(outputMappingFilePath, mappingCss);
+
+                Console.WriteLine($"compiled style to {outputFilePath} (mapping: {outputMappingFilePath})");
+
+                //Console.WriteLine("Compiled content:{1}{1}{0}{1}", result.CompiledContent,
+                //    Environment.NewLine);
+                //Console.WriteLine("Source map:{1}{1}{0}{1}", result.SourceMap, Environment.NewLine);
+                //Console.WriteLine("Included file paths: {0}",
+                //    string.Join(", ", result.IncludedFilePaths));
             }
         }
         catch (SassCompilerLoadException e)
