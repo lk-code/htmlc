@@ -10,6 +10,7 @@ CoconaAppBuilder? builder = CoconaApp.CreateBuilder();
 
 builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
 builder.Services.AddTransient<IHtmlWatcher, HtmlWatcher>();
+builder.Services.AddTransient<IStyleCompiler, StyleCompiler>();
 
 CoconaApp? app = builder.Build();
 

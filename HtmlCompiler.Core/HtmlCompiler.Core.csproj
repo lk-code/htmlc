@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -7,6 +7,16 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Components\" />
+		<None Remove="DartSassHost" />
+		<None Remove="JavaScriptEngineSwitcher.V8" />
+		<None Remove="Microsoft.ClearScript.V8.Native.win-x86" />
+		<None Remove="Microsoft.ClearScript.V8.Native.win-x64" />
+		<None Remove="Microsoft.ClearScript.V8.Native.win-arm64" />
+		<None Remove="Microsoft.ClearScript.V8.Native.linux-x64" />
+		<None Remove="Microsoft.ClearScript.V8.Native.linux-arm" />
+		<None Remove="Microsoft.ClearScript.V8.Native.linux-arm64" />
+		<None Remove="Microsoft.ClearScript.V8.Native.osx-x64" />
+		<None Remove="Microsoft.ClearScript.V8.Native.osx-arm64" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Components\" />
@@ -16,5 +26,17 @@
 			<_Parameter1>HtmlCompiler.Tests</_Parameter1>
 			<!-- We use the value of AssemblyName to declare the value of the attribute -->
 		</AssemblyAttribute>
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="DartSassHost" Version="1.0.1" />
+	  <PackageReference Include="JavaScriptEngineSwitcher.V8" Version="3.20.8" />
+	  <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x86" Version="7.3.6" />
+	  <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.3.6" />
+	  <PackageReference Include="Microsoft.ClearScript.V8.Native.win-arm64" Version="7.3.6" />
+	  <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-x64" Version="7.3.6" />
+	  <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-arm" Version="7.3.6" />
+	  <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-arm64" Version="7.3.6" />
+	  <PackageReference Include="Microsoft.ClearScript.V8.Native.osx-x64" Version="7.3.6" />
+	  <PackageReference Include="Microsoft.ClearScript.V8.Native.osx-arm64" Version="7.3.6" />
 	</ItemGroup>
 </Project>

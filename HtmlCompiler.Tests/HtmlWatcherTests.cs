@@ -14,6 +14,7 @@ namespace HtmlCompiler.Tests;
 public class HtmlWatcherTests
 {
     private Mock<IHtmlRenderer> _htmlRenderer = null!;
+    private Mock<IStyleCompiler> _styleCompiler = null!;
 
     private HtmlWatcher _instance = null!;
 
@@ -21,8 +22,10 @@ public class HtmlWatcherTests
     public void SetUp()
     {
         this._htmlRenderer = new Mock<IHtmlRenderer>();
+        this._styleCompiler = new Mock<IStyleCompiler>();
 
-        this._instance = new HtmlWatcher(this._htmlRenderer.Object);
+        this._instance = new HtmlWatcher(this._htmlRenderer.Object,
+            this._styleCompiler.Object);
     }
 
     [TestMethod]

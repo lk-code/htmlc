@@ -9,14 +9,18 @@ namespace HtmlCompiler.Core;
 public class HtmlWatcher : IHtmlWatcher
 {
     private readonly IHtmlRenderer _htmlRenderer;
+    private readonly IStyleCompiler _styleCompiler;
 
     private string _sourceDirectoryPath = string.Empty;
     private string _outputDirectoryPath = string.Empty;
+    private string? _styleEntryFilePath = null;
     private FileChangeDetector? _fileDetector = null;
 
-    public HtmlWatcher(IHtmlRenderer htmlRenderer)
+    public HtmlWatcher(IHtmlRenderer htmlRenderer,
+        IStyleCompiler styleCompiler)
     {
         this._htmlRenderer = htmlRenderer ?? throw new ArgumentNullException(nameof(htmlRenderer));
+        this._styleCompiler = styleCompiler ?? throw new ArgumentNullException(nameof(styleCompiler));
     }
 
     ~HtmlWatcher()
@@ -32,14 +36,23 @@ public class HtmlWatcher : IHtmlWatcher
         }
     }
 
-    public async Task WatchDirectoryAsync(string? sourcePath, string? outputPath)
+    /// <inheritdoc/>
+    public async Task WatchDirectoryAsync(string? sourcePath, string? outputPath, string? fileToStyleFilePath)
     {
         Console.WriteLine("htmlc is watching :)");
+
         // prepare
         this.SetProjectPaths(sourcePath, outputPath);
 
         this._sourceDirectoryPath.EnsurePath();
         this._outputDirectoryPath.EnsurePath();
+
+        // check for style file
+        if (!string.IsNullOrEmpty(fileToStyleFilePath))
+        {
+            string styleFullFilePath = $"{this._sourceDirectoryPath}{fileToStyleFilePath}";
+            this._styleEntryFilePath = styleFullFilePath;
+        }
 
         // compile files
         await this.CompileFilesAsync();
@@ -96,6 +109,16 @@ public class HtmlWatcher : IHtmlWatcher
         Console.WriteLine($"compiling...");
 
         List<string> files = this._sourceDirectoryPath.GetAllFiles();
+
+        // compile html
+        await this.RenderHtmlFiles(files);
+
+        // compile style file
+        await this._styleCompiler.CompileStyleAsync(this._sourceDirectoryPath, this._outputDirectoryPath, this._styleEntryFilePath);
+    }
+
+    private async Task RenderHtmlFiles(List<string> files)
+    {
         List<string> layoutFiles = this.GetLayoutFiles(files);
         List<string> sourceFiles = this.GetHtmlFiles(files);
 
@@ -131,7 +154,7 @@ public class HtmlWatcher : IHtmlWatcher
             }
             catch (FileNotFoundException err)
             {
-                Console.WriteLine($"file {err.FileName} not found");
+                Console.WriteLine($"ERR: file {err.FileName} not found");
             }
         }
     }
