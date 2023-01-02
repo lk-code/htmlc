@@ -18,14 +18,14 @@ public class StyleCompiler : IStyleCompiler
     {
     }
 
-    public async Task CompileStyleAsync(string sourceDirectoryPath, string outputDirectoryPath, string? styleSourceFilePath)
+    public async Task<string?> CompileStyleAsync(string sourceDirectoryPath, string outputDirectoryPath, string? styleSourceFilePath)
     {
         this._sourceDirectoryPath = sourceDirectoryPath;
         this._outputDirectoryPath = outputDirectoryPath;
 
         if (string.IsNullOrEmpty(styleSourceFilePath))
         {
-            return;
+            return null;
         }
 
         Console.WriteLine($"looking for style at {styleSourceFilePath}");
@@ -35,7 +35,7 @@ public class StyleCompiler : IStyleCompiler
             // no style found
             Console.WriteLine("ERR: no style file found!");
 
-            return;
+            return null;
         }
 
         string fileExtension = Path.GetExtension(styleSourceFilePath)
@@ -45,7 +45,7 @@ public class StyleCompiler : IStyleCompiler
             // not supported style
             Console.WriteLine("ERR: style type is not supported (only scss and less is supported to compile)");
 
-            return;
+            return null;
         }
 
         string sourceFileName = styleSourceFilePath.Replace(sourceDirectoryPath, "");
@@ -71,6 +71,8 @@ public class StyleCompiler : IStyleCompiler
                 }
                 break;
         }
+
+        return outputFilePath;
     }
 
     private async Task<string> GetStyleContent(string sourceDirectoryPath, string sourceFilePath)

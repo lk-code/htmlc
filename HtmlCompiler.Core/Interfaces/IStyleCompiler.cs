@@ -3,5 +3,5 @@ namespace HtmlCompiler.Core.Interfaces;
 
 public interface IStyleCompiler
 {
-    Task CompileStyleAsync(string sourceDirectoryPath, string outputDirectoryPath, string? styleSourceFilePath);
+    Task<string?> CompileStyleAsync(string sourceDirectoryPath, string outputDirectoryPath, string? styleSourceFilePath);
 }

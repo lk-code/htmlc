@@ -111,14 +111,14 @@ public class HtmlWatcher : IHtmlWatcher
 
         List<string> files = this._sourceDirectoryPath.GetAllFiles();
 
-        // compile html
-        await this.RenderHtmlFiles(files);
-
         // compile style file
-        await this._styleCompiler.CompileStyleAsync(this._sourceDirectoryPath, this._outputDirectoryPath, this._styleEntryFilePath);
+        string? cssOutputFilePath = await this._styleCompiler.CompileStyleAsync(this._sourceDirectoryPath, this._outputDirectoryPath, this._styleEntryFilePath);
+
+        // compile html
+        await this.RenderHtmlFiles(files, cssOutputFilePath);
     }
 
-    private async Task RenderHtmlFiles(List<string> files)
+    private async Task RenderHtmlFiles(List<string> files, string? cssOutputFilePath)
     {
         List<string> layoutFiles = this.GetLayoutFiles(files);
         List<string> sourceFiles = this.GetHtmlFiles(files);
@@ -151,7 +151,7 @@ public class HtmlWatcher : IHtmlWatcher
 
             try
             {
-                string renderedContent = await this._htmlRenderer.RenderHtmlAsync(fileToCompile);
+                string renderedContent = await this._htmlRenderer.RenderHtmlAsync(fileToCompile, cssOutputFilePath);
 
                 await File.WriteAllTextAsync(outputFile, renderedContent);
             }

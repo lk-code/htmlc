@@ -8,7 +8,7 @@ namespace HtmlCompiler.Core
 {
     public class HtmlRenderer : IHtmlRenderer
     {
-        public async Task<string> RenderHtmlAsync(string sourceFullFilePath)
+        public async Task<string> RenderHtmlAsync(string sourceFullFilePath, string? cssOutputFilePath)
         {
             string baseDirectory = this.GetBaseDirectory(sourceFullFilePath);
             string originalContent = await this.LoadFileContent(sourceFullFilePath);
@@ -21,9 +21,22 @@ namespace HtmlCompiler.Core
             baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
 
             // replace all @File=...
-            renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory);
+            renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory, cssOutputFilePath);
+
+            // replace all @StylePath
+            if (!string.IsNullOrEmpty(cssOutputFilePath))
+            {
+                renderedContent = this.ReplaceStylePath(renderedContent, cssOutputFilePath);
+            }
 
             return renderedContent;
+        }
+
+        private string ReplaceStylePath(string content, string cssPath)
+        {
+            var stylePathRegex = new Regex("@StylePath", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+
+            return stylePathRegex.Replace(content, cssPath);
         }
 
         private string AdjustBaseDirectoryToLayoutFile(string content, string baseDirectory)
@@ -39,9 +52,9 @@ namespace HtmlCompiler.Core
             return baseDirectory;
         }
 
-        private async Task<string> ReplaceFilePlaceholdersAsync(string content, string baseDirectory)
+        private async Task<string> ReplaceFilePlaceholdersAsync(string content, string baseDirectory, string? cssPath)
         {
-            Regex fileTagRegex = new Regex(@"@File=([^\s]+)", RegexOptions.None, TimeSpan.FromMilliseconds(100));
+            Regex fileTagRegex = new Regex(@"@File=([^\s]+)", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
             foreach (Match match in fileTagRegex.Matches(content))
             {
@@ -50,7 +63,7 @@ namespace HtmlCompiler.Core
                 string fullPath = Path.Combine(baseDirectory, fileValue);
 
                 // render the new file and return the rendered content
-                string fileContent = await this.RenderHtmlAsync(fullPath);
+                string fileContent = await this.RenderHtmlAsync(fullPath, cssPath);
 
                 content = content.Replace(match.Value, fileContent);
             }
@@ -60,19 +73,21 @@ namespace HtmlCompiler.Core
 
         private string? GetLayoutFilePath(string content)
         {
-            int layoutIndex = content.IndexOf("@Layout");
-            if (layoutIndex < 0)
+            var layoutRegex = new Regex("@Layout", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+
+            Match layoutMatch = layoutRegex.Match(content);
+            if (!layoutMatch.Success)
             {
                 return null;
             }
 
-            int lineBreakIndex = content.IndexOf(Environment.NewLine, layoutIndex);
+            int lineBreakIndex = content.IndexOf(Environment.NewLine, layoutMatch.Index);
             if (lineBreakIndex < 0)
             {
                 return null;
             }
 
-            string layoutPath = content.Substring(layoutIndex + 8, lineBreakIndex - layoutIndex - 8).Trim();
+            string layoutPath = content.Substring(layoutMatch.Index + 8, lineBreakIndex - layoutMatch.Index - 8).Trim();
 
             return layoutPath;
         }
