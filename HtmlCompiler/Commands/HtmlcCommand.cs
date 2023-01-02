@@ -9,12 +9,15 @@ public class HtmlcCommand
 {
     private readonly IHtmlRenderer _htmlRenderer;
     private readonly IHtmlWatcher _htmlWatcher;
+    private readonly IStyleCompiler _styleCompiler;
 
     public HtmlcCommand(IHtmlRenderer htmlRenderer,
-        IHtmlWatcher htmlWatcher)
+        IHtmlWatcher htmlWatcher,
+        IStyleCompiler styleCompiler)
     {
         this._htmlRenderer = htmlRenderer ?? throw new ArgumentNullException(nameof(htmlRenderer));
         this._htmlWatcher = htmlWatcher ?? throw new ArgumentNullException(nameof(htmlWatcher));
+        this._styleCompiler = styleCompiler ?? throw new ArgumentNullException(nameof(styleCompiler));
     }
 
     [Command("compile")]
@@ -27,7 +30,7 @@ public class HtmlcCommand
 
         try
         {
-            string content = await this._htmlRenderer.RenderHtmlAsync(sourceFile);
+            string content = await this._htmlRenderer.RenderHtmlAsync(sourceFile, null);
 
             await File.WriteAllTextAsync(fullOutputFilePath, content);
         }
@@ -40,7 +43,7 @@ public class HtmlcCommand
     [Command("watch")]
     public async Task Watch([Argument(Description = "path to the source files. If empty, then the /src is used in the current directory for scanning")] string? sourcePath = null,
         [Argument(Description = "path for the output. if empty, then the /dist folder is used in the current directory")] string? outputPath = null,
-        [Option('s', Description = "path to the style file to compile (scss or less)")] string? style = null)
+        [Option('s', Description = "path to the style file to compile (scss or sass)")] string? style = null)
     {
         await this._htmlWatcher.WatchDirectoryAsync(sourcePath, outputPath, style);
     }
