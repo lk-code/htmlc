@@ -21,23 +21,11 @@ public class HtmlcCommand
     }
 
     [Command("compile")]
-    public async Task Compile([Argument(Description = "path to the source file")] string sourceFile,
-        [Argument(Description = "path to the output file")] string outputFile)
+    public async Task Compile([Argument(Description = "path to the source files. If empty, then the /src is used in the current directory for scanning")] string? sourcePath = null,
+        [Argument(Description = "path for the output. if empty, then the /dist folder is used in the current directory")] string? outputPath = null,
+        [Option('s', Description = "path to the style file to compile (scss or sass)")] string? style = null)
     {
-        string fullOutputFilePath = outputFile.FromSourceFilePath(sourceFile);
-
-        Console.WriteLine($"compile file {sourceFile} to {fullOutputFilePath}");
-
-        try
-        {
-            string content = await this._htmlRenderer.RenderHtmlAsync(sourceFile, null);
-
-            await File.WriteAllTextAsync(fullOutputFilePath, content);
-        }
-        catch (FileNotFoundException)
-        {
-            Console.WriteLine($"file {sourceFile} not found");
-        }
+        await this._htmlWatcher.WatchDirectoryAsync(sourcePath, outputPath, style, false);
     }
 
     [Command("watch")]
