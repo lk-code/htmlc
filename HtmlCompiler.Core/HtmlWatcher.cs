@@ -38,9 +38,16 @@ public class HtmlWatcher : IHtmlWatcher
     }
 
     /// <inheritdoc/>
-    public async Task WatchDirectoryAsync(string? sourcePath, string? outputPath, string? fileToStyleFilePath)
+    public async Task WatchDirectoryAsync(string? sourcePath, string? outputPath, string? fileToStyleFilePath, bool watchDirectory = true)
     {
-        Console.WriteLine("htmlc is watching :)");
+        if (watchDirectory)
+        {
+            Console.WriteLine("htmlc is watching :)");
+        }
+        else
+        {
+            Console.WriteLine("htmlc is compiling :)");
+        }
 
         // prepare
         this.SetProjectPaths(sourcePath, outputPath);
@@ -59,16 +66,24 @@ public class HtmlWatcher : IHtmlWatcher
         await this.CompileFilesAsync();
 
         // watch for changes
-        this.UnregisterFileDetector();
-        this._fileDetector = new FileChangeDetector(this._sourceDirectoryPath);
-        this._fileDetector.FileChanged += FileChangeDetector_FileChanged;
+        if (watchDirectory == true)
+        {
+            this.UnregisterFileDetector();
+            this._fileDetector = new FileChangeDetector(this._sourceDirectoryPath);
+            this._fileDetector.FileChanged += FileChangeDetector_FileChanged;
 
-        ConsoleColor oldColor = Console.ForegroundColor;
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("use CTRL+X to exit htmlc");
-        Console.ForegroundColor = oldColor;
+            ConsoleColor oldColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("use CTRL+X to exit htmlc");
+            Console.ForegroundColor = oldColor;
+        }
 
         // loop => wait for user input to exit the app
+        if (watchDirectory != true)
+        {
+            Console.WriteLine("compiling finished");
+            return;
+        }
         while (true)
         {
             if (Console.KeyAvailable)

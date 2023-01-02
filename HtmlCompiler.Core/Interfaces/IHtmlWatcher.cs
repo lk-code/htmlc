@@ -10,5 +10,5 @@ public interface IHtmlWatcher
     /// <param name="outputPath"></param>
     /// <param name="styleFilePath"></param>
     /// <returns></returns>
-    Task WatchDirectoryAsync(string? sourcePath, string? outputPath, string? styleFilePath);
+    Task WatchDirectoryAsync(string? sourcePath, string? outputPath, string? styleFilePath, bool watchDirectory = true);
 }
