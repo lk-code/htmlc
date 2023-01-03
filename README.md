@@ -115,6 +115,7 @@ htmlc can also compile style files (scss or sass). the path of the compiled CSS 
 ## commands
 
 ### compile
+
 This command compiles all HTML files from the /src (rekusriv) folder and writes the results to /dist.
 
 `htmlc compile <project-directory>`
