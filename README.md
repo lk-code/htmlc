@@ -34,73 +34,124 @@ then you can install the html-tool very simple via this command:
 
 ## usage
 
-### compile a single file
+The compile process searches in the folder for all HTML files. All files that do NOT start with an underscore are compiled. Files with an underscore (for example _layout.html or _footer.html) are used as reusable components.
 
-generates HTML from the template file demo.html and writes it into the folder ".\output" with the same file name ".\output\demo.html":<br />
-`htmlc compile .\source\demo.html .\output\`
+### html files
 
-generates HTML from the template file test.html and writes it into the file ".\output\sample.html":<br />
-`htmlc compile .\source\test.html .\output\sample.html`
+### different html types
 
-#### specify a template file
-this file contains only the individual content:
+#### entry html
+The compiler searches for all HTML files which do NOT start with an underscore (index.html, a-page.html, etc.). files like _layout.html, footer.html, etc. are ignored.
 
-`@Layout=_layout.html`<br />
-`<section>`<br />
-`    <div>Hello again</div>`<br />
-`</section>`<br />
+for example:
 
-**important:** add the ***@Layout***-element to specify which file the layout is in.
+`/src/index.html`<br />
+`/src/pages.html`<br />
+`/src/components/buttons.html`<br />
 
-#### specify a layout file
-The layout file contains the HTML framework, which is identical for all generated files:<br />
+#### layout
+The layout file must start with an underscore. The rest of the naming is up to you. the content consists of reusable layout in HTML (styles and scripts, header, navigation, etc.).
+
+for example:
+
+`/src/_layout.html`<br />
+
+#### reusable components
+In addition, you can use other recyclable components. The file name must start with an underscore. The rest of the naming is up to you.
+
+for example:
+
+`/src/_navigation.html`<br />
+`/src/_header.html`<br />
+`/src/_footer.html`<br />
+
+### supported tags and its functionality
+
+#### @Layout
+The **@Layout** tag is used in an HTML entry file to specify which layout file is to use.
+
+#### @Body
+The **@Body** tag determines in a layout file where the content from the actual HTML entry file is written.
+
+#### @File
+You can include another file with the **@File** tag in any HTML file (whether layout file. reusable file or entry file).
+
+#### @StylePath
+htmlc can also compile style files (scss or sass). the path of the compiled CSS file can be inserted using this **@StylePath** tag. The following usage makes sense:<br />
+`<link rel="stylesheet" href="@StylePath">`<br />
+
+### getting started with your own project
+
+1. create a directory with two subdirectories **/src** and **/dist**. All project files must be stored under **/src**. The compiler writes the results under **/dist**.
+2. create an initial entry file **index.html**.
+3. create a layout file **_layout.html**.
+4. write the following basic HTML structure in the **_layout.html** file.<br />
 `<html>`<br />
 `    <head>`<br />
-`        ...`<br />
 `    </head>`<br />
 `    <body>`<br />
 `        @Body`<br />
 `    </body>`<br />
 `</html>`<br />
-
-**important:** add the ***@Body***-element to specify where the content of the page should be written.
-
-#### generated output
-
-The above example generates the following code:
-`<html>`<br />
-`    <head>`<br />
-`        ...`<br />
-`    </head>`<br />
-`    <body>`<br />
+5. write the following example in **index.html**.<br />
+`@Layout=_layout.html`<br />
 `<section>`<br />
 `    <div>Hello again</div>`<br />
 `</section>`<br />
+6. open the console of your choice and change to the project directory. (**/src** and **/dist** must be in it).
+7. type the following command:<br />
+`htmlc compile`<br />
+8. under **/dist** should now appear a file **index.html** with the following content:<br />
+`<html>`<br />
+`    <head>`<br />
+`    </head>`<br />
+`    <body>`<br />
+`        <section>`<br />
+`            <div>Hello again</div>`<br />
+`        </section>`<br />
 `    </body>`<br />
 `</html>`<br />
 
-### watch your project directory
+## commands
 
-You can monitor your whole HTML project directory and compile it automatically. There are two options:
+### compile
+This command compiles all HTML files from the /src (rekusriv) folder and writes the results to /dist.
 
-1. you specify only the path to the project folder. In this folder htmlc will look for /src and /dist (or will create these two folders). Under /src htmlc will monitor for file changes. /dist is used as output directory for the compiler:
+`htmlc compile <project-directory>`
 
-`htmlc watch .\path\to\source\`
+If only one path is specified, htmlc searches for /src and /dist in this directory. If these do not exist, then they are created. Then htmlc searches for files in /src and writes the results to the /dist directory. If no path is specified, then htmlc searches for /src and /dist in the current folder.
 
-2. you specify the source directory and the output directory. These then behave like /src and /dist:
+**project-directory (optional):** the path to the project directory. for example: `/path/to/project`
 
-`htmlc watch .\path\to\source\ .\path\to\output\`
+`htmlc compile <source-directory> <output-directory>`
 
-#### optional: add a style file to compile
-You can also specify a style file to the watch command. This will then also be monitored and compiled in case of changes. Currently supported are Sass/SCSS and Less.
+If two folders are specified, then htmlc uses the first value as the source path and the second value as the output paths.
 
-`htmlc watch [....] -s {relative/path/to/style.scss}`
+**source-directory (optional):** The path to the source directory (equivalent to /src). for example: `/path/to/project/src`
 
-for example:
+**output-directory (optional):** The path to the output directory (equivalent to /dist). for example: `/path/to/another/directory/output`
 
-`htmlc watch /Users/lk-code/Projects/Website/src /Users/lk-code/Projects/Website/dist -s /styles/main.scss`
+`htmlc compile [...] [-s --style {path/to/main.scss}]`
 
-htmlc now searches for the style file at /Users/lk-code/Projects/Website/src/styles/main.scss. The content is compiled and then saved to this location: /Users/lk-code/Projects/Website/dist/styles/main.css
+Optionally, a relative path to the style entry file can be specified with -s or -style.
+
+### watch
+
+The watch command is identical to the compile command. The only difference is that the watch command observes the directory after the first compile and restarts the compile process every time a change is made.
+
+**project-directory (optional):** the path to the project directory. for example: `/path/to/project`
+
+`htmlc compile <source-directory> <output-directory>`
+
+If two folders are specified, then htmlc uses the first value as the source path and the second value as the output paths.
+
+**source-directory (optional):** The path to the source directory (equivalent to /src). for example: `/path/to/project/src`
+
+**output-directory (optional):** The path to the output directory (equivalent to /dist). for example: `/path/to/another/directory/output`
+
+`htmlc compile [...] [-s --style {/path/to/main.scss}]`
+
+Optionally, a relative path to the style entry file can be specified with -s or -style. The path to the style file must be specified relative to the /src directory.
 
 ## notices
 
