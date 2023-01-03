@@ -137,11 +137,15 @@ Optionally, a relative path to the style entry file can be specified with -s or 
 
 ### watch
 
+This command compiles all HTML files from the /src (rekusriv) folder and writes the results to /dist. then /src is observed for changes and recompiled whenever a change is made.
+
+`htmlc watch <project-directory>`
+
 The watch command is identical to the compile command. The only difference is that the watch command observes the directory after the first compile and restarts the compile process every time a change is made.
 
 **project-directory (optional):** the path to the project directory. for example: `/path/to/project`
 
-`htmlc compile <source-directory> <output-directory>`
+`htmlc watch <source-directory> <output-directory>`
 
 If two folders are specified, then htmlc uses the first value as the source path and the second value as the output paths.
 
@@ -149,7 +153,7 @@ If two folders are specified, then htmlc uses the first value as the source path
 
 **output-directory (optional):** The path to the output directory (equivalent to /dist). for example: `/path/to/another/directory/output`
 
-`htmlc compile [...] [-s --style {/path/to/main.scss}]`
+`htmlc watch [...] [-s --style {/path/to/main.scss}]`
 
 Optionally, a relative path to the style entry file can be specified with -s or -style. The path to the style file must be specified relative to the /src directory.
 
