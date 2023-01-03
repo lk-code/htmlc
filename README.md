@@ -149,9 +149,9 @@ If two folders are specified, then htmlc uses the first value as the source path
 
 **output-directory (optional):** The path to the output directory (equivalent to /dist). for example: `/path/to/another/directory/output`
 
-`htmlc compile [...] [-s --style {path/to/main.scss}]`
+`htmlc compile [...] [-s --style {/path/to/main.scss}]`
 
-Optionally, a relative path to the style entry file can be specified with -s or -style.
+Optionally, a relative path to the style entry file can be specified with -s or -style. The path to the style file must be specified relative to the /src directory.
 
 ## notices
 
