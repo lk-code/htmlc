@@ -114,6 +114,22 @@ htmlc can also compile style files (scss or sass). the path of the compiled CSS 
 
 ## commands
 
+### config
+
+With this command, the user configuration, which is located in the user directory as a .htmlc file (e.g. /Users/lk-code/.htmlc), can be edited. The file is hidden per default. all (!) html-files a always blocked, the compiler copies the result to the output-directory.
+
+#### build-blacklist
+
+With this command, a file type (e.g. *.png) can be blocked for the compilation process so that no files of this type are copied into the output directory during the asset copying process.
+
+`htmlc config build-blacklist <add|remove> {fileextensions}`
+
+**examples:**
+
+`htmlc config build-blacklist add .png` this command adds a block for all .png-files
+
+`htmlc config build-blacklist remove .png` this command removes the entry for .png-files so all png files are copied.
+
 ### compile
 
 This command compiles all HTML files from the /src (rekusriv) folder and writes the results to /dist.
