@@ -1,14 +1,14 @@
-﻿using System;
-using System.Globalization;
-using System.Reflection.Metadata;
+﻿using System.Diagnostics;
 using HtmlCompiler.Core.Components;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace HtmlCompiler.Core;
 
 public class HtmlWatcher : IHtmlWatcher
 {
+    private readonly IConfiguration configuration;
     private readonly IHtmlRenderer _htmlRenderer;
     private readonly IStyleCompiler _styleCompiler;
 
@@ -17,9 +17,11 @@ public class HtmlWatcher : IHtmlWatcher
     private string? _styleEntryFilePath = null;
     private FileChangeDetector? _fileDetector = null;
 
-    public HtmlWatcher(IHtmlRenderer htmlRenderer,
+    public HtmlWatcher(IConfiguration configuration,
+        IHtmlRenderer htmlRenderer,
         IStyleCompiler styleCompiler)
     {
+        this.configuration = configuration;
         this._htmlRenderer = htmlRenderer ?? throw new ArgumentNullException(nameof(htmlRenderer));
         this._styleCompiler = styleCompiler ?? throw new ArgumentNullException(nameof(styleCompiler));
     }
@@ -124,6 +126,42 @@ public class HtmlWatcher : IHtmlWatcher
 
         // compile html
         await this.RenderHtmlFiles(files, cssOutputFilePath);
+
+        // copy additional assets (like js, css, images, etc.)
+        this.CopyAssetsToOutput(files);
+    }
+
+    private void CopyAssetsToOutput(List<string> sourceFiles)
+    {
+        // copy all other files from /src to /dist
+        string[]? buildBlacklistArray = this.configuration.GetSection("BuildBlacklist").Get<string[]>();
+
+        if (buildBlacklistArray == null
+            || buildBlacklistArray.Length <= 0)
+        {
+            buildBlacklistArray = Array.Empty<string>();
+        }
+
+        List<string> buildBlacklist = buildBlacklistArray.ToList();
+        if (!buildBlacklist.Contains(".html"))
+        {
+            buildBlacklist.Add(".html");
+        }
+
+        List<string> filesWithoutBlacklisted = sourceFiles
+                .Where(x => buildBlacklist.Contains(Path.GetExtension(x.ToLowerInvariant())) != true)
+                .ToList();
+
+        // copy files to output
+        foreach (string sourceFile in filesWithoutBlacklisted)
+        {
+            string outputFile = this.GetOutputPathForSource(sourceFile, this._sourceDirectoryPath, this._outputDirectoryPath);
+            string outputDirectory = Path.GetDirectoryName(outputFile)!;
+            outputDirectory.EnsurePath();
+
+            // copy sourceFile to outputFile
+            File.Copy(sourceFile, outputFile);
+        }
     }
 
     private async Task RenderHtmlFiles(List<string> files, string? cssOutputFilePath)
