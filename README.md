@@ -134,7 +134,7 @@ If two folders are specified, then htmlc uses the first value as the source path
 
 `htmlc compile [...] [-s --style {path/to/main.scss}]`
 
-Optionally, a relative path to the style entry file can be specified with -s or -style.
+Optionally, a relative path to the style entry file can be specified with -s or -style. the path to the style file must be specified relative to the /src directory. the relative path to the final css-file is written to the @StylePath-tags.
 
 ### watch
 
@@ -156,7 +156,7 @@ If two folders are specified, then htmlc uses the first value as the source path
 
 `htmlc watch [...] [-s --style {/path/to/main.scss}]`
 
-Optionally, a relative path to the style entry file can be specified with -s or -style. The path to the style file must be specified relative to the /src directory.
+Optionally, a relative path to the style entry file can be specified with -s or -style. the path to the style file must be specified relative to the /src directory. the relative path to the final css-file is written to the @StylePath-tags.
 
 ## notices
 
