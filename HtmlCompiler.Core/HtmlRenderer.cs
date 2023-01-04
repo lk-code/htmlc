@@ -8,8 +8,12 @@ namespace HtmlCompiler.Core
 {
     public class HtmlRenderer : IHtmlRenderer
     {
-        public async Task<string> RenderHtmlAsync(string sourceFullFilePath, string? cssOutputFilePath)
+        public async Task<string> RenderHtmlAsync(string sourceFullFilePath,
+            string sourceDirectory,
+            string outputDirectory,
+            string? cssOutputFilePath)
         {
+            sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
             string baseDirectory = this.GetBaseDirectory(sourceFullFilePath);
             string originalContent = await this.LoadFileContent(sourceFullFilePath);
             string renderedContent = string.Empty;
@@ -21,25 +25,31 @@ namespace HtmlCompiler.Core
             baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
 
             // replace all @File=...
-            renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory, cssOutputFilePath);
+            renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory, sourceDirectory, outputDirectory, cssOutputFilePath);
 
             // replace all @StylePath
             if (!string.IsNullOrEmpty(cssOutputFilePath))
             {
-                renderedContent = this.ReplaceStylePath(renderedContent, cssOutputFilePath);
+                string entryFilePath = sourceFullFilePath.Replace(sourceDirectory, string.Empty);
+                entryFilePath = $"{outputDirectory}{entryFilePath}";
+                string relativeStylePath = entryFilePath.GetRelativePath(outputDirectory, cssOutputFilePath);
+
+                renderedContent = this.ReplaceStylePath(renderedContent, relativeStylePath);
             }
 
             return renderedContent;
         }
 
-        private string ReplaceStylePath(string content, string cssPath)
+        private string ReplaceStylePath(string content,
+            string cssPath)
         {
             var stylePathRegex = new Regex("@StylePath", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
             return stylePathRegex.Replace(content, cssPath);
         }
 
-        private string AdjustBaseDirectoryToLayoutFile(string content, string baseDirectory)
+        private string AdjustBaseDirectoryToLayoutFile(string content,
+            string baseDirectory)
         {
             string? layoutPath = this.GetLayoutFilePath(content);
             if (string.IsNullOrEmpty(layoutPath))
@@ -47,12 +57,16 @@ namespace HtmlCompiler.Core
                 return baseDirectory;
             }
 
-            baseDirectory = Path.Combine(baseDirectory, Path.GetDirectoryName(layoutPath));
+            baseDirectory = Path.Combine(baseDirectory, Path.GetDirectoryName(layoutPath)!);
 
             return baseDirectory;
         }
 
-        private async Task<string> ReplaceFilePlaceholdersAsync(string content, string baseDirectory, string? cssPath)
+        private async Task<string> ReplaceFilePlaceholdersAsync(string content,
+            string baseDirectory,
+            string sourceDirectory,
+            string outputDirectory,
+            string? cssPath)
         {
             Regex fileTagRegex = new Regex(@"@File=([^\s]+)", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
@@ -63,7 +77,7 @@ namespace HtmlCompiler.Core
                 string fullPath = Path.Combine(baseDirectory, fileValue);
 
                 // render the new file and return the rendered content
-                string fileContent = await this.RenderHtmlAsync(fullPath, cssPath);
+                string fileContent = await this.RenderHtmlAsync(fullPath, sourceDirectory, outputDirectory, cssPath);
 
                 content = content.Replace(match.Value, fileContent);
             }
@@ -92,7 +106,8 @@ namespace HtmlCompiler.Core
             return layoutPath;
         }
 
-        private async Task<string> ReplaceLayoutPlaceholderAsync(string content, string baseDirectory)
+        private async Task<string> ReplaceLayoutPlaceholderAsync(string content,
+            string baseDirectory)
         {
             string? layoutPath = this.GetLayoutFilePath(content);
             if (string.IsNullOrEmpty(layoutPath))

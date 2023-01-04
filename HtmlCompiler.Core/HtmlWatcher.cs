@@ -40,14 +40,7 @@ public class HtmlWatcher : IHtmlWatcher
     /// <inheritdoc/>
     public async Task WatchDirectoryAsync(string? sourcePath, string? outputPath, string? fileToStyleFilePath, bool watchDirectory = true)
     {
-        if (watchDirectory)
-        {
-            Console.WriteLine("htmlc is watching :)");
-        }
-        else
-        {
-            Console.WriteLine("htmlc is compiling :)");
-        }
+        Console.WriteLine($"htmlc is {((watchDirectory == true) ? "watching" : "compiling")} :)");
 
         // prepare
         this.SetProjectPaths(sourcePath, outputPath);
@@ -166,7 +159,7 @@ public class HtmlWatcher : IHtmlWatcher
 
             try
             {
-                string renderedContent = await this._htmlRenderer.RenderHtmlAsync(fileToCompile, cssOutputFilePath);
+                string renderedContent = await this._htmlRenderer.RenderHtmlAsync(fileToCompile, this._sourceDirectoryPath, this._outputDirectoryPath, cssOutputFilePath);
 
                 await File.WriteAllTextAsync(outputFile, renderedContent);
             }
