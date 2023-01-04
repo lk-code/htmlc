@@ -1,11 +1,7 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using FluentAssertions;
+﻿using FluentAssertions;
 using HtmlCompiler.Core;
-using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace HtmlCompiler.Tests;
@@ -13,6 +9,7 @@ namespace HtmlCompiler.Tests;
 [TestClass]
 public class HtmlWatcherTests
 {
+    private Mock<IConfiguration> _configuration = null!;
     private Mock<IHtmlRenderer> _htmlRenderer = null!;
     private Mock<IStyleCompiler> _styleCompiler = null!;
 
@@ -21,10 +18,13 @@ public class HtmlWatcherTests
     [TestInitialize]
     public void SetUp()
     {
+        this._configuration = new Mock<IConfiguration>();
         this._htmlRenderer = new Mock<IHtmlRenderer>();
         this._styleCompiler = new Mock<IStyleCompiler>();
 
-        this._instance = new HtmlWatcher(this._htmlRenderer.Object,
+        this._instance = new HtmlWatcher(
+            this._configuration.Object,
+            this._htmlRenderer.Object,
             this._styleCompiler.Object);
     }
 

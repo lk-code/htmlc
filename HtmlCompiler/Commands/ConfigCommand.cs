@@ -17,7 +17,8 @@ public class ConfigCommand
 
     [Command("config")]
     public async Task Config([Argument(Description = "the config value to edit")] string key,
-        [Argument(Description = "the config value as json string")] string? value = null)
+        [Argument(Description = "the action on array-based config entries (add, remove or replace)")] string? action,
+        [Argument(Description = "the config value as json string")] string? value)
     {
         // read user config file
         string userJsonConfig = await File.ReadAllTextAsync(Globals.USER_CONFIG);
@@ -31,7 +32,7 @@ public class ConfigCommand
         // edit the content
         try
         {
-            userConfig = this.EditOnConfig(userConfig, key, value);
+            userConfig = this.EditOnConfig(userConfig, key, action, value);
         }
         catch (Exception err)
         {
@@ -45,16 +46,28 @@ public class ConfigCommand
         }
 
         // write user config file
-        await File.WriteAllTextAsync(Globals.USER_CONFIG, JsonSerializer.Serialize(userConfig));
+        userJsonConfig = JsonSerializer.Serialize(userConfig);
+        await File.WriteAllTextAsync(Globals.USER_CONFIG, userJsonConfig);
     }
 
-    private ConfigModel? EditOnConfig(ConfigModel userConfig, string key, string? value)
+    private ConfigModel? EditOnConfig(ConfigModel userConfig, string key, string? action, string? value)
     {
-        switch (key.ToLowerInvariant())
+        string comparingKey = key.ToLowerInvariant();
+        switch (comparingKey)
         {
-            case "tests":
+            //case "bool-exmaple":
+            //    {
+            //        userConfig.Bool = true;
+            //    }
+            //    break;
+            //case "string-exmaple":
+            //    {
+            //        userConfig = value.Ensure($"value for {comparingKey} can not be empty!");
+            //    }
+            //    break;
+            case "build-blacklist":
                 {
-                    userConfig.Tests = value.Ensure("value for tests cant be empty!");
+                    EditBuildBlacklist(userConfig, ref action, ref value, comparingKey);
                 }
                 break;
             default:
@@ -66,5 +79,30 @@ public class ConfigCommand
         }
 
         return userConfig;
+    }
+
+    private static void EditBuildBlacklist(ConfigModel userConfig, ref string? action, ref string? value, string comparingKey)
+    {
+        List<string> blacklist = userConfig.BuildBlackList.ToList();
+        action = action.Ensure($"action is needed for {comparingKey}!");
+        value = value.Ensure($"value for {comparingKey} can not be empty!");
+
+        if (action.ToLowerInvariant() == "add")
+        {
+            // add
+            blacklist.Add(value!.ToLowerInvariant());
+        }
+        else if (action.ToLowerInvariant() == "remove")
+        {
+            // remove
+            blacklist.Remove(value!.ToLowerInvariant());
+        }
+        else if (action.ToLowerInvariant() == "replace")
+        {
+            // overwrite
+            blacklist = JsonSerializer.Deserialize<string[]>(value!)!.ToList();
+        }
+
+        userConfig.BuildBlackList = blacklist.ToArray();
     }
 }
