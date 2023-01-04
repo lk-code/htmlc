@@ -6,6 +6,7 @@ using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
 
 CoconaAppBuilder? builder = CoconaApp.CreateBuilder();
 
@@ -15,7 +16,9 @@ if (!File.Exists(Globals.USER_CONFIG))
 {
     using (StreamWriter sw = File.CreateText(Globals.USER_CONFIG))
     {
-        sw.WriteLine("{}");
+        ConfigModel basicConfiguration = ConfigModel.GetBasicConfig();
+        string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
+        sw.WriteLine(basicJsonConfiguration);
     }
     File.SetAttributes(Globals.USER_CONFIG, FileAttributes.Hidden);
 }
