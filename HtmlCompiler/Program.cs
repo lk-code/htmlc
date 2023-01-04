@@ -24,7 +24,6 @@ if (!File.Exists(Globals.USER_CONFIG))
 }
 
 builder.Configuration
-    .AddJsonFile("appsettings.json", false, false)
     .AddJsonStream(new StreamReader(Globals.USER_CONFIG).BaseStream);
 
 builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
