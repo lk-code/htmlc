@@ -27,6 +27,9 @@
 	  <WarningLevel>4</WarningLevel>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="appsettings.json" />
+	</ItemGroup>
+	<ItemGroup>
 		<None Include="..\icon_128.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
@@ -47,5 +50,15 @@
 			<_Parameter1>$(AssemblyName).Tests</_Parameter1>
 			<!-- We use the value of AssemblyName to declare the value of the attribute -->
 		</AssemblyAttribute>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 </Project>
