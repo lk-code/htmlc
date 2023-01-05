@@ -44,21 +44,19 @@ public class HtmlWatcher : IHtmlWatcher
     {
         Console.WriteLine($"htmlc is {((watchDirectory == true) ? "watching" : "compiling")} :)");
 
-        // prepare
-        this.SetProjectPaths(sourcePath, outputPath);
-
-        this._sourceDirectoryPath.EnsurePath();
-        this._outputDirectoryPath.EnsurePath();
-
-        // check for style file
-        if (!string.IsNullOrEmpty(fileToStyleFilePath))
+        try
         {
-            string styleFullFilePath = $"{this._sourceDirectoryPath}{fileToStyleFilePath}";
-            this._styleEntryFilePath = styleFullFilePath;
+            await this.ProcessDirectoryAsync(sourcePath, outputPath, fileToStyleFilePath, watchDirectory);
         }
+        catch (Exception err)
+        {
+            Console.WriteLine($"error: {err.Message}");
 
-        // compile files
-        await this.CompileFilesAsync();
+            if (watchDirectory != true)
+            {
+                return;
+            }
+        }
 
         // watch for changes
         if (watchDirectory == true)
@@ -94,6 +92,25 @@ public class HtmlWatcher : IHtmlWatcher
                 }
             }
         }
+    }
+
+    private async Task ProcessDirectoryAsync(string? sourcePath, string? outputPath, string? fileToStyleFilePath, bool watchDirectory)
+    {
+        // prepare
+        this.SetProjectPaths(sourcePath, outputPath);
+
+        this._sourceDirectoryPath.EnsurePath();
+        this._outputDirectoryPath.EnsurePath();
+
+        // check for style file
+        if (!string.IsNullOrEmpty(fileToStyleFilePath))
+        {
+            string styleFullFilePath = $"{this._sourceDirectoryPath}{fileToStyleFilePath}";
+            this._styleEntryFilePath = styleFullFilePath;
+        }
+
+        // compile files
+        await this.CompileFilesAsync();
     }
 
     private async void FileChangeDetector_FileChanged(object? sender, FileSystemEventArgs e)
