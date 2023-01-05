@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using HtmlCompiler.Core.Components;
-using HtmlCompiler.Core.Extensions;
+﻿using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 
@@ -15,7 +13,7 @@ public class HtmlWatcher : IHtmlWatcher
     private string _sourceDirectoryPath = string.Empty;
     private string _outputDirectoryPath = string.Empty;
     private string? _styleEntryFilePath = null;
-    private FileChangeDetector? _fileDetector = null;
+    private FileSystemWatcher? _fileSystemWatcher = null;
 
     public HtmlWatcher(IConfiguration configuration,
         IHtmlRenderer htmlRenderer,
@@ -33,9 +31,12 @@ public class HtmlWatcher : IHtmlWatcher
 
     private void UnregisterFileDetector()
     {
-        if (this._fileDetector != null)
+        if (this._fileSystemWatcher != null)
         {
-            this._fileDetector.FileChanged -= FileChangeDetector_FileChanged;
+            this._fileSystemWatcher.Changed -= FileSystemWatcher_Changed;
+            this._fileSystemWatcher.Created -= FileSystemWatcher_Changed;
+            this._fileSystemWatcher.Deleted -= FileSystemWatcher_Changed;
+            this._fileSystemWatcher.Renamed -= FileSystemWatcher_Renamed;
         }
     }
 
@@ -62,8 +63,23 @@ public class HtmlWatcher : IHtmlWatcher
         if (watchDirectory == true)
         {
             this.UnregisterFileDetector();
-            this._fileDetector = new FileChangeDetector(this._sourceDirectoryPath);
-            this._fileDetector.FileChanged += FileChangeDetector_FileChanged;
+            this._fileSystemWatcher = new FileSystemWatcher();
+
+            this._fileSystemWatcher.Path = this._sourceDirectoryPath;
+
+            this._fileSystemWatcher.NotifyFilter = NotifyFilters.LastAccess
+                | NotifyFilters.LastWrite
+                | NotifyFilters.FileName
+                | NotifyFilters.DirectoryName;
+
+            this._fileSystemWatcher.Filter = "*.*";
+
+            this._fileSystemWatcher.Changed += FileSystemWatcher_Changed;
+            this._fileSystemWatcher.Created += FileSystemWatcher_Changed;
+            this._fileSystemWatcher.Deleted += FileSystemWatcher_Changed;
+            this._fileSystemWatcher.Renamed += FileSystemWatcher_Renamed;
+
+            this._fileSystemWatcher.EnableRaisingEvents = true;
 
             ConsoleColor oldColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -113,22 +129,13 @@ public class HtmlWatcher : IHtmlWatcher
         await this.CompileFilesAsync();
     }
 
-    private async void FileChangeDetector_FileChanged(object? sender, FileSystemEventArgs e)
+    private async void FileSystemWatcher_Renamed(object sender, RenamedEventArgs e)
     {
-        //string filePath = e.FullPath;
-        //string fileExtension = Path.GetExtension(filePath);
+        await this.CompileFilesAsync();
+    }
 
-        //Console.WriteLine($"file changing detected ({filePath})...");
-
-        //switch (fileExtension.ToLower().Replace(".", ""))
-        //{
-        //    case "html":
-        //        {
-        //            await this.CompileFiles();
-        //        }
-        //        break;
-        //}
-
+    private async void FileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
+    {
         await this.CompileFilesAsync();
     }
 
