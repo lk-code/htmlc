@@ -160,7 +160,7 @@ public class HtmlWatcher : IHtmlWatcher
             outputDirectory.EnsurePath();
 
             // copy sourceFile to outputFile
-            File.Copy(sourceFile, outputFile);
+            File.Copy(sourceFile, outputFile, true);
         }
     }
 
