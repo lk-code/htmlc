@@ -14,6 +14,7 @@ public class HtmlWatcher : IHtmlWatcher
     private string _outputDirectoryPath = string.Empty;
     private string? _styleEntryFilePath = null;
     private FileSystemWatcher? _fileSystemWatcher = null;
+    private bool _watchDirectory = false;
 
     public HtmlWatcher(IConfiguration configuration,
         IHtmlRenderer htmlRenderer,
@@ -43,34 +44,43 @@ public class HtmlWatcher : IHtmlWatcher
     /// <inheritdoc/>
     public async Task WatchDirectoryAsync(string? sourcePath, string? outputPath, string? fileToStyleFilePath, bool watchDirectory = true)
     {
-        Console.WriteLine($"htmlc is {((watchDirectory == true) ? "watching" : "compiling")} :)");
+        this._watchDirectory = watchDirectory;
+        Console.WriteLine($"htmlc is {((this._watchDirectory == true) ? "watching" : "compiling")} :)");
 
         try
         {
-            await this.ProcessDirectoryAsync(sourcePath, outputPath, fileToStyleFilePath, watchDirectory);
+            this.ProcessDirectory(sourcePath, outputPath, fileToStyleFilePath);
         }
         catch (Exception err)
         {
             Console.WriteLine($"error: {err.Message}");
 
-            if (watchDirectory != true)
+            if (this._watchDirectory != true)
             {
                 return;
             }
         }
 
+        // compile files
+        await this.CompileFilesAsync();
+
         // watch for changes
-        if (watchDirectory == true)
+        if (this._watchDirectory == true)
         {
             this.UnregisterFileDetector();
             this._fileSystemWatcher = new FileSystemWatcher();
 
             this._fileSystemWatcher.Path = this._sourceDirectoryPath;
+            this._fileSystemWatcher.IncludeSubdirectories = true;
 
-            this._fileSystemWatcher.NotifyFilter = NotifyFilters.LastAccess
-                | NotifyFilters.LastWrite
+            this._fileSystemWatcher.NotifyFilter = NotifyFilters.Attributes
+                | NotifyFilters.CreationTime
+                | NotifyFilters.DirectoryName
                 | NotifyFilters.FileName
-                | NotifyFilters.DirectoryName;
+                | NotifyFilters.LastAccess
+                | NotifyFilters.LastWrite
+                | NotifyFilters.Security
+                | NotifyFilters.Size;
 
             this._fileSystemWatcher.Filter = "*.*";
 
@@ -88,7 +98,7 @@ public class HtmlWatcher : IHtmlWatcher
         }
 
         // loop => wait for user input to exit the app
-        if (watchDirectory != true)
+        if (this._watchDirectory != true)
         {
             Console.WriteLine("compiling finished");
             return;
@@ -110,7 +120,7 @@ public class HtmlWatcher : IHtmlWatcher
         }
     }
 
-    private async Task ProcessDirectoryAsync(string? sourcePath, string? outputPath, string? fileToStyleFilePath, bool watchDirectory)
+    private void ProcessDirectory(string? sourcePath, string? outputPath, string? fileToStyleFilePath)
     {
         // prepare
         this.SetProjectPaths(sourcePath, outputPath);
@@ -124,9 +134,6 @@ public class HtmlWatcher : IHtmlWatcher
             string styleFullFilePath = $"{this._sourceDirectoryPath}{fileToStyleFilePath}";
             this._styleEntryFilePath = styleFullFilePath;
         }
-
-        // compile files
-        await this.CompileFilesAsync();
     }
 
     private async void FileSystemWatcher_Renamed(object sender, RenamedEventArgs e)
@@ -141,18 +148,30 @@ public class HtmlWatcher : IHtmlWatcher
 
     private async Task CompileFilesAsync()
     {
-        Console.WriteLine($"compiling...");
+        try
+        {
+            Console.WriteLine($"compiling...");
 
-        List<string> files = this._sourceDirectoryPath.GetAllFiles();
+            List<string> files = this._sourceDirectoryPath.GetAllFiles();
 
-        // compile style file
-        string? cssOutputFilePath = await this._styleCompiler.CompileStyleAsync(this._sourceDirectoryPath, this._outputDirectoryPath, this._styleEntryFilePath);
+            // compile style file
+            string? cssOutputFilePath = await this._styleCompiler.CompileStyleAsync(this._sourceDirectoryPath, this._outputDirectoryPath, this._styleEntryFilePath);
 
-        // compile html
-        await this.RenderHtmlFiles(files, cssOutputFilePath);
+            // compile html
+            await this.RenderHtmlFiles(files, cssOutputFilePath);
 
-        // copy additional assets (like js, css, images, etc.)
-        this.CopyAssetsToOutput(files);
+            // copy additional assets (like js, css, images, etc.)
+            this.CopyAssetsToOutput(files);
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine($"error: {err.Message}");
+
+            if (this._watchDirectory != true)
+            {
+                return;
+            }
+        }
     }
 
     private void CopyAssetsToOutput(List<string> sourceFiles)

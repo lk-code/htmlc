@@ -13,7 +13,7 @@
 
 [![buy me a coffe](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://www.buymeacoffee.com/lk.code)
 
-This is the HTML Compiler Tool for your cli
+This is the HTML Compiler Tool for your cli. htmlc is a small tool with which very easily static HTML files from various HTML components, including layout files and reusable HTML blocks (such as header, footer, etc.) from separate HTML files. The result is written to a complete and finished HTML file. Sass/SCSS compilation is also supported (the path to generated CSS file is then written into the HTML file). In the end you don't have to touch the generated html files.
 
 ## installation and update
 
