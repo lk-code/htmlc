@@ -18,8 +18,11 @@ namespace HtmlCompiler.Core
             string originalContent = await this.LoadFileContent(sourceFullFilePath);
             string renderedContent = string.Empty;
 
+            // replace all @File=...
+            renderedContent = await this.ReplaceFilePlaceholdersAsync(originalContent, baseDirectory, sourceDirectory, outputDirectory, cssOutputFilePath);
+
             // replace @Layout=...
-            renderedContent = await this.ReplaceLayoutPlaceholderAsync(originalContent, baseDirectory);
+            renderedContent = await this.ReplaceLayoutPlaceholderAsync(renderedContent, baseDirectory);
 
             // check if layout-file and source-html-file are on different directories => baseDirectory must be adjusted
             baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
