@@ -71,11 +71,16 @@ public class HtmlWatcher : IHtmlWatcher
             this._fileSystemWatcher = new FileSystemWatcher();
 
             this._fileSystemWatcher.Path = this._sourceDirectoryPath;
+            this._fileSystemWatcher.IncludeSubdirectories = true;
 
-            this._fileSystemWatcher.NotifyFilter = NotifyFilters.LastAccess
-                | NotifyFilters.LastWrite
+            this._fileSystemWatcher.NotifyFilter = NotifyFilters.Attributes
+                | NotifyFilters.CreationTime
+                | NotifyFilters.DirectoryName
                 | NotifyFilters.FileName
-                | NotifyFilters.DirectoryName;
+                | NotifyFilters.LastAccess
+                | NotifyFilters.LastWrite
+                | NotifyFilters.Security
+                | NotifyFilters.Size;
 
             this._fileSystemWatcher.Filter = "*.*";
 
