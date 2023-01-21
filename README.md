@@ -80,6 +80,15 @@ You can include another file with the **@File** tag in any HTML file (whether la
 htmlc can also compile style files (scss or sass). the path of the compiled CSS file can be inserted using this **@StylePath** tag. The following usage makes sense:<br />
 `<link rel="stylesheet" href="@StylePath">`<br />
 
+#### @Comment
+You can generate a HTML comment tag:
+
+`@Comment=START footer`
+
+result:
+
+`<!-- START footer -->`
+
 ### getting started with your own project
 
 1. create a directory with two subdirectories **/src** and **/dist**. All project files must be stored under **/src**. The compiler writes the results under **/dist**.

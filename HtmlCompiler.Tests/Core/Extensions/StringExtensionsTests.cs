@@ -51,4 +51,32 @@ public class StringExtensionsTests
         htmlDoc.DocumentNode.SelectSingleNode("//meta[@name='generator']").Should().NotBeNull();
         htmlDoc.DocumentNode.SelectSingleNode("//meta[@name='generator']").GetAttributeValue("content", "").Should().Be("htmlc test");
     }
+
+    [TestMethod]
+    public void ReplaceCommentTags_BugWithHeaderInContent_Returns()
+    {
+        string sourceHtml = "<html>" + Environment.NewLine +
+            "<body>" + Environment.NewLine +
+            "@Comment=START body" + Environment.NewLine +
+            "<header>" + Environment.NewLine +
+            "<h1>hello world</h1>" + Environment.NewLine +
+            "</header>" + Environment.NewLine +
+            "@Comment=END body" + Environment.NewLine +
+            "</body>" + Environment.NewLine +
+            "</html>";
+        string expectedHtml = "<html>" + Environment.NewLine +
+            "<body>" + Environment.NewLine +
+            "<!-- START body -->" + Environment.NewLine +
+            "<header>" + Environment.NewLine +
+            "<h1>hello world</h1>" + Environment.NewLine +
+            "</header>" + Environment.NewLine +
+            "<!-- END body -->" + Environment.NewLine +
+            "</body>" + Environment.NewLine +
+            "</html>";
+
+        string html = sourceHtml.ReplaceCommentTags();
+
+        html.Should().NotBeNullOrEmpty();
+        html.Should().Be(expectedHtml);
+    }
 }
