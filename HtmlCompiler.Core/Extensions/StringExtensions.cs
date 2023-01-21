@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using System.Xml;
+﻿using HtmlAgilityPack;
 
 namespace HtmlCompiler.Core.Extensions
 {
@@ -17,24 +16,23 @@ namespace HtmlCompiler.Core.Extensions
 
         public static string AddMetaTag(this string html, string name, string content)
         {
-            // Use regular expression to find the head tag
-            string headTagPattern = @"<head.*?>";
-            Regex headRegex = new Regex(headTagPattern, RegexOptions.IgnoreCase);
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
 
-            // Create the new meta tag using the provided name and content parameters
-            string newMetaTag = "<meta name='" + name + "' content='" + content + "'/>";
+            var head = doc.DocumentNode.SelectSingleNode("//head");
+            if (head == null)
+            {
+                var htmlNode = doc.DocumentNode.SelectSingleNode("html");
+                head = doc.CreateElement("head");
+                htmlNode?.AppendChild(head);
+            }
 
-            // Check if the head tag already exists
-            if (headRegex.IsMatch(html))
-            {
-                // Replace the closing head tag with the new meta tag and the closing head tag
-                return headRegex.Replace(html, "$&" + newMetaTag);
-            }
-            else
-            {
-                // If the head tag does not exist, add it along with the new meta tag
-                return "<head>" + newMetaTag + "</head>" + html;
-            }
+            var metaTag = doc.CreateElement("meta");
+            metaTag.SetAttributeValue("name", name);
+            metaTag.SetAttributeValue("content", content);
+            head.AppendChild(metaTag);
+
+            return doc.DocumentNode.OuterHtml;
         }
     }
 }
