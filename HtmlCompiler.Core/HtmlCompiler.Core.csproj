@@ -19,6 +19,7 @@
 		<None Remove="Microsoft.ClearScript.V8.Native.osx-arm64" />
 		<None Remove="Microsoft.Extensions.Configuration" />
 		<None Remove="Microsoft.Extensions.Configuration.Binder" />
+		<None Remove="HtmlAgilityPack" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Components\" />
@@ -42,5 +43,6 @@
 	  <PackageReference Include="Microsoft.ClearScript.V8.Native.osx-arm64" Version="7.3.6" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.2" />
+	  <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
 	</ItemGroup>
 </Project>
