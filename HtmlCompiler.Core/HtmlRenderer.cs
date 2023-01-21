@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Xml;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 
@@ -39,6 +40,9 @@ namespace HtmlCompiler.Core
 
                 renderedContent = this.ReplaceStylePath(renderedContent, relativeStylePath);
             }
+
+            // add meta-tag "generator"
+            renderedContent = renderedContent.AddMetaTag("generator", "htmlc");
 
             return renderedContent;
         }
