@@ -55,15 +55,14 @@ public class HtmlRenderer : IHtmlRenderer
         string startTag = "@StartHtmlSpecialChars";
         string endTag = "@EndHtmlSpecialChars";
         int startIndex = html.IndexOf(startTag);
-        int endIndex = html.IndexOf(endTag);
 
         while (startIndex != -1)
         {
+            int endIndex = html.IndexOf(endTag, startIndex);
             if (endIndex == -1)
             {
                 endIndex = html.Length;
             }
-
             string textToEscape = html.Substring(startIndex + startTag.Length, endIndex - startIndex - startTag.Length);
             string escapedText = Regex.Replace(textToEscape, "[<>&\"']", m =>
             {
@@ -77,11 +76,10 @@ public class HtmlRenderer : IHtmlRenderer
                 }
                 return m.Value;
             });
-            escapedText = escapedText.Replace("\n", "<br />\n"); // add <br> after replacing special characters
+            escapedText = escapedText.Replace("\n", "<br>\n");
             html = html.Remove(startIndex, endIndex - startIndex + endTag.Length).Insert(startIndex, escapedText);
 
             startIndex = html.IndexOf(startTag, startIndex + escapedText.Length);
-            endIndex = html.IndexOf(endTag, startIndex + escapedText.Length);
         }
         return html;
     }
