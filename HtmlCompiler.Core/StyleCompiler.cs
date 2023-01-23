@@ -1,7 +1,4 @@
-﻿using System;
-using System.Reflection.Metadata;
-using System.Text.RegularExpressions;
-using DartSassHost;
+﻿using DartSassHost;
 using DartSassHost.Helpers;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
@@ -137,12 +134,6 @@ public class StyleCompiler : IStyleCompiler
                 await File.WriteAllTextAsync(outputMappingFilePath, mappingCss);
 
                 Console.WriteLine($"compiled style to {outputFilePath} (mapping: {outputMappingFilePath})");
-
-                //Console.WriteLine("Compiled content:{1}{1}{0}{1}", result.CompiledContent,
-                //    Environment.NewLine);
-                //Console.WriteLine("Source map:{1}{1}{0}{1}", result.SourceMap, Environment.NewLine);
-                //Console.WriteLine("Included file paths: {0}",
-                //    string.Join(", ", result.IncludedFilePaths));
             }
         }
         catch (SassCompilerLoadException e)
