@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using System.Xml;
+﻿using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 
@@ -34,6 +31,9 @@ public class HtmlRenderer : IHtmlRenderer
         // replace all @Comment=...
         renderedContent = renderedContent.ReplaceCommentTags();
 
+        // replace all @Comment=...
+        renderedContent = this.RenderHtmlEscapeBlocks(renderedContent);
+
         // replace all @StylePath
         if (!string.IsNullOrEmpty(cssOutputFilePath))
         {
@@ -48,6 +48,41 @@ public class HtmlRenderer : IHtmlRenderer
         renderedContent = renderedContent.AddMetaTag("generator", "htmlc");
 
         return renderedContent;
+    }
+
+    public string RenderHtmlEscapeBlocks(string html)
+    {
+        string startTag = "@StartHtmlSpecialChars";
+        string endTag = "@EndHtmlSpecialChars";
+        int startIndex = html.IndexOf(startTag);
+        int endIndex = html.IndexOf(endTag);
+
+        while (startIndex != -1)
+        {
+            if (endIndex == -1)
+            {
+                endIndex = html.Length;
+            }
+
+            string textToEscape = html.Substring(startIndex + startTag.Length, endIndex - startIndex - startTag.Length);
+            string escapedText = Regex.Replace(textToEscape, "[<>&\"']", m =>
+            {
+                switch (m.Value)
+                {
+                    case "<": return "&#60;";
+                    case ">": return "&#62;";
+                    case "&": return "&#38;";
+                    case "\"": return "&#34;";
+                    case "'": return "&#39;";
+                }
+                return m.Value;
+            });
+            html = html.Remove(startIndex, endIndex - startIndex + endTag.Length).Insert(startIndex, escapedText);
+
+            startIndex = html.IndexOf(startTag);
+            endIndex = html.IndexOf(endTag);
+        }
+        return html;
     }
 
     private string ReplaceStylePath(string content,
