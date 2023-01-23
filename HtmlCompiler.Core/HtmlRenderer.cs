@@ -65,6 +65,7 @@ public class HtmlRenderer : IHtmlRenderer
             }
 
             string textToEscape = html.Substring(startIndex + startTag.Length, endIndex - startIndex - startTag.Length);
+            textToEscape = textToEscape.Replace("\n", "<br>\n");  // add <br> before every line break
             string escapedText = Regex.Replace(textToEscape, "[<>&\"']", m =>
             {
                 switch (m.Value)
@@ -79,8 +80,8 @@ public class HtmlRenderer : IHtmlRenderer
             });
             html = html.Remove(startIndex, endIndex - startIndex + endTag.Length).Insert(startIndex, escapedText);
 
-            startIndex = html.IndexOf(startTag);
-            endIndex = html.IndexOf(endTag);
+            startIndex = html.IndexOf(startTag, startIndex + escapedText.Length);
+            endIndex = html.IndexOf(endTag, startIndex + escapedText.Length);
         }
         return html;
     }
