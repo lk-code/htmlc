@@ -83,11 +83,17 @@ htmlc can also compile style files (scss or sass). the path of the compiled CSS 
 #### @Comment
 You can generate a HTML comment tag:
 
-`@Comment=START footer`
+#### HTML Special Chars
+You can escape special characters in a section HTML.
+To do this, place the following tags @StartHtmlSpecialChars and @EndHtmlSpecialChars before and after the block to be escaped:
 
-result:
+`@StartHtmlSpecialChars`<br />
+`<h1>a h1 heading</h1>`<br />
+`@EndHtmlSpecialChars`<br />
 
-`<!-- START footer -->`
+turns into
+
+`&#60;h1&#62;a h1 heading&#60;/h1&#62;`<br />
 
 ### getting started with your own project
 
