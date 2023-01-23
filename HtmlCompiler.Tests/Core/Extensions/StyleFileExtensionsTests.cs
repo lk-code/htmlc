@@ -1,12 +1,22 @@
 ﻿using System;
 using FluentAssertions;
 using HtmlCompiler.Core.Extensions;
+using HtmlCompiler.Core.Interfaces;
+using Moq;
 
 namespace HtmlCompiler.Tests.Core.Extensions;
 
 [TestClass]
 public class StyleFileExtensionsTests
 {
+    private Mock<IStyleCompiler> _styleCompiler = null!;
+
+    [TestInitialize]
+    public void SetUp()
+    {
+        this._styleCompiler = new Mock<IStyleCompiler>();
+    }
+
     [TestMethod]
     public void GetFullObjectNameBySassImportName_WithFullFileName_Returns()
     {
@@ -71,5 +81,57 @@ public class StyleFileExtensionsTests
 
         result.Should().NotBeNull();
         result.Should().Be("../../plugins/template/_data.scss");
+    }
+
+    [TestMethod]
+    public async Task ReplaceSassImports_WithImportAndQuotationMark_Returns()
+    {
+        string testCss = "body {" + Environment.NewLine +
+            "color: red;" + Environment.NewLine +
+            "}" + Environment.NewLine +
+            "@import \"_test.scss\";";
+        string loadedCss = ".test {" + Environment.NewLine +
+            "color: blue;" + Environment.NewLine +
+            "}";
+        string expectedCss = "body {" + Environment.NewLine +
+            "color: red;" + Environment.NewLine +
+            "}" + Environment.NewLine +
+            ".test {" + Environment.NewLine +
+            "color: blue;" + Environment.NewLine +
+            "}";
+
+        this._styleCompiler.Setup(x => x.GetStyleContent(It.IsAny<string>(), "_test.scss"))
+            .ReturnsAsync(loadedCss);
+
+        string result = await testCss.ReplaceSassImports(this._styleCompiler.Object, "", "", "");
+
+        result.Should().NotBeNullOrEmpty();
+        result.Should().Be(expectedCss);
+    }
+
+    [TestMethod]
+    public async Task ReplaceSassImports_WithImportAndApostrophe_Returns()
+    {
+        string testCss = "body {" + Environment.NewLine +
+            "color: red;" + Environment.NewLine +
+            "}" + Environment.NewLine +
+            "@import '_test.scss';";
+        string loadedCss = ".test {" + Environment.NewLine +
+            "color: blue;" + Environment.NewLine +
+            "}";
+        string expectedCss = "body {" + Environment.NewLine +
+            "color: red;" + Environment.NewLine +
+            "}" + Environment.NewLine +
+            ".test {" + Environment.NewLine +
+            "color: blue;" + Environment.NewLine +
+            "}";
+
+        this._styleCompiler.Setup(x => x.GetStyleContent(It.IsAny<string>(), "_test.scss"))
+            .ReturnsAsync(loadedCss);
+
+        string result = await testCss.ReplaceSassImports(this._styleCompiler.Object, "", "", "");
+
+        result.Should().NotBeNullOrEmpty();
+        result.Should().Be(expectedCss);
     }
 }

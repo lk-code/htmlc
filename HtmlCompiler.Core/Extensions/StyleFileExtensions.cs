@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Text.RegularExpressions;
+using HtmlCompiler.Core.Interfaces;
 
 namespace HtmlCompiler.Core.Extensions;
 
@@ -55,5 +57,30 @@ public static class StyleFileExtensions
         string modifiedFilePath = Path.Combine(directory, $"{fileName}{fileExtension}");
 
         return modifiedFilePath;
+    }
+
+    public static async Task<string> ReplaceSassImports(this string input,
+        IStyleCompiler styleCompiler,
+        string sourceDirectoryPath,
+        string currentSubDirectory,
+        string fileExtension)
+    {
+        //var importRegex = new Regex(@"@import\s+""([^""]+)""\s*;", RegexOptions.None, TimeSpan.FromMilliseconds(100));
+        //var importRegex = new Regex(@"@import\s+'""['""]\s*;", RegexOptions.None, TimeSpan.FromMilliseconds(100));
+        var importRegex = new Regex(@"@import\s+['""]([^'""\n\r]+)['""]\s*;", RegexOptions.None, TimeSpan.FromMilliseconds(100));
+
+        foreach (Match match in importRegex.Matches(input))
+        {
+            string requestedSassFile = match.Groups[1].Value;
+            requestedSassFile = requestedSassFile.GetFullObjectNameBySassImportName(fileExtension);
+
+            requestedSassFile = Path.Combine(sourceDirectoryPath, currentSubDirectory, requestedSassFile);
+
+            string replacement = await styleCompiler.GetStyleContent(sourceDirectoryPath, requestedSassFile);
+
+            input = input.Replace(match.Value, replacement);
+        }
+
+        return input;
     }
 }

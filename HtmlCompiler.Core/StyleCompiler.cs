@@ -75,7 +75,7 @@ public class StyleCompiler : IStyleCompiler
         return outputFilePath;
     }
 
-    private async Task<string> GetStyleContent(string sourceDirectoryPath, string sourceFilePath)
+    public async Task<string> GetStyleContent(string sourceDirectoryPath, string sourceFilePath)
     {
         string sourceFullFilePath = $"{sourceDirectoryPath}{sourceFilePath}";
 
@@ -92,8 +92,8 @@ public class StyleCompiler : IStyleCompiler
             || extension == ".sass")
         {
             // replace sass imports
-            content = await this.ReplaceSassImports(sourceDirectoryPath,
-                content,
+            content = await content.ReplaceSassImports(this,
+                sourceDirectoryPath,
                 currentSubDirectory,
                 extension);
         }
@@ -103,28 +103,6 @@ public class StyleCompiler : IStyleCompiler
         }
 
         return content;
-    }
-
-    private async Task<string> ReplaceSassImports(string sourceDirectoryPath,
-        string input,
-        string currentSubDirectory,
-        string fileExtension)
-    {
-        var importRegex = new Regex(@"@import\s+""([^""]+)""\s*;", RegexOptions.None, TimeSpan.FromMilliseconds(100));
-
-        foreach (Match match in importRegex.Matches(input))
-        {
-            string requestedSassFile = match.Groups[1].Value;
-            requestedSassFile = requestedSassFile.GetFullObjectNameBySassImportName(fileExtension);
-
-            requestedSassFile = Path.Combine(sourceDirectoryPath, currentSubDirectory, requestedSassFile);
-
-            string replacement = await this.GetStyleContent(sourceDirectoryPath, requestedSassFile);
-
-            input = input.Replace(match.Value, replacement);
-        }
-
-        return input;
     }
 
     private async Task CompileSass(string inputContent, string styleSourceFilePath, string styleOutputFilePath)
