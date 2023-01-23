@@ -28,10 +28,10 @@ public class HtmlRendererTests
             "</section>";
         string expectedHtml = "<section>" + Environment.NewLine +
             "<div class=\"test-container\">" + Environment.NewLine +
-            "" + Environment.NewLine +
-            "&#60;h1 class=&#34;title&#34;&#62;" + Environment.NewLine +
-            "&#60;a href=&#34;https://a.link.testcase&#34;&#62;a link&#60;/a&#62;" + Environment.NewLine +
-            "&#60;/h1&#62;" + Environment.NewLine +
+            "<br />" + Environment.NewLine +
+            "&#60;h1 class=&#34;title&#34;&#62;<br />" + Environment.NewLine +
+            "&#60;a href=&#34;https://a.link.testcase&#34;&#62;a link&#60;/a&#62;<br />" + Environment.NewLine +
+            "&#60;/h1&#62;<br />" + Environment.NewLine +
             "" + Environment.NewLine +
             "</div>" + Environment.NewLine +
             "</section>";
