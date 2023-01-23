@@ -77,10 +77,11 @@ public class HtmlRenderer : IHtmlRenderer
                 }
                 return m.Value;
             });
+            escapedText = escapedText.Replace("\n", "<br />\n"); // add <br> after replacing special characters
             html = html.Remove(startIndex, endIndex - startIndex + endTag.Length).Insert(startIndex, escapedText);
 
-            startIndex = html.IndexOf(startTag);
-            endIndex = html.IndexOf(endTag);
+            startIndex = html.IndexOf(startTag, startIndex + escapedText.Length);
+            endIndex = html.IndexOf(endTag, startIndex + escapedText.Length);
         }
         return html;
     }
