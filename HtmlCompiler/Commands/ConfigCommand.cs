@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Cocona;
 using HtmlCompiler.Core.Extensions;
 using Microsoft.Extensions.Configuration;

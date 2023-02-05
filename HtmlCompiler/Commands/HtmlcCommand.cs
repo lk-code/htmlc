@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using Cocona;
-using HtmlCompiler.Core.Extensions;
+﻿using Cocona;
 using HtmlCompiler.Core.Interfaces;
 
 namespace HtmlCompiler.Commands;
@@ -18,6 +16,15 @@ public class HtmlcCommand
         this._htmlRenderer = htmlRenderer ?? throw new ArgumentNullException(nameof(htmlRenderer));
         this._htmlWatcher = htmlWatcher ?? throw new ArgumentNullException(nameof(htmlWatcher));
         this._styleCompiler = styleCompiler ?? throw new ArgumentNullException(nameof(styleCompiler));
+    }
+
+    [Command("new")]
+    public async Task New([Option('v', Description = "path to the style file to compile (scss or sass)")] bool? vscode = null,
+        [Option('l', Description = "path to the style file to compile (scss or sass)")] bool? vsliveserver = null)
+    {
+        // TODO: add "new" logic
+
+        await Task.CompletedTask;
     }
 
     [Command("compile")]
