@@ -19,8 +19,9 @@ public class HtmlcCommand
     }
 
     [Command("new")]
-    public async Task New([Option('v', Description = "path to the style file to compile (scss or sass)")] bool? vscode = null,
-        [Option('l', Description = "path to the style file to compile (scss or sass)")] bool? vsliveserver = null)
+    public async Task New([Option('v', Description = "added Visual Studio Code settings file")] bool? vscode = null,
+        [Option('l', Description = "add configuration for VSCode Extension LiveServer (see documentation)")] bool? vsliveserver = null,
+        [Option('d', Description = "creates a simple Dockerfile with nginx configuration")] bool? docker = null)
     {
         // TODO: add "new" logic
 
