@@ -1,0 +1,8 @@
+<html>
+    <head>
+        <title>htmlc demo</title>
+    </head>
+    <body>
+        @Body
+    </body>
+</html>

@@ -28,6 +28,7 @@ builder.Configuration.AddJsonStream(new StreamReader(Globals.USER_CONFIG).BaseSt
 builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
 builder.Services.AddTransient<IHtmlWatcher, HtmlWatcher>();
 builder.Services.AddTransient<IStyleCompiler, StyleCompiler>();
+builder.Services.AddTransient<IProjectManager, ProjectManager>();
 
 CoconaApp? app = builder.Build();
 

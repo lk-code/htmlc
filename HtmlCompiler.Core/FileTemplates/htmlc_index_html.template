@@ -1,0 +1,5 @@
+@Layout=shared/_layout.html
+
+<div>
+    <h1>hello world from htmlc :D</h1>
+</div>

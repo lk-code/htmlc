@@ -1,21 +1,19 @@
 ﻿using Cocona;
 using HtmlCompiler.Core.Interfaces;
+using Microsoft.ClearScript;
 
 namespace HtmlCompiler.Commands;
 
 public class HtmlcCommand
 {
-    private readonly IHtmlRenderer _htmlRenderer;
     private readonly IHtmlWatcher _htmlWatcher;
-    private readonly IStyleCompiler _styleCompiler;
+    private readonly IProjectManager _projectManager;
 
-    public HtmlcCommand(IHtmlRenderer htmlRenderer,
-        IHtmlWatcher htmlWatcher,
-        IStyleCompiler styleCompiler)
+    public HtmlcCommand(IHtmlWatcher htmlWatcher,
+        IProjectManager projectManager)
     {
-        this._htmlRenderer = htmlRenderer ?? throw new ArgumentNullException(nameof(htmlRenderer));
         this._htmlWatcher = htmlWatcher ?? throw new ArgumentNullException(nameof(htmlWatcher));
-        this._styleCompiler = styleCompiler ?? throw new ArgumentNullException(nameof(styleCompiler));
+        this._projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
     }
 
     [Command("new")]
@@ -23,9 +21,30 @@ public class HtmlcCommand
         [Option('l', Description = "add configuration for VSCode Extension LiveServer (see documentation)")] bool? vsliveserver = null,
         [Option('d', Description = "creates a simple Dockerfile with nginx configuration")] bool? docker = null)
     {
-        // TODO: add "new" logic
-
-        await Task.CompletedTask;
+        // create new project
+        string projectPath = Directory.GetCurrentDirectory();
+        string sourcePath = Path.Combine(projectPath, "src");
+        string outputPath = Path.Combine(projectPath, "dist");
+        
+        await this._projectManager.CreateProjectAsync(projectPath);
+        
+        // add vscode if requested
+        if (vscode == true)
+        {
+            await this._projectManager.AddVSCodeSupportAsync(sourcePath);
+        }
+        
+        // add vscode liveserver if requested
+        if (vsliveserver == true)
+        {
+            await this._projectManager.AddVSCodeLiveServerConfigurationAsync(sourcePath);
+        }
+        
+        // add docker if requested
+        if (docker == true)
+        {
+            await this._projectManager.AddDockerSupportAsync(sourcePath);
+        }
     }
 
     [Command("compile")]
