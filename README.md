@@ -68,6 +68,7 @@ The compile process searches in the folder for all HTML files. All files that do
 
 The new command creates a new project at the current folder location. The project contains the following elements:
 
+- **.gitignore** - the git ignore file
 - **/src** - the source directory for your files
   - **/src/index.html** - the html index file
   - **/src/shared** - the directory for alle shared components (like layout, etc.)
