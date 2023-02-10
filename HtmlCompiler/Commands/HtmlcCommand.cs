@@ -31,13 +31,13 @@ public class HtmlcCommand
         // add vscode if requested
         if (vscode == true)
         {
-            await this._projectManager.AddVSCodeSupportAsync(sourcePath);
+            await this._projectManager.AddVSCodeSupportAsync(projectPath);
         }
         
         // add vscode liveserver if requested
         if (vsliveserver == true)
         {
-            await this._projectManager.AddVSCodeLiveServerConfigurationAsync(sourcePath);
+            await this._projectManager.AddVSCodeLiveServerConfigurationAsync(projectPath);
         }
         
         // add docker if requested

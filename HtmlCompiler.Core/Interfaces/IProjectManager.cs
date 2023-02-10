@@ -5,16 +5,16 @@ public interface IProjectManager
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="path"></param>
+    /// <param name="projectPath"></param>
     /// <returns></returns>
-    Task CreateProjectAsync(string path);
+    Task CreateProjectAsync(string projectPath);
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="projectPath"></param>
+    /// <param name="sourcePath"></param>
     /// <returns></returns>
-    Task AddDockerSupportAsync(string projectPath);
+    Task AddDockerSupportAsync(string sourcePath);
 
     /// <summary>
     /// 

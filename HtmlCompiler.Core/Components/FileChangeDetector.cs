@@ -3,7 +3,7 @@ namespace HtmlCompiler.Core.Components;
 
 public class FileChangeDetector
 {
-    public event EventHandler<FileSystemEventArgs> FileChanged;
+    public event EventHandler<FileSystemEventArgs> FileChanged = null!;
 
     private FileSystemWatcher _watcher;
 

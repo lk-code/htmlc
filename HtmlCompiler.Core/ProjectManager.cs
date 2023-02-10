@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 
@@ -6,7 +8,8 @@ namespace HtmlCompiler.Core;
 
 public class ProjectManager : IProjectManager
 {
-    public async Task CreateProjectAsync(string path)
+    /// <inheritdoc/>
+    public async Task CreateProjectAsync(string projectPath)
     {
         Dictionary<string, string> filesToCreate = new()
         {
@@ -29,12 +32,11 @@ public class ProjectManager : IProjectManager
             string? folderPath = Path.GetDirectoryName(filePath);
             if (!string.IsNullOrEmpty(folderPath))
             {
-                string subfolder = Path.Combine(path, folderPath);
+                string subfolder = Path.Combine(projectPath, folderPath);
                 subfolder.EnsurePath();
             }
 
-            string fullFilePath = Path.Combine(path, filePath);
-
+            string fullFilePath = Path.Combine(projectPath, filePath);
             if (!string.IsNullOrEmpty(templateContent))
             {
                 await File.WriteAllTextAsync(fullFilePath, templateContent);
@@ -42,19 +44,46 @@ public class ProjectManager : IProjectManager
         }
     }
 
-    public Task AddDockerSupportAsync(string projectPath)
+    /// <inheritdoc/>
+    public async Task AddDockerSupportAsync(string sourcePath)
     {
-        throw new NotImplementedException();
+        string filePath = "Dockerfile";
+        string? templateContent = await this.GetTemplateContentAsync("htmlc_dockerfile");
+        
+        string fullFilePath = Path.Combine(sourcePath, filePath);
+        if (!string.IsNullOrEmpty(templateContent))
+        {
+            await File.WriteAllTextAsync(fullFilePath, templateContent);
+        }
     }
 
-    public Task AddVSCodeSupportAsync(string projectPath)
+    /// <inheritdoc/>
+    public async Task AddVSCodeSupportAsync(string projectPath)
     {
-        throw new NotImplementedException();
+        string filePath = ".vscode/settings.json";
+        string? templateContent = await this.GetTemplateContentAsync("htmlc_vscode_settings_json");
+
+        string fullFilePath = Path.Combine(projectPath, filePath);
+        string vsDirectory = Path.GetDirectoryName(fullFilePath)!;
+        vsDirectory.EnsurePath();
+
+        if (!string.IsNullOrEmpty(templateContent))
+        {
+            await File.WriteAllTextAsync(fullFilePath, templateContent);
+        }
     }
 
-    public Task AddVSCodeLiveServerConfigurationAsync(string projectPath)
+    /// <inheritdoc/>
+    public async Task AddVSCodeLiveServerConfigurationAsync(string projectPath)
     {
-        throw new NotImplementedException();
+        string filePath = ".vscode/settings.json";
+        string fullFilePath = Path.Combine(projectPath, filePath);
+        
+        string fileContent = await File.ReadAllTextAsync(fullFilePath);
+
+        fileContent = fileContent.UpdateJsonProperty("liveServer.settings.root", "/dist");
+        
+        await File.WriteAllTextAsync(fullFilePath, fileContent);
     }
 
     internal async Task<string?> GetTemplateContentAsync(string template)
@@ -66,7 +95,7 @@ public class ProjectManager : IProjectManager
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = $"HtmlCompiler.Core.FileTemplates.{template}.template";
 
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName)!)
             using (StreamReader reader = new StreamReader(stream))
             {
                 content = await reader.ReadToEndAsync();
