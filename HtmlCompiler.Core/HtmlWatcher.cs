@@ -45,20 +45,20 @@ public class HtmlWatcher : IHtmlWatcher
     }
 
     /// <inheritdoc/>
-    public async Task WatchDirectoryAsync(string? sourcePath, string? outputPath, string? fileToStyleFilePath, bool watchDirectory = true)
+    public async Task WatchDirectoryAsync(string? sourcePath, string? outputPath, string? styleFilePath, bool watchDirectory = true)
     {
         this._watchDirectory = watchDirectory;
-        Console.WriteLine($"htmlc is {((this._watchDirectory == true) ? "watching" : "compiling")} :)");
+        Console.WriteLine($"htmlc is {((this._watchDirectory) ? "watching" : "compiling")} :)");
 
         try
         {
-            this.ProcessDirectory(sourcePath, outputPath, fileToStyleFilePath);
+            this.ProcessDirectory(sourcePath, outputPath, styleFilePath);
         }
         catch (Exception err)
         {
             Console.WriteLine($"error: {err.Message}");
 
-            if (this._watchDirectory != true)
+            if (!this._watchDirectory)
             {
                 return;
             }
@@ -68,7 +68,7 @@ public class HtmlWatcher : IHtmlWatcher
         await this.CompileFilesAsync();
 
         // watch for changes
-        if (this._watchDirectory == true)
+        if (this._watchDirectory)
         {
             this.UnregisterFileDetector();
             this._fileSystemWatcher = new FileSystemWatcher();
@@ -101,11 +101,12 @@ public class HtmlWatcher : IHtmlWatcher
         }
 
         // loop => wait for user input to exit the app
-        if (this._watchDirectory != true)
+        if (!this._watchDirectory)
         {
             Console.WriteLine("compiling finished");
             return;
         }
+        
         while (true)
         {
             if (Console.KeyAvailable)
@@ -170,7 +171,7 @@ public class HtmlWatcher : IHtmlWatcher
         {
             Console.WriteLine($"error: {err.Message}");
 
-            if (this._watchDirectory != true)
+            if (!this._watchDirectory)
             {
                 return;
             }
@@ -201,7 +202,7 @@ public class HtmlWatcher : IHtmlWatcher
         // copy files to output
         foreach (string sourceFile in filesWithoutBlacklisted)
         {
-            string outputFile = this.GetOutputPathForSource(sourceFile, this._sourceDirectoryPath, this._outputDirectoryPath);
+            string outputFile = GetOutputPathForSource(sourceFile, this._sourceDirectoryPath, this._outputDirectoryPath);
             string outputDirectory = Path.GetDirectoryName(outputFile)!;
             outputDirectory.EnsurePath();
 
@@ -212,26 +213,12 @@ public class HtmlWatcher : IHtmlWatcher
 
     private async Task RenderHtmlFiles(List<string> files, string? cssOutputFilePath)
     {
-        List<string> layoutFiles = this.GetLayoutFiles(files);
-        List<string> sourceFiles = this.GetHtmlFiles(files);
-
-        // get files
-        //Console.WriteLine($"found {layoutFiles.Count()} layout files:");
-        //foreach (string filePath in layoutFiles)
-        //{
-        //    Console.WriteLine(filePath);
-        //}
-
-        //Console.WriteLine($"found {sourceFiles.Count()} source files:");
-        //foreach (string filePath in sourceFiles)
-        //{
-        //    Console.WriteLine(filePath);
-        //}
+        List<string> sourceFiles = GetHtmlFiles(files);
 
         foreach (string sourceFile in sourceFiles)
         {
             string fileToCompile = sourceFile;
-            string outputFile = this.GetOutputPathForSource(sourceFile, this._sourceDirectoryPath, this._outputDirectoryPath);
+            string outputFile = GetOutputPathForSource(sourceFile, this._sourceDirectoryPath, this._outputDirectoryPath);
 
             string? outputDirectoryName = Path.GetDirectoryName(outputFile);
             if (!string.IsNullOrEmpty(outputDirectoryName))
@@ -254,7 +241,7 @@ public class HtmlWatcher : IHtmlWatcher
         }
     }
 
-    internal string GetOutputPathForSource(string sourceFile, string projectPath, string outputPath)
+    internal static string GetOutputPathForSource(string sourceFile, string projectPath, string outputPath)
     {
         string sourceFilePath = sourceFile.Replace(projectPath, "");
         string outputFilePath = $"{outputPath}{sourceFilePath}";
@@ -262,21 +249,12 @@ public class HtmlWatcher : IHtmlWatcher
         return outputFilePath;
     }
 
-    private List<string> GetHtmlFiles(List<string> files)
+    private static List<string> GetHtmlFiles(List<string> files)
     {
         List<string> htmlFilePaths = files.Where(file => Path.GetExtension(file) == ".html")
             .ToList();
 
         return htmlFilePaths.Where(filePath => !Path.GetFileName(filePath).StartsWith("_"))
-            .ToList();
-    }
-
-    private List<string> GetLayoutFiles(List<string> files)
-    {
-        List<string> htmlFiles = files.Where(file => Path.GetExtension(file) == ".html")
-            .ToList();
-
-        return htmlFiles.Where(filePath => Path.GetFileName(filePath).StartsWith("_"))
             .ToList();
     }
 

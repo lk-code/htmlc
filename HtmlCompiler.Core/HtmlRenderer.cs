@@ -19,8 +19,8 @@ public class HtmlRenderer : IHtmlRenderer
         string? cssOutputFilePath)
     {
         sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
-        string baseDirectory = this.GetBaseDirectory(sourceFullFilePath);
-        string originalContent = await this.LoadFileContent(sourceFullFilePath);
+        string baseDirectory = GetBaseDirectory(sourceFullFilePath);
+        string originalContent = await LoadFileContent(sourceFullFilePath);
         string renderedContent = string.Empty;
 
         // replace all @File=...
@@ -39,7 +39,7 @@ public class HtmlRenderer : IHtmlRenderer
         renderedContent = renderedContent.ReplaceCommentTags();
 
         // replace all @Comment=...
-        renderedContent = this.RenderHtmlEscapeBlocks(renderedContent);
+        renderedContent = RenderHtmlEscapeBlocks(renderedContent);
 
         // replace all @StylePath
         if (!string.IsNullOrEmpty(cssOutputFilePath))
@@ -48,7 +48,7 @@ public class HtmlRenderer : IHtmlRenderer
             entryFilePath = $"{outputDirectory}{entryFilePath}";
             string relativeStylePath = entryFilePath.GetRelativePath(outputDirectory, cssOutputFilePath);
 
-            renderedContent = this.ReplaceStylePath(renderedContent, relativeStylePath);
+            renderedContent = ReplaceStylePath(renderedContent, relativeStylePath);
         }
 
         // add meta-tag "generator"
@@ -57,7 +57,7 @@ public class HtmlRenderer : IHtmlRenderer
         return renderedContent;
     }
 
-    public string RenderHtmlEscapeBlocks(string html)
+    public static string RenderHtmlEscapeBlocks(string html)
     {
         string startTag = "@StartHtmlSpecialChars";
         string endTag = "@EndHtmlSpecialChars";
@@ -91,10 +91,10 @@ public class HtmlRenderer : IHtmlRenderer
         return html;
     }
 
-    private string ReplaceStylePath(string content,
+    private static string ReplaceStylePath(string content,
         string cssPath)
     {
-        var stylePathRegex = new Regex("@StylePath", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+        Regex stylePathRegex = new Regex("@StylePath", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
         return stylePathRegex.Replace(content, cssPath);
     }
@@ -102,7 +102,7 @@ public class HtmlRenderer : IHtmlRenderer
     private string AdjustBaseDirectoryToLayoutFile(string content,
         string baseDirectory)
     {
-        string? layoutPath = this.GetLayoutFilePath(content);
+        string? layoutPath = GetLayoutFilePath(content);
         if (string.IsNullOrEmpty(layoutPath))
         {
             return baseDirectory;
@@ -136,7 +136,7 @@ public class HtmlRenderer : IHtmlRenderer
         return content;
     }
 
-    private string? GetLayoutFilePath(string content)
+    private static string? GetLayoutFilePath(string content)
     {
         var layoutRegex = new Regex("@Layout", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
@@ -160,7 +160,7 @@ public class HtmlRenderer : IHtmlRenderer
     private async Task<string> ReplaceLayoutPlaceholderAsync(string content,
         string baseDirectory)
     {
-        string? layoutPath = this.GetLayoutFilePath(content);
+        string? layoutPath = GetLayoutFilePath(content);
         if (string.IsNullOrEmpty(layoutPath))
         {
             return content;
@@ -171,13 +171,13 @@ public class HtmlRenderer : IHtmlRenderer
         layoutContent = layoutContent.Replace("@Body", content);
 
         string output = string.Join(Environment.NewLine, layoutContent.Split(Environment.NewLine)
-            .Where(x => x.Trim().ToLowerInvariant().StartsWith("@layout") != true)
+            .Where(x => x.Trim().ToLowerInvariant().StartsWith("@layout"))
             .ToArray());
 
         return output;
     }
 
-    private async Task<string> LoadFileContent(string sourceFile)
+    private static async Task<string> LoadFileContent(string sourceFile)
     {
         string content = string.Empty;
 
@@ -189,7 +189,7 @@ public class HtmlRenderer : IHtmlRenderer
         return content;
     }
 
-    private string GetBaseDirectory(string sourceFile)
+    private static string GetBaseDirectory(string sourceFile)
     {
         string? baseDirectory = Path.GetDirectoryName(sourceFile);
 

@@ -22,7 +22,7 @@ public class ProjectManagerTests
     [TestMethod]
     public async Task GetTemplateContentAsync_WithGitIgnore_Returns()
     {
-        string? content = await this._instance.GetTemplateContentAsync("htmlc_gitignore");
+        string? content = await ProjectManager.GetTemplateContentAsync("htmlc_gitignore");
 
         content.Should().NotBeNullOrEmpty();
     }

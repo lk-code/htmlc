@@ -37,7 +37,7 @@ public class HtmlRendererTests
             "" + Environment.NewLine +
             "</section>";
 
-        string result = this._instance.RenderHtmlEscapeBlocks(html);
+        string result = HtmlRenderer.RenderHtmlEscapeBlocks(html);
 
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
@@ -75,7 +75,7 @@ public class HtmlRendererTests
             "" + Environment.NewLine +
             "</section>";
 
-        string result = this._instance.RenderHtmlEscapeBlocks(html);
+        string result = HtmlRenderer.RenderHtmlEscapeBlocks(html);
 
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
