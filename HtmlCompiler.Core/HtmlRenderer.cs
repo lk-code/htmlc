@@ -82,7 +82,7 @@ public class HtmlRenderer : IHtmlRenderer
                     case "'": return "&#39;";
                 }
                 return m.Value;
-            });
+            }, RegexOptions.None, TimeSpan.FromMilliseconds(100));
             escapedText = escapedText.Replace("\n", "<br>\n");
             html = html.Remove(startIndex, endIndex - startIndex + endTag.Length).Insert(startIndex, escapedText);
 
