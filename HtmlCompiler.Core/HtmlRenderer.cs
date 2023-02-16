@@ -6,6 +6,13 @@ namespace HtmlCompiler.Core;
 
 public class HtmlRenderer : IHtmlRenderer
 {
+    private readonly IFileSystemService _fileSystemService;
+
+    public HtmlRenderer(IFileSystemService fileSystemService)
+    {
+        this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+    }
+    
     public async Task<string> RenderHtmlAsync(string sourceFullFilePath,
         string sourceDirectory,
         string outputDirectory,
@@ -160,9 +167,7 @@ public class HtmlRenderer : IHtmlRenderer
         }
 
         string fullPath = Path.Combine(baseDirectory, layoutPath);
-
-        string layoutContent = await File.ReadAllTextAsync(fullPath);
-
+        string layoutContent = await this._fileSystemService.FileReadAllTextAsync(fullPath);
         layoutContent = layoutContent.Replace("@Body", content);
 
         string output = string.Join(Environment.NewLine, layoutContent.Split(Environment.NewLine)

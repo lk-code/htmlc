@@ -6,9 +6,10 @@ namespace HtmlCompiler.Core;
 
 public class HtmlWatcher : IHtmlWatcher
 {
-    private readonly IConfiguration configuration;
+    private readonly IConfiguration _configuration;
     private readonly IHtmlRenderer _htmlRenderer;
     private readonly IStyleCompiler _styleCompiler;
+    private readonly IFileSystemService _fileSystemService;
 
     private string _sourceDirectoryPath = string.Empty;
     private string _outputDirectoryPath = string.Empty;
@@ -18,11 +19,13 @@ public class HtmlWatcher : IHtmlWatcher
 
     public HtmlWatcher(IConfiguration configuration,
         IHtmlRenderer htmlRenderer,
-        IStyleCompiler styleCompiler)
+        IStyleCompiler styleCompiler,
+        IFileSystemService fileSystemService)
     {
-        this.configuration = configuration;
+        this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         this._htmlRenderer = htmlRenderer ?? throw new ArgumentNullException(nameof(htmlRenderer));
         this._styleCompiler = styleCompiler ?? throw new ArgumentNullException(nameof(styleCompiler));
+        this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
 
     ~HtmlWatcher()
@@ -177,7 +180,7 @@ public class HtmlWatcher : IHtmlWatcher
     private void CopyAssetsToOutput(List<string> sourceFiles)
     {
         // copy all other files from /src to /dist
-        string[]? buildBlacklistArray = this.configuration.GetSection("BuildBlacklist").Get<string[]>();
+        string[]? buildBlacklistArray = this._configuration.GetSection("BuildBlacklist").Get<string[]>();
 
         if (buildBlacklistArray == null
             || buildBlacklistArray.Length <= 0)
@@ -203,7 +206,7 @@ public class HtmlWatcher : IHtmlWatcher
             outputDirectory.EnsurePath();
 
             // copy sourceFile to outputFile
-            File.Copy(sourceFile, outputFile, true);
+            this._fileSystemService.FileCopy(sourceFile, outputFile, true);
         }
     }
 
@@ -242,7 +245,7 @@ public class HtmlWatcher : IHtmlWatcher
             {
                 string renderedContent = await this._htmlRenderer.RenderHtmlAsync(fileToCompile, this._sourceDirectoryPath, this._outputDirectoryPath, cssOutputFilePath);
 
-                await File.WriteAllTextAsync(outputFile, renderedContent);
+                await  this._fileSystemService.FileWriteAllTextAsync(outputFile, renderedContent);
             }
             catch (FileNotFoundException err)
             {

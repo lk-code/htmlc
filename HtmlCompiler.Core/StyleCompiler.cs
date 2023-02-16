@@ -8,11 +8,14 @@ namespace HtmlCompiler.Core;
 
 public class StyleCompiler : IStyleCompiler
 {
+    private readonly IFileSystemService _fileSystemService;
+
     private string _sourceDirectoryPath = null!;
     private string _outputDirectoryPath = null!;
 
-    public StyleCompiler()
+    public StyleCompiler(IFileSystemService fileSystemService)
     {
+        _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
 
     public async Task<string?> CompileStyleAsync(string sourceDirectoryPath, string outputDirectoryPath, string? styleSourceFilePath)
@@ -27,7 +30,7 @@ public class StyleCompiler : IStyleCompiler
 
         Console.WriteLine($"looking for style at {styleSourceFilePath}");
 
-        if (!File.Exists(styleSourceFilePath))
+        if(this._fileSystemService.FileExists(styleSourceFilePath))
         {
             // no style found
             Console.WriteLine("ERR: no style file found!");
@@ -76,7 +79,7 @@ public class StyleCompiler : IStyleCompiler
     {
         string sourceFullFilePath = $"{sourceDirectoryPath}{sourceFilePath}";
 
-        string content = await File.ReadAllTextAsync(sourceFullFilePath);
+        string content = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
         string extension = Path.GetExtension(sourceFullFilePath)
             .ToLowerInvariant();
         string? currentSubDirectory = Path.GetDirectoryName(sourceFilePath);
@@ -128,10 +131,10 @@ public class StyleCompiler : IStyleCompiler
                 }
 
                 string compiledCss = result.CompiledContent;
-                await File.WriteAllTextAsync(outputFilePath, compiledCss);
+                await this._fileSystemService.FileWriteAllTextAsync(outputFilePath, compiledCss);
 
                 string mappingCss = result.SourceMap;
-                await File.WriteAllTextAsync(outputMappingFilePath, mappingCss);
+                await this._fileSystemService.FileWriteAllTextAsync(outputMappingFilePath, mappingCss);
 
                 Console.WriteLine($"compiled style to {outputFilePath} (mapping: {outputMappingFilePath})");
             }

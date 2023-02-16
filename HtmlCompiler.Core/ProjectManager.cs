@@ -8,6 +8,13 @@ namespace HtmlCompiler.Core;
 
 public class ProjectManager : IProjectManager
 {
+    private readonly IFileSystemService _fileSystemService;
+
+    public ProjectManager(IFileSystemService fileSystemService)
+    {
+        this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+    }
+    
     /// <inheritdoc/>
     public async Task CreateProjectAsync(string projectPath)
     {
@@ -39,7 +46,7 @@ public class ProjectManager : IProjectManager
             string fullFilePath = Path.Combine(projectPath, filePath);
             if (!string.IsNullOrEmpty(templateContent))
             {
-                await File.WriteAllTextAsync(fullFilePath, templateContent);
+                await this._fileSystemService.FileWriteAllTextAsync(fullFilePath, templateContent);
             }
         }
     }
@@ -53,7 +60,7 @@ public class ProjectManager : IProjectManager
         string fullFilePath = Path.Combine(sourcePath, filePath);
         if (!string.IsNullOrEmpty(templateContent))
         {
-            await File.WriteAllTextAsync(fullFilePath, templateContent);
+            await this._fileSystemService.FileWriteAllTextAsync(fullFilePath, templateContent);
         }
     }
 
@@ -69,7 +76,7 @@ public class ProjectManager : IProjectManager
 
         if (!string.IsNullOrEmpty(templateContent))
         {
-            await File.WriteAllTextAsync(fullFilePath, templateContent);
+            await this._fileSystemService.FileWriteAllTextAsync(fullFilePath, templateContent);
         }
     }
 
@@ -79,11 +86,11 @@ public class ProjectManager : IProjectManager
         string filePath = ".vscode/settings.json";
         string fullFilePath = Path.Combine(projectPath, filePath);
         
-        string fileContent = await File.ReadAllTextAsync(fullFilePath);
+        string fileContent = await this._fileSystemService.FileReadAllTextAsync(fullFilePath);
 
         fileContent = fileContent.UpdateJsonProperty("liveServer.settings.root", "/dist");
         
-        await File.WriteAllTextAsync(fullFilePath, fileContent);
+        await this._fileSystemService.FileWriteAllTextAsync(fullFilePath, fileContent);
     }
 
     internal async Task<string?> GetTemplateContentAsync(string template)
