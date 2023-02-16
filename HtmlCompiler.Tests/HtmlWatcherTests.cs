@@ -9,11 +9,11 @@ namespace HtmlCompiler.Tests;
 [TestClass]
 public class HtmlWatcherTests
 {
+    private HtmlWatcher _instance = null!;
     private Mock<IConfiguration> _configuration = null!;
     private Mock<IHtmlRenderer> _htmlRenderer = null!;
     private Mock<IStyleCompiler> _styleCompiler = null!;
-
-    private HtmlWatcher _instance = null!;
+    private Mock<IFileSystemService> _fileSystemService = null!;
 
     [TestInitialize]
     public void SetUp()
@@ -21,11 +21,13 @@ public class HtmlWatcherTests
         this._configuration = new Mock<IConfiguration>();
         this._htmlRenderer = new Mock<IHtmlRenderer>();
         this._styleCompiler = new Mock<IStyleCompiler>();
+        this._fileSystemService = new Mock<IFileSystemService>();
 
         this._instance = new HtmlWatcher(
             this._configuration.Object,
             this._htmlRenderer.Object,
-            this._styleCompiler.Object);
+            this._styleCompiler.Object,
+            this._fileSystemService.Object);
     }
 
     [TestMethod]
