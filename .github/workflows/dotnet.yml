@@ -79,9 +79,4 @@ jobs:
       uses: actions/upload-artifact@v3.1.2
       with:
         name: 1.0.${{ github.run_number }}
-        path: "**/*htmlc*.nupkg"
-      
-    - name: Publish
-      run: dotnet nuget push **/*htmlc*.nupkg --no-symbols --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source "nuget.org"
-      
-      
+        path: "**/*htmlc*.nupkg
