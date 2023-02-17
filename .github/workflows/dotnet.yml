@@ -79,4 +79,4 @@ jobs:
       uses: actions/upload-artifact@v3.1.2
       with:
         name: 1.0.${{ github.run_number }}
-        path: "**/*htmlc*.nupkg
+        path: "**/*htmlc*.nupkg"
