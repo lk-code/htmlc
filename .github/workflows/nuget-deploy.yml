@@ -1,8 +1,6 @@
-name: .NET Build
+name: Nuget Deploy
 
-on:
-  push:
-    branches: [ "main" ]
+on: workflow_dispatch
 
 jobs:
   build:
