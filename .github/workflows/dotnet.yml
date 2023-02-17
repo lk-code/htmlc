@@ -62,6 +62,7 @@ jobs:
       run: |
         dotnet tool update -g dotnet-sonarscanner
         dotnet tool update -g dotnet-reportgenerator-globaltool
+        dotnet tool update -g dotnet-coverage
       
     - name: Build and analyze
       env:
