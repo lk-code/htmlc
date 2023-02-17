@@ -74,6 +74,12 @@ jobs:
         dotnet test --no-build --collect:"XPlat Code Coverage"
         reportgenerator "-reports:*/TestResults/*/coverage.cobertura.xml" "-targetdir:sonarqubecoverage" "-reporttypes:SonarQube"
         dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
       
     - name: Publish
       run: dotnet nuget push **/*htmlc*.nupkg --no-symbols --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source "nuget.org"
