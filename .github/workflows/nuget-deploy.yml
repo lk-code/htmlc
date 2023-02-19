@@ -1,0 +1,20 @@
+name: Nuget Deploy
+
+on: workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v3.0.2
+      with:
+        name: 1.0.${{ github.run_number }}
+        # Destination path
+        path: "/artifacts"
+      
+    - name: Publish
+      run: dotnet nuget push /artifacts/*htmlc*.nupkg --no-symbols --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source "nuget.org"
