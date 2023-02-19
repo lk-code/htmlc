@@ -127,7 +127,7 @@ public class StyleCompiler : IStyleCompiler
                 string? outputDirectory = Path.GetDirectoryName(outputFilePath);
                 if (!string.IsNullOrEmpty(outputDirectory))
                 {
-                    outputDirectory.EnsurePath();
+                    this._fileSystemService.EnsurePath(outputDirectory);
                 }
 
                 string compiledCss = result.CompiledContent;

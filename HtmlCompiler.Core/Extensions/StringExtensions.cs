@@ -4,16 +4,6 @@ namespace HtmlCompiler.Core.Extensions;
 
 public static class StringExtensions
 {
-    public static string[] ToLines(this string content)
-    {
-        return content.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-    }
-
-    public static string ToContent(this string[] lines)
-    {
-        return string.Join(Environment.NewLine, lines);
-    }
-
     public static string AddMetaTag(this string html, string name, string content)
     {
         var doc = new HtmlDocument();
@@ -50,5 +40,15 @@ public static class StringExtensions
             }
         }
         return string.Join(Environment.NewLine, lines);
+    }
+    
+    public static string EnsureString(this string? val, string err)
+    {
+        if (string.IsNullOrEmpty(val))
+        {
+            throw new InvalidDataException(err);
+        }
+
+        return val.ToString();
     }
 }

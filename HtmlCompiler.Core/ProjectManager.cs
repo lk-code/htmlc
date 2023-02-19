@@ -1,6 +1,4 @@
 using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 
@@ -40,7 +38,7 @@ public class ProjectManager : IProjectManager
             if (!string.IsNullOrEmpty(folderPath))
             {
                 string subfolder = Path.Combine(projectPath, folderPath);
-                subfolder.EnsurePath();
+                this._fileSystemService.EnsurePath(subfolder);
             }
 
             string fullFilePath = Path.Combine(projectPath, filePath);
@@ -72,7 +70,7 @@ public class ProjectManager : IProjectManager
 
         string fullFilePath = Path.Combine(projectPath, filePath);
         string vsDirectory = Path.GetDirectoryName(fullFilePath)!;
-        vsDirectory.EnsurePath();
+        this._fileSystemService.EnsurePath(vsDirectory);
 
         if (!string.IsNullOrEmpty(templateContent))
         {

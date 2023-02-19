@@ -26,4 +26,24 @@ public class ProjectManagerTests
 
         content.Should().NotBeNullOrEmpty();
     }
+
+    [TestMethod]
+    public async Task AddVSCodeLiveServerConfigurationAsync_Should_Read_And_Update_File()
+    {
+        // Arrange
+        string projectPath = "/test/path";
+        string filePath = ".vscode/settings.json";
+        string fullFilePath = Path.Combine(projectPath, filePath);
+        string fileContent = @"{""liveServer.settings.root"": ""/src""}";
+
+        this._fileSystemService.Setup(x => x.FileReadAllTextAsync(fullFilePath))
+            .ReturnsAsync(fileContent);
+
+        // Act
+        await this._instance.AddVSCodeLiveServerConfigurationAsync(projectPath);
+
+        // Assert
+        this._fileSystemService.Verify(x => x.FileReadAllTextAsync(fullFilePath), Times.Once);
+        this._fileSystemService.Verify(x => x.FileWriteAllTextAsync(fullFilePath, It.IsAny<string>()), Times.Once);
+    }
 }

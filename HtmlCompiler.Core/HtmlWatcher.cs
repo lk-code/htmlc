@@ -129,8 +129,8 @@ public class HtmlWatcher : IHtmlWatcher
         // prepare
         this.SetProjectPaths(sourcePath, outputPath);
 
-        this._sourceDirectoryPath.EnsurePath();
-        this._outputDirectoryPath.EnsurePath();
+        this._fileSystemService.EnsurePath(this._sourceDirectoryPath);
+        this._fileSystemService.EnsurePath(this._outputDirectoryPath);
 
         // check for style file
         if (!string.IsNullOrEmpty(fileToStyleFilePath))
@@ -156,7 +156,8 @@ public class HtmlWatcher : IHtmlWatcher
         {
             Console.WriteLine($"compiling...");
 
-            List<string> files = this._sourceDirectoryPath.GetAllFiles();
+            this._fileSystemService.GetAllFiles(this._sourceDirectoryPath);
+            IEnumerable<string> files = this._fileSystemService.GetAllFiles(this._sourceDirectoryPath);
 
             // compile style file
             string? cssOutputFilePath = await this._styleCompiler.CompileStyleAsync(this._sourceDirectoryPath, this._outputDirectoryPath, this._styleEntryFilePath);
@@ -178,7 +179,7 @@ public class HtmlWatcher : IHtmlWatcher
         }
     }
 
-    private void CopyAssetsToOutput(List<string> sourceFiles)
+    private void CopyAssetsToOutput(IEnumerable<string> sourceFiles)
     {
         // copy all other files from /src to /dist
         string[]? buildBlacklistArray = this._configuration.GetSection("BuildBlacklist").Get<string[]>();
@@ -195,7 +196,7 @@ public class HtmlWatcher : IHtmlWatcher
             buildBlacklist.Add(".html");
         }
 
-        List<string> filesWithoutBlacklisted = sourceFiles
+        IEnumerable<string> filesWithoutBlacklisted = sourceFiles
                 .Where(x => buildBlacklist.Contains(Path.GetExtension(x.ToLowerInvariant())) != true)
                 .ToList();
 
@@ -204,14 +205,14 @@ public class HtmlWatcher : IHtmlWatcher
         {
             string outputFile = GetOutputPathForSource(sourceFile, this._sourceDirectoryPath, this._outputDirectoryPath);
             string outputDirectory = Path.GetDirectoryName(outputFile)!;
-            outputDirectory.EnsurePath();
+            this._fileSystemService.EnsurePath(outputDirectory);
 
             // copy sourceFile to outputFile
             this._fileSystemService.FileCopy(sourceFile, outputFile, true);
         }
     }
 
-    private async Task RenderHtmlFiles(List<string> files, string? cssOutputFilePath)
+    private async Task RenderHtmlFiles(IEnumerable<string> files, string? cssOutputFilePath)
     {
         List<string> sourceFiles = GetHtmlFiles(files);
 
@@ -223,7 +224,7 @@ public class HtmlWatcher : IHtmlWatcher
             string? outputDirectoryName = Path.GetDirectoryName(outputFile);
             if (!string.IsNullOrEmpty(outputDirectoryName))
             {
-                outputDirectoryName.EnsurePath();
+                this._fileSystemService.EnsurePath(outputDirectoryName);
             }
 
             Console.WriteLine($"compile {fileToCompile} to {outputFile}");
@@ -249,9 +250,9 @@ public class HtmlWatcher : IHtmlWatcher
         return outputFilePath;
     }
 
-    private static List<string> GetHtmlFiles(List<string> files)
+    private static List<string> GetHtmlFiles(IEnumerable<string> files)
     {
-        List<string> htmlFilePaths = files.Where(file => Path.GetExtension(file) == ".html")
+        IEnumerable<string> htmlFilePaths = files.Where(file => Path.GetExtension(file) == ".html")
             .ToList();
 
         return htmlFilePaths.Where(filePath => !Path.GetFileName(filePath).StartsWith("_"))
@@ -285,7 +286,7 @@ public class HtmlWatcher : IHtmlWatcher
         {
             // No path was specified => use the current directory
 
-            string baseDirectory = Directory.GetCurrentDirectory();
+            string baseDirectory = this._fileSystemService.GetCurrentDirectory();
             this._sourceDirectoryPath = Path.Combine(baseDirectory, "src");
             this._outputDirectoryPath = Path.Combine(baseDirectory, "dist");
 

@@ -134,4 +134,56 @@ public class StyleFileExtensionsTests
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedCss);
     }
+    
+    [TestMethod]
+    public void IsSupportedStyleFile_ReturnsTrue_ForSCSSFile()
+    {
+        // Arrange
+        string fileExtension = ".scss";
+
+        // Act
+        bool result = fileExtension.IsSupportedStyleFile();
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void IsSupportedStyleFile_ReturnsTrue_ForSASSFile()
+    {
+        // Arrange
+        string fileExtension = "sass";
+
+        // Act
+        bool result = fileExtension.IsSupportedStyleFile();
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void IsSupportedStyleFile_ReturnsTrue_ForLESSFile()
+    {
+        // Arrange
+        string fileExtension = "less";
+
+        // Act
+        bool result = fileExtension.IsSupportedStyleFile();
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void IsSupportedStyleFile_ReturnsFalse_ForUnsupportedFile()
+    {
+        // Arrange
+        string fileExtension = "txt";
+
+        // Act
+        bool result = fileExtension.IsSupportedStyleFile();
+
+        // Assert
+        result.Should().BeFalse();
+    }
 }
