@@ -30,6 +30,7 @@ builder.Services.AddTransient<IHtmlWatcher, HtmlWatcher>();
 builder.Services.AddTransient<IStyleCompiler, StyleCompiler>();
 builder.Services.AddTransient<IProjectManager, ProjectManager>();
 builder.Services.AddTransient<IFileSystemService, FileSystemService>();
+builder.Services.AddTransient<IResourceLoader, ResourceLoader>();
 
 CoconaApp? app = builder.Build();
 
