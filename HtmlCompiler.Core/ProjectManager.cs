@@ -1,4 +1,3 @@
-using System.Reflection;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 
@@ -7,10 +6,13 @@ namespace HtmlCompiler.Core;
 public class ProjectManager : IProjectManager
 {
     private readonly IFileSystemService _fileSystemService;
+    private readonly IResourceLoader _resourceLoader;
 
-    public ProjectManager(IFileSystemService fileSystemService)
+    public ProjectManager(IFileSystemService fileSystemService,
+        IResourceLoader resourceLoader)
     {
         this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+        this._resourceLoader = resourceLoader ?? throw new ArgumentNullException(nameof(resourceLoader));
     }
     
     /// <inheritdoc/>
@@ -31,7 +33,7 @@ public class ProjectManager : IProjectManager
             string? templateContent = null;
             if (!string.IsNullOrEmpty(templateKey))
             {
-                templateContent = await GetTemplateContentAsync(templateKey);
+                templateContent = await this.GetTemplateContentAsync(templateKey);
             }
 
             string? folderPath = Path.GetDirectoryName(filePath);
@@ -53,7 +55,7 @@ public class ProjectManager : IProjectManager
     public async Task AddDockerSupportAsync(string sourcePath)
     {
         string filePath = "Dockerfile";
-        string? templateContent = await GetTemplateContentAsync("htmlc_dockerfile");
+        string? templateContent = await this.GetTemplateContentAsync("htmlc_dockerfile");
         
         string fullFilePath = Path.Combine(sourcePath, filePath);
         if (!string.IsNullOrEmpty(templateContent))
@@ -66,7 +68,7 @@ public class ProjectManager : IProjectManager
     public async Task AddVSCodeSupportAsync(string projectPath)
     {
         string filePath = ".vscode/settings.json";
-        string? templateContent = await GetTemplateContentAsync("htmlc_vscode_settings_json");
+        string? templateContent = await this.GetTemplateContentAsync("htmlc_vscode_settings_json");
 
         string fullFilePath = Path.Combine(projectPath, filePath);
         string vsDirectory = Path.GetDirectoryName(fullFilePath)!;
@@ -91,19 +93,11 @@ public class ProjectManager : IProjectManager
         await this._fileSystemService.FileWriteAllTextAsync(fullFilePath, fileContent);
     }
 
-    internal static async Task<string?> GetTemplateContentAsync(string template)
+    private async Task<string?> GetTemplateContentAsync(string template)
     {
-        string? content = null;
+        string resourceName = $"HtmlCompiler.Core.FileTemplates.{template}.template";
+        string? content = await this._resourceLoader.GetResourceContentAsync(resourceName);
         
-        var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = $"HtmlCompiler.Core.FileTemplates.{template}.template";
-
-        using (Stream stream = assembly.GetManifestResourceStream(resourceName)!)
-        using (StreamReader reader = new StreamReader(stream))
-        {
-            content = await reader.ReadToEndAsync();
-        }
-
         return content;
     }
 }
