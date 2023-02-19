@@ -44,7 +44,7 @@
 	<ItemGroup>
 		<PackageReference Include="Cocona" Version="2.1.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.3" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\HtmlCompiler.Core\HtmlCompiler.Core.csproj" />
