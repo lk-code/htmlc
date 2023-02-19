@@ -13,14 +13,14 @@ public class FileSystemService : IFileSystemService
         return File.Exists(path);
     }
 
-    public Task<string> FileReadAllTextAsync(string path, CancellationToken cancellationToken = default(CancellationToken))
+    public Task<string> FileReadAllTextAsync(string path)
     {
-	    return File.ReadAllTextAsync(path, cancellationToken);
+	    return File.ReadAllTextAsync(path);
     }
 
-    public Task FileWriteAllTextAsync(string path, string? contents, CancellationToken cancellationToken = default(CancellationToken))
+    public Task FileWriteAllTextAsync(string path, string? contents)
     {
-	    return File.WriteAllTextAsync(path, contents, cancellationToken);
+	    return File.WriteAllTextAsync(path, contents);
     }
 
     public void FileCopy(string sourceFileName, string destFileName, bool overwrite)

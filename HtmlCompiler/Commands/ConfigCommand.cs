@@ -87,8 +87,8 @@ public class ConfigCommand
     private static void EditBuildBlacklist(ConfigModel userConfig, ref string? action, ref string? value, string comparingKey)
     {
         List<string> blacklist = userConfig.BuildBlackList.ToList();
-        action = action.Ensure($"action is needed for {comparingKey}!");
-        value = value.Ensure($"value for {comparingKey} can not be empty!");
+        action = action.EnsureString($"action is needed for {comparingKey}!");
+        value = value.EnsureString($"value for {comparingKey} can not be empty!");
 
         if (action.ToLowerInvariant() == "add")
         {

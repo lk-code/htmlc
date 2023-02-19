@@ -41,4 +41,14 @@ public static class StringExtensions
         }
         return string.Join(Environment.NewLine, lines);
     }
+    
+    public static string EnsureString(this string? val, string err)
+    {
+        if (string.IsNullOrEmpty(val))
+        {
+            throw new InvalidDataException(err);
+        }
+
+        return val.ToString();
+    }
 }
