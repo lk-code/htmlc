@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 

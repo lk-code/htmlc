@@ -1,4 +1,3 @@
-using FluentAssertions;
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Tests.Helper;
@@ -47,10 +46,10 @@ public class ProjectManagerTests
     public async Task AddVSCodeSupportAsync_ShouldEnsurePathAndWriteSettingsJson()
     {
         // Arrange
-        var projectPath = "c:\\projects\\myproject".ToSystemPath();
-        var expectedFilePath = Path.Combine(projectPath, ".vscode/settings.json".ToSystemPath());
-        var expectedVsDirectory = Path.GetDirectoryName(expectedFilePath);
-        var template = "htmlc_vscode_settings_json";
+        string projectPath = "c:\\projects\\myproject".ToSystemPath();
+        string expectedFilePath = Path.Combine(projectPath, ".vscode/settings.json".ToSystemPath());
+        string? expectedVsDirectory = Path.GetDirectoryName(expectedFilePath);
+        string template = "htmlc_vscode_settings_json";
 
         this._resourceLoader.Setup(r => r.GetResourceContentAsync($"HtmlCompiler.Core.FileTemplates.{template}.template"))
             .ReturnsAsync("{\"key\": \"value\"}");
@@ -67,7 +66,7 @@ public class ProjectManagerTests
     public async Task AddVSCodeSupportAsync_ShouldNotWriteSettingsJson_WhenTemplateContentIsEmpty()
     {
         // Arrange
-        var projectPath = "c:\\projects\\myproject".ToSystemPath();
+        string projectPath = "c:\\projects\\myproject".ToSystemPath();
 
         this._resourceLoader.Setup(r => r.GetResourceContentAsync("unknown_template"))
             .ReturnsAsync(string.Empty);
@@ -84,9 +83,9 @@ public class ProjectManagerTests
     public async Task AddDockerSupportAsync_ShouldEnsurePathAndWriteSettingsJson()
     {
         // Arrange
-        var projectPath = "c:\\projects\\myproject".ToSystemPath();
-        var expectedFilePath = Path.Combine(projectPath, "Dockerfile".ToSystemPath());
-        var template = "htmlc_dockerfile";
+        string projectPath = "c:\\projects\\myproject".ToSystemPath();
+        string expectedFilePath = Path.Combine(projectPath, "Dockerfile".ToSystemPath());
+        string template = "htmlc_dockerfile";
 
         this._resourceLoader.Setup(r => r.GetResourceContentAsync($"HtmlCompiler.Core.FileTemplates.{template}.template"))
             .ReturnsAsync("{\"key\": \"value\"}");
@@ -102,7 +101,7 @@ public class ProjectManagerTests
     public async Task AddDockerSupportAsync_ShouldNotWriteSettingsJson_WhenTemplateContentIsEmpty()
     {
         // Arrange
-        var projectPath = "c:\\projects\\myproject".ToSystemPath();
+        string projectPath = "c:\\projects\\myproject".ToSystemPath();
 
         this._resourceLoader.Setup(r => r.GetResourceContentAsync("unknown_template"))
             .ReturnsAsync(string.Empty);
@@ -112,5 +111,61 @@ public class ProjectManagerTests
 
         // Assert
         this._fileSystemService.Verify(fs => fs.FileWriteAllTextAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+    
+    [TestMethod]
+    public async Task CreateProjectAsync_ShouldCreateFiles()
+    {
+        // Arrange
+        string projectPath = "path/to/project";
+        Dictionary<string, string> expectedFilesToCreate = new Dictionary<string, string>
+        {
+            { "src/index.html", "htmlc_index_html" }
+        };
+
+        foreach (var fileToCreate in expectedFilesToCreate)
+        {
+            string filePath = Path.Combine(projectPath, fileToCreate.Key);
+            string templateKey = fileToCreate.Value;
+            string templateContent = string.Empty;
+
+            if (!string.IsNullOrEmpty(templateKey))
+            {
+                templateContent = "Template content for " + templateKey;
+                string resourceName = $"HtmlCompiler.Core.FileTemplates.{templateKey}.template";
+                this._resourceLoader.Setup(x => x.GetResourceContentAsync(resourceName))
+                    .ReturnsAsync(templateContent);
+            }
+
+            string? folderPath = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(folderPath))
+            {
+                this._fileSystemService.Setup(x => x.EnsurePath(It.IsAny<string>()));
+            }
+
+            this._fileSystemService.Setup(x => x.FileWriteAllTextAsync(filePath, templateContent))
+                .Returns(Task.CompletedTask);
+        }
+
+        // Act
+        await this._instance.CreateProjectAsync(projectPath);
+
+        // Assert
+        foreach (var fileToCreate in expectedFilesToCreate)
+        {
+            string filePath = Path.Combine(projectPath, fileToCreate.Key);
+            string templateKey = fileToCreate.Value;
+            string expectedTemplateContent = string.Empty;
+
+            if (!string.IsNullOrEmpty(templateKey))
+            {
+                expectedTemplateContent = "Template content for " + templateKey;
+            }
+
+            string resourceName = $"HtmlCompiler.Core.FileTemplates.{templateKey}.template";
+            this._resourceLoader.Verify(x => x.GetResourceContentAsync(resourceName));
+            this._fileSystemService.Verify(x => x.EnsurePath(It.IsAny<string>()));
+            this._fileSystemService.Verify(x => x.FileWriteAllTextAsync(filePath, expectedTemplateContent));
+        }
     }
 }
