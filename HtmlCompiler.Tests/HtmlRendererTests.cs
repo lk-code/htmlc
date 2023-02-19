@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
 using HtmlCompiler.Core;
+using HtmlCompiler.Core.Interfaces;
+using Moq;
 
 namespace HtmlCompiler.Tests;
 
@@ -7,11 +9,14 @@ namespace HtmlCompiler.Tests;
 public class HtmlRendererTests
 {
     private HtmlRenderer _instance = null!;
+    private Mock<IFileSystemService> _fileSystemService = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._instance = new HtmlRenderer();
+        this._fileSystemService = new Mock<IFileSystemService>();
+        
+        this._instance = new HtmlRenderer(this._fileSystemService.Object);
     }
 
     [TestMethod]
@@ -32,7 +37,7 @@ public class HtmlRendererTests
             "" + Environment.NewLine +
             "</section>";
 
-        string result = this._instance.RenderHtmlEscapeBlocks(html);
+        string result = HtmlRenderer.RenderHtmlEscapeBlocks(html);
 
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
@@ -70,7 +75,7 @@ public class HtmlRendererTests
             "" + Environment.NewLine +
             "</section>";
 
-        string result = this._instance.RenderHtmlEscapeBlocks(html);
+        string result = HtmlRenderer.RenderHtmlEscapeBlocks(html);
 
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);

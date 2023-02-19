@@ -26,6 +26,7 @@ public static class StyleFileExtensions
     /// components/butttons             => /components/_butttons.scss
     /// </summary>
     /// <param name="sassImportName"></param>
+    /// <param name="requestedFileExtension"></param>
     /// <returns></returns>
     public static string GetFullObjectNameBySassImportName(this string sassImportName, string requestedFileExtension)
     {
@@ -65,9 +66,7 @@ public static class StyleFileExtensions
         string currentSubDirectory,
         string fileExtension)
     {
-        //var importRegex = new Regex(@"@import\s+""([^""]+)""\s*;", RegexOptions.None, TimeSpan.FromMilliseconds(100));
-        //var importRegex = new Regex(@"@import\s+'""['""]\s*;", RegexOptions.None, TimeSpan.FromMilliseconds(100));
-        var importRegex = new Regex(@"@import\s+['""]([^'""\n\r]+)['""]\s*;", RegexOptions.None, TimeSpan.FromMilliseconds(100));
+        Regex importRegex = new Regex(@"@import\s+['""]([^'""\n\r]+)['""]\s*;", RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
         foreach (Match match in importRegex.Matches(input))
         {

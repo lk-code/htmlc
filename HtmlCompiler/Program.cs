@@ -29,6 +29,7 @@ builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
 builder.Services.AddTransient<IHtmlWatcher, HtmlWatcher>();
 builder.Services.AddTransient<IStyleCompiler, StyleCompiler>();
 builder.Services.AddTransient<IProjectManager, ProjectManager>();
+builder.Services.AddTransient<IFileSystemService, FileSystemService>();
 
 CoconaApp? app = builder.Build();
 

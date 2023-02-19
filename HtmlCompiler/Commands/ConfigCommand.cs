@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Cocona;
 using HtmlCompiler.Core.Extensions;
+using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 
 namespace HtmlCompiler.Commands;
@@ -8,10 +9,13 @@ namespace HtmlCompiler.Commands;
 public class ConfigCommand
 {
     private readonly IConfiguration _configuration;
+    private readonly IFileSystemService _fileSystemService;
 
-    public ConfigCommand(IConfiguration configuration)
+    public ConfigCommand(IConfiguration configuration,
+        IFileSystemService fileSystemService)
     {
         this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
 
     [Command("config")]
@@ -20,7 +24,7 @@ public class ConfigCommand
         [Argument(Description = "the config value as json string")] string? value)
     {
         // read user config file
-        string userJsonConfig = await File.ReadAllTextAsync(Globals.USER_CONFIG);
+        string userJsonConfig = await this._fileSystemService.FileReadAllTextAsync(Globals.USER_CONFIG);
         ConfigModel? userConfig = JsonSerializer.Deserialize<ConfigModel>(userJsonConfig);
         if (userConfig == null)
         {
@@ -46,7 +50,7 @@ public class ConfigCommand
 
         // write user config file
         userJsonConfig = JsonSerializer.Serialize(userConfig);
-        await File.WriteAllTextAsync(Globals.USER_CONFIG, userJsonConfig);
+        await this._fileSystemService.FileWriteAllTextAsync(Globals.USER_CONFIG, userJsonConfig);
     }
 
     private ConfigModel? EditOnConfig(ConfigModel userConfig, string key, string? action, string? value)
