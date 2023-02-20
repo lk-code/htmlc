@@ -3,21 +3,38 @@ name: Nuget Deploy
 on:
   workflow_dispatch:
     inputs:
-      artifact_name:
-        description: 'Name of the artifact to use'
+      run_id:
+        description: 'ID of the workflow run to use'
         required: true
 
 jobs:
-  nuget-deploy:
+  nuget-publish:
     runs-on: ubuntu-latest
-    needs: build-and-publish
 
     steps:
+    - name: Get Artifact Name
+      uses: actions/github-script@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const runs = await github.actions.listWorkflowRuns({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'build-and-publish.yml',
+            branch: 'main'
+          });
+          const run = runs.data.find(run => run.id == ${{ github.event.inputs.run_id }});
+          const artifacts = await github.actions.listWorkflowRunArtifacts({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            run_id: run.id
+          });
+          core.setOutput('artifact_name', artifacts.data[0].name);
     
     - name: Download a Build Artifact
       uses: actions/download-artifact@v3.0.2
       with:
-        name: ${{ github.event.inputs.artifact_name }}
+        name: ${{ steps.get-artifact-name.outputs.artifact_name }}
         # Destination path
         path: "/artifacts"
       
