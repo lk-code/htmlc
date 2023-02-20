@@ -5,6 +5,7 @@ on:
 
 jobs:
   list-artifacts:
+    needs: build-and-deploy
     runs-on: ubuntu-latest
     outputs:
       artifact-names: ${{ steps.list-outputs.outputs.artifact-names }}
