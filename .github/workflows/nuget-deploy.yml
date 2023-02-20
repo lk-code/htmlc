@@ -1,32 +1,50 @@
 name: Nuget Deploy
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
 
 jobs:
-  nuget-publish:
+  list-artifacts:
     runs-on: ubuntu-latest
-
+    outputs:
+      artifact-names: ${{ steps.list-outputs.outputs.artifact-names }}
     steps:
-    - name: List Artifacts
-      id: list_artifacts
-      uses: actions/artifact@v2
-      with:
-        name: my-artifact-name
-          
-    - name: Select Artifact
-      uses: appleboy/gh-action-input@v1.0.6
-      with:
-        input_id: artifact
-        message: 'Select an artifact:'
-        type: select
-        options: '${{ steps.list_artifacts.outputs.artifacts }}'
-    
-    - name: Download a Build Artifact
-      uses: actions/download-artifact@v3.0.2
-      with:
-        name: ${{ inputs.artifact }}
-        # Destination path
-        path: "/artifacts"
-      
-    - name: Publish
-      run: dotnet nuget push /artifacts/*.nupkg --no-symbols --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source "nuget.org"
+      - name: List artifacts
+        id: list-outputs
+        run: |
+          echo "::set-output name=artifact-names::$(ls artifacts)"
+
+  select-artifact:
+    needs: list-artifacts
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-path: ${{ steps.select-output.outputs.artifact-path }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download artifact list
+        uses: actions/download-artifact@v2
+        with:
+          name: artifacts
+          path: .
+
+      - name: Select artifact
+        id: select-output
+        run: |
+          artifact_name=$(echo "${{ needs.list-artifacts.outputs.artifact-names }}" | sed "s/ /\n/g" | fzf --height 10 --reverse --preview "cat artifacts/{}" --preview-window right:70%)
+          artifact_path="./artifacts/$artifact_name"
+          echo "::set-output name=artifact-path::$artifact_path"
+
+  upload-artifact:
+    needs: select-artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload to NuGet
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+          nuget-version: '5.x'
+
+      - name: Upload artifact
+        run: dotnet nuget push /artifacts/*.nupkg --no-symbols --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} --source "nuget.org"
