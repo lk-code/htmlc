@@ -2,7 +2,9 @@ name: .NET Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   build-and-publish:
