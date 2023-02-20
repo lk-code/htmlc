@@ -3,40 +3,35 @@ name: Nuget Deploy
 on:
   workflow_dispatch:
     inputs:
-      workflow_name:
+      workflow_id:
         description: 'Select a workflow to use'
         required: true
-        default: 'build-and-publish.yml'
-        options: ['build-and-publish.yml', 'build-and-deploy.yml']
+        default: ''
+        options: ${{ steps.get-workflows.outputs.workflow_ids }}
 
 jobs:
   nuget-publish:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Get Artifact Name
-      uses: actions/github-script@v4
+    - name: List Artifacts
+      id: list_artifacts
+      uses: actions/artifact@v2
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const runs = await github.actions.listWorkflowRuns({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            workflow_id: 'build-and-publish.yml',
-            branch: 'main'
-          });
-          const run = runs.data.find(run => run.id == ${{ github.event.inputs.run_id }});
-          const artifacts = await github.actions.listWorkflowRunArtifacts({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            run_id: run.id
-          });
-          core.setOutput('artifact_name', artifacts.data[0].name);
+        name: my-artifact-name
+          
+    - name: Select Artifact
+      uses: appleboy/gh-action-input@v1.0.6
+      with:
+        input_id: artifact
+        message: 'Select an artifact:'
+        type: select
+        options: '${{ steps.list_artifacts.outputs.artifacts }}'
     
     - name: Download a Build Artifact
       uses: actions/download-artifact@v3.0.2
       with:
-        name: ${{ steps.get-artifact-name.outputs.artifact_name }}
+        name: ${{ inputs.artifact }}
         # Destination path
         path: "/artifacts"
       
