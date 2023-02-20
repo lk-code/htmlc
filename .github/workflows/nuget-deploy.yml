@@ -1,13 +1,6 @@
 name: Nuget Deploy
 
-on:
-  workflow_dispatch:
-    inputs:
-      workflow_id:
-        description: 'Select a workflow to use'
-        required: true
-        default: ''
-        options: ${{ steps.get-workflows.outputs.workflow_ids }}
+on: workflow_dispatch
 
 jobs:
   nuget-publish:
