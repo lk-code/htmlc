@@ -3,9 +3,11 @@ name: Nuget Deploy
 on:
   workflow_dispatch:
     inputs:
-      run_id:
-        description: 'ID of the workflow run to use'
+      workflow_name:
+        description: 'Select a workflow to use'
         required: true
+        default: 'build-and-publish.yml'
+        options: ['build-and-publish.yml', 'build-and-deploy.yml']
 
 jobs:
   nuget-publish:
