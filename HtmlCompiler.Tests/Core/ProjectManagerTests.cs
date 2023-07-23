@@ -58,7 +58,7 @@ public class ProjectManagerTests
         await this._instance.AddVSCodeSupportAsync(projectPath);
 
         // Assert
-        this._fileSystemService.Verify(fs => fs.EnsurePath(expectedVsDirectory), Times.Once);
+        this._fileSystemService.Verify(fs => fs.EnsurePath(expectedVsDirectory!), Times.Once);
         this._fileSystemService.Verify(fs => fs.FileWriteAllTextAsync(expectedFilePath, "{\"key\": \"value\"}"), Times.Once);
     }
 
