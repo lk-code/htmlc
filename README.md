@@ -183,6 +183,9 @@ for example:
 
 ### supported tags and its functionality
 
+#### The @PageTitle-Tag
+The value of **PageTitle** is set as a global variable. Each time @PageTitle is used, this location is replaced with the value.
+
 #### The @Layout-Tag
 The **@Layout** tag is used in an HTML entry file to specify which layout file is to use.
 
