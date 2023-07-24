@@ -47,35 +47,52 @@ public class HtmlRendererTests
     public void RenderHtmlEscapeBlocks_WithMultipleTags_Returns()
     {
         string html = "<section>" + Environment.NewLine +
-            "@StartHtmlSpecialChars" + Environment.NewLine +
-            "<h1 class=\"title\">" + Environment.NewLine +
-            "<a href=\"https://a.link.testcase\">a link</a>" + Environment.NewLine +
-            "</h1>" + Environment.NewLine +
-            "@EndHtmlSpecialChars" + Environment.NewLine +
-            "</section>" + Environment.NewLine +
-            "<section>" + Environment.NewLine +
-            "@StartHtmlSpecialChars" + Environment.NewLine +
-            "<h1 class=\"title\">" + Environment.NewLine +
-            "<a href=\"https://a.link.testcase\">a link</a>" + Environment.NewLine +
-            "</h1>" + Environment.NewLine +
-            "@EndHtmlSpecialChars" + Environment.NewLine +
-            "</section>";
+                      "@StartHtmlSpecialChars" + Environment.NewLine +
+                      "<h1 class=\"title\">" + Environment.NewLine +
+                      "<a href=\"https://a.link.testcase\">a link</a>" + Environment.NewLine +
+                      "</h1>" + Environment.NewLine +
+                      "@EndHtmlSpecialChars" + Environment.NewLine +
+                      "</section>" + Environment.NewLine +
+                      "<section>" + Environment.NewLine +
+                      "@StartHtmlSpecialChars" + Environment.NewLine +
+                      "<h1 class=\"title\">" + Environment.NewLine +
+                      "<a href=\"https://a.link.testcase\">a link</a>" + Environment.NewLine +
+                      "</h1>" + Environment.NewLine +
+                      "@EndHtmlSpecialChars" + Environment.NewLine +
+                      "</section>";
         string expectedHtml = "<section>" + Environment.NewLine +
-            "<br>" + Environment.NewLine +
-            "&#60;h1 class=&#34;title&#34;&#62;<br>" + Environment.NewLine +
-            "&#60;a href=&#34;https://a.link.testcase&#34;&#62;a link&#60;/a&#62;<br>" + Environment.NewLine +
-            "&#60;/h1&#62;<br>" + Environment.NewLine +
-            "" + Environment.NewLine +
-            "</section>" + Environment.NewLine +
-            "<section>" + Environment.NewLine +
-            "<br>" + Environment.NewLine +
-            "&#60;h1 class=&#34;title&#34;&#62;<br>" + Environment.NewLine +
-            "&#60;a href=&#34;https://a.link.testcase&#34;&#62;a link&#60;/a&#62;<br>" + Environment.NewLine +
-            "&#60;/h1&#62;<br>" + Environment.NewLine +
-            "" + Environment.NewLine +
-            "</section>";
+                              "<br>" + Environment.NewLine +
+                              "&#60;h1 class=&#34;title&#34;&#62;<br>" + Environment.NewLine +
+                              "&#60;a href=&#34;https://a.link.testcase&#34;&#62;a link&#60;/a&#62;<br>" + Environment.NewLine +
+                              "&#60;/h1&#62;<br>" + Environment.NewLine +
+                              "" + Environment.NewLine +
+                              "</section>" + Environment.NewLine +
+                              "<section>" + Environment.NewLine +
+                              "<br>" + Environment.NewLine +
+                              "&#60;h1 class=&#34;title&#34;&#62;<br>" + Environment.NewLine +
+                              "&#60;a href=&#34;https://a.link.testcase&#34;&#62;a link&#60;/a&#62;<br>" + Environment.NewLine +
+                              "&#60;/h1&#62;<br>" + Environment.NewLine +
+                              "" + Environment.NewLine +
+                              "</section>";
 
         string result = HtmlRenderer.RenderHtmlEscapeBlocks(html);
+
+        result.Should().NotBeNullOrEmpty();
+        result.Should().Be(expectedHtml);
+    }
+
+    [TestMethod]
+    public async Task RenderPageTitle_WithDefault_Returns()
+    {
+        string html = "@PageTitle=Test Page :D" + Environment.NewLine +
+                      "<section>" + Environment.NewLine +
+                      "<h1>@PageTitle</h1>" + Environment.NewLine +
+                      "</section>";
+        string expectedHtml = "<section>" + Environment.NewLine +
+                              "<h1>Test Page :D</h1>" + Environment.NewLine +
+                              "</section>";
+
+        string result = await this._instance.ReplacePageTitlePlaceholderAsync(html);
 
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);

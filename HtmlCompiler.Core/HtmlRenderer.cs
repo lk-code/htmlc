@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 
@@ -12,7 +12,7 @@ public class HtmlRenderer : IHtmlRenderer
     {
         this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
-    
+
     public async Task<string> RenderHtmlAsync(string sourceFullFilePath,
         string sourceDirectory,
         string outputDirectory,
@@ -38,7 +38,7 @@ public class HtmlRenderer : IHtmlRenderer
         // replace all @Comment=...
         renderedContent = renderedContent.ReplaceCommentTags();
 
-        // replace all @Comment=...
+        // replace all HTML Escape Blocks=...
         renderedContent = RenderHtmlEscapeBlocks(renderedContent);
 
         // replace all @StylePath
@@ -53,6 +53,9 @@ public class HtmlRenderer : IHtmlRenderer
 
         // add meta-tag "generator"
         renderedContent = renderedContent.AddMetaTag("generator", "htmlc");
+
+        // replace @PageTitle=...
+        renderedContent = await this.ReplacePageTitlePlaceholderAsync(renderedContent);
 
         return renderedContent;
     }
@@ -70,6 +73,7 @@ public class HtmlRenderer : IHtmlRenderer
             {
                 endIndex = html.Length;
             }
+
             string textToEscape = html.Substring(startIndex + startTag.Length, endIndex - startIndex - startTag.Length);
             string escapedText = Regex.Replace(textToEscape, "[<>&\"']", m =>
             {
@@ -81,6 +85,7 @@ public class HtmlRenderer : IHtmlRenderer
                     case "\"": return "&#34;";
                     case "'": return "&#39;";
                 }
+
                 return m.Value;
             }, RegexOptions.None, TimeSpan.FromMilliseconds(100));
             escapedText = escapedText.Replace("\n", "<br>\n");
@@ -88,6 +93,7 @@ public class HtmlRenderer : IHtmlRenderer
 
             startIndex = html.IndexOf(startTag, startIndex + escapedText.Length);
         }
+
         return html;
     }
 
@@ -136,25 +142,39 @@ public class HtmlRenderer : IHtmlRenderer
         return content;
     }
 
-    private static string? GetLayoutFilePath(string content)
+    public async Task<string> ReplacePageTitlePlaceholderAsync(string content)
     {
-        var layoutRegex = new Regex("@Layout", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+        string? pageTitle = GetPageTitle(ref content);
+        if (string.IsNullOrEmpty(pageTitle))
+        {
+            return content;
+        }
 
-        Match layoutMatch = layoutRegex.Match(content);
-        if (!layoutMatch.Success)
+        Regex regex = new Regex("@PageTitle", RegexOptions.IgnoreCase);
+
+        string output = regex.Replace(content, pageTitle);
+
+        return output;
+    }
+
+    private static string? GetPageTitle(ref string content)
+    {
+        // Definiere den regulären Ausdruck mit Groß- und Kleinschreibung ignorieren
+        Regex regex = new Regex(@"(?i)^@PageTitle=(.*(?:\r?\n|$))");
+
+        // Suche nach der Zeile, die mit "@PageTitle=" beginnt
+        Match match = regex.Match(content);
+
+        // Wenn ein Treffer gefunden wurde, entferne die Zeile und gib den modifizierten Inhalt zurück
+        if (match.Success)
+        {
+            content = regex.Replace(content, string.Empty);
+            return match.Groups[1].Value.Trim();
+        }
+        else
         {
             return null;
         }
-
-        int lineBreakIndex = content.IndexOf(Environment.NewLine, layoutMatch.Index);
-        if (lineBreakIndex < 0)
-        {
-            return null;
-        }
-
-        string layoutPath = content.Substring(layoutMatch.Index + 8, lineBreakIndex - layoutMatch.Index - 8).Trim();
-
-        return layoutPath;
     }
 
     private async Task<string> ReplaceLayoutPlaceholderAsync(string content,
@@ -175,6 +195,27 @@ public class HtmlRenderer : IHtmlRenderer
             .ToArray());
 
         return output;
+    }
+
+    private static string? GetLayoutFilePath(string content)
+    {
+        Regex layoutRegex = new Regex("@Layout", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+
+        Match layoutMatch = layoutRegex.Match(content);
+        if (!layoutMatch.Success)
+        {
+            return null;
+        }
+
+        int lineBreakIndex = content.IndexOf(Environment.NewLine, layoutMatch.Index);
+        if (lineBreakIndex < 0)
+        {
+            return null;
+        }
+
+        string layoutPath = content.Substring(layoutMatch.Index + 8, lineBreakIndex - layoutMatch.Index - 8).Trim();
+
+        return layoutPath;
     }
 
     private static async Task<string> LoadFileContent(string sourceFile)
