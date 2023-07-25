@@ -158,11 +158,11 @@ public class HtmlRendererTests
             .Append("<html>")
             .Append("<head>")
             .Append("<title>Demo</title>")
-            .Append("<meta name=\"generator\" content=\"htmlc\"></head>")
+            .Append("<meta name=\"generator\" content=\"htmlc\">")
             .Append("</head>")
             .Append("<body>")
             .Append("<h1>Hello World!</h1>")
-            .Append("<body>")
+            .Append("</body>")
             .Append("</html>")
             .ToString().Trim();
 
@@ -181,7 +181,7 @@ public class HtmlRendererTests
             .Append("</head>")
             .Append("<body>")
             .Append("@Body")
-            .Append("<body>")
+            .Append("</body>")
             .Append("</html>")
             .ToString().Trim();
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html"))
@@ -195,4 +195,76 @@ public class HtmlRendererTests
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
     }
+
+    // [TestMethod]
+    // public async Task RenderHtmlAsync_WithMultipleFiles_Return()
+    // {
+    //     string sourceFullFilePath = "/project/src/index.html";
+    //     string sourceDirectory = "/project/src";
+    //     string outputDirectory = "/project/dist";
+    //     string? cssOutputFilePath = null;
+    //     
+    //     var expectedHtml = new StringBuilder()
+    //         .Append("<html>")
+    //         .Append("<head>")
+    //         .Append("<title>Demo</title>")
+    //         .Append("<meta name=\"generator\" content=\"htmlc\">")
+    //         .Append("</head>")
+    //         .Append("<body>")
+    //         .Append("<h1>Hello World!</h1>")
+    //         .Append("<section>")
+    //         .Append("<footer>")
+    //         .Append("<div>")
+    //         .Append("<p>Demo</p>")
+    //         .Append("<p>a footer value</p>")
+    //         .Append("</div>")
+    //         .AppendLine("</footer>")
+    //         .Append("</section>")
+    //         .Append("</body>")
+    //         .Append("</html>")
+    //         .ToString().Trim();
+    //
+    //     var indexContent = new StringBuilder()
+    //         .AppendLine("@Layout=_layoutbase.html")
+    //         .AppendLine("@PageTitle=Demo")
+    //         .Append("<h1>Hello World!</h1>")
+    //         .ToString().Trim();
+    //     this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
+    //         .ReturnsAsync(indexContent);
+    //     
+    //     var footerContent = new StringBuilder()
+    //         .Append("<footer>")
+    //         .Append("<div>")
+    //         .Append("<p>@PageTitle</p>")
+    //         .Append("<p>a footer value</p>")
+    //         .Append("</div>")
+    //         .Append("</footer>")
+    //         .ToString().Trim();
+    //     this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_footer.html"))
+    //         .ReturnsAsync(footerContent);
+    //     
+    //     var layoutContent = new StringBuilder()
+    //         .Append("<html>")
+    //         .Append("<head>")
+    //         .Append("<title>@PageTitle</title>")
+    //         .Append("</head>")
+    //         .Append("<body>")
+    //         .Append("@Body")
+    //         .Append("<section>")
+    //         .AppendLine("@File=_footer.html")
+    //         .Append("</section>")
+    //         .Append("</body>")
+    //         .Append("</html>")
+    //         .ToString().Trim();
+    //     this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html"))
+    //         .ReturnsAsync(layoutContent);
+    //     
+    //     string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+    //         sourceDirectory,
+    //         outputDirectory,
+    //         cssOutputFilePath);
+    //     
+    //     result.Should().NotBeNullOrEmpty();
+    //     result.Should().Be(expectedHtml);
+    // }
 }

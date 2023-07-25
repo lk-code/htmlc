@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
@@ -31,9 +32,6 @@ public class HtmlRenderer : IHtmlRenderer
         // replace @Layout=...
         renderedContent = await this.ReplaceLayoutPlaceholderAsync(renderedContent, baseDirectory);
 
-        // replace @PageTitle=...
-        renderedContent = await this.ReplacePageTitlePlaceholderAsync(renderedContent);
-
         // check if layout-file and source-html-file are on different directories => baseDirectory must be adjusted
         baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
 
@@ -56,6 +54,9 @@ public class HtmlRenderer : IHtmlRenderer
 
             renderedContent = ReplaceStylePath(renderedContent, relativeStylePath);
         }
+
+        // replace @PageTitle=...
+        renderedContent = await this.ReplacePageTitlePlaceholderAsync(renderedContent);
 
         // add meta-tag "generator"
         renderedContent = renderedContent.AddMetaTag("generator", "htmlc");
@@ -144,61 +145,25 @@ public class HtmlRenderer : IHtmlRenderer
 
         return content;
     }
+    
+    private static readonly Regex TitleDeclarationRegex = new Regex(@"@PageTitle=(.*?)(\r\n|\n|$)", RegexOptions.Compiled);
+    private static readonly Regex TitleUseRegex = new Regex(@"@PageTitle", RegexOptions.Compiled);
 
     public async Task<string> ReplacePageTitlePlaceholderAsync(string content)
     {
-        string pageTitle = null;
-        string[] lines = content.Split('\n');
+        string pageTitle = string.Empty;
 
-        for (int i = 0; i < lines.Length; i++)
+        // Find title declarations
+        content = TitleDeclarationRegex.Replace(content, match =>
         {
-            string line = lines[i];
-            int equalIndex = line.IndexOf('=');
+            pageTitle = match.Groups[1].Value;
+            return string.Empty; // Remove declaration
+        });
 
-            if (equalIndex >= 0)
-            {
-                pageTitle = line.Substring(equalIndex + 1).Trim();
-                lines[i] = null; // Mark the line for removal
-            }
-        }
+        // Replace usages of the title
+        content = TitleUseRegex.Replace(content, match => pageTitle);
 
-        // Remove lines marked for removal
-        lines = Array.FindAll(lines, line => line != null);
-
-        if (!string.IsNullOrEmpty(pageTitle))
-        {
-            // Replace @PageTitle with the last assigned value
-            for (int i = lines.Length - 1; i >= 0; i--)
-            {
-                if (lines[i].Contains("@PageTitle"))
-                {
-                    lines[i] = lines[i].Replace("@PageTitle", pageTitle);
-                    break;
-                }
-            }
-        }
-
-        return string.Join("\n", lines);
-    }
-
-    private static string? GetPageTitle(ref string content)
-    {
-        // Definiere den regulären Ausdruck mit Groß- und Kleinschreibung ignorieren
-        Regex regex = new Regex(@"(?i)^@PageTitle=(.*(?:\r?\n|$))");
-
-        // Suche nach der Zeile, die mit "@PageTitle=" beginnt
-        Match match = regex.Match(content);
-
-        // Wenn ein Treffer gefunden wurde, entferne die Zeile und gib den modifizierten Inhalt zurück
-        if (match.Success)
-        {
-            content = regex.Replace(content, string.Empty);
-            return match.Groups[1].Value.Trim();
-        }
-        else
-        {
-            return null;
-        }
+        return content;
     }
 
     private async Task<string> ReplaceLayoutPlaceholderAsync(string content,
@@ -245,7 +210,8 @@ public class HtmlRenderer : IHtmlRenderer
         }
 
         // Ersetzen des @Body-Platzhalters durch den bereinigten Inhalt.
-        string result = layoutContent.Substring(0, bodyIndex) + cleanedContent + layoutContent.Substring(bodyIndex + bodyPlaceholder.Length);
+        string result = layoutContent.Substring(0, bodyIndex) + cleanedContent +
+                        layoutContent.Substring(bodyIndex + bodyPlaceholder.Length);
 
         return result;
     }
