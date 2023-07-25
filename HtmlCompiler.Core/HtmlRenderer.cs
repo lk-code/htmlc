@@ -31,6 +31,9 @@ public class HtmlRenderer : IHtmlRenderer
         // replace @Layout=...
         renderedContent = await this.ReplaceLayoutPlaceholderAsync(renderedContent, baseDirectory);
 
+        // replace @PageTitle=...
+        renderedContent = await this.ReplacePageTitlePlaceholderAsync(renderedContent);
+
         // check if layout-file and source-html-file are on different directories => baseDirectory must be adjusted
         baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
 
@@ -56,9 +59,6 @@ public class HtmlRenderer : IHtmlRenderer
 
         // add meta-tag "generator"
         renderedContent = renderedContent.AddMetaTag("generator", "htmlc");
-
-        // replace @PageTitle=...
-        renderedContent = await this.ReplacePageTitlePlaceholderAsync(renderedContent);
 
         return renderedContent;
     }
@@ -147,17 +147,38 @@ public class HtmlRenderer : IHtmlRenderer
 
     public async Task<string> ReplacePageTitlePlaceholderAsync(string content)
     {
-        string? pageTitle = GetPageTitle(ref content);
-        if (string.IsNullOrEmpty(pageTitle))
+        string pageTitle = null;
+        string[] lines = content.Split('\n');
+
+        for (int i = 0; i < lines.Length; i++)
         {
-            return content;
+            string line = lines[i];
+            int equalIndex = line.IndexOf('=');
+
+            if (equalIndex >= 0)
+            {
+                pageTitle = line.Substring(equalIndex + 1).Trim();
+                lines[i] = null; // Mark the line for removal
+            }
         }
 
-        Regex regex = new Regex("@PageTitle", RegexOptions.IgnoreCase);
+        // Remove lines marked for removal
+        lines = Array.FindAll(lines, line => line != null);
 
-        string output = regex.Replace(content, pageTitle);
+        if (!string.IsNullOrEmpty(pageTitle))
+        {
+            // Replace @PageTitle with the last assigned value
+            for (int i = lines.Length - 1; i >= 0; i--)
+            {
+                if (lines[i].Contains("@PageTitle"))
+                {
+                    lines[i] = lines[i].Replace("@PageTitle", pageTitle);
+                    break;
+                }
+            }
+        }
 
-        return output;
+        return string.Join("\n", lines);
     }
 
     private static string? GetPageTitle(ref string content)
@@ -183,20 +204,49 @@ public class HtmlRenderer : IHtmlRenderer
     private async Task<string> ReplaceLayoutPlaceholderAsync(string content,
         string baseDirectory)
     {
-        string? layoutPath = content.GetLayoutFilePath();
-        if (string.IsNullOrEmpty(layoutPath))
+        string layoutPlaceholder = "@Layout=";
+        string bodyPlaceholder = "@Body";
+
+        int layoutIndex = content.IndexOf(layoutPlaceholder);
+        if (layoutIndex == -1)
         {
+            // Kein @Layout-Platzhalter gefunden, gibt einfach den ursprünglichen Inhalt zurück.
             return content;
         }
 
-        string fullPath = Path.Combine(baseDirectory, layoutPath);
-        string layoutContent = await this._fileSystemService.FileReadAllTextAsync(fullPath);
-        layoutContent = layoutContent.Replace("@Body", content);
+        // Extrahiere den Pfad zur Layout-Datei.
+        int layoutPathStart = layoutIndex + layoutPlaceholder.Length;
+        int layoutPathEnd = content.IndexOf('\n', layoutPathStart);
+        string layoutFilePath = content[layoutPathStart..layoutPathEnd].Trim();
 
-        string output = string.Join(Environment.NewLine, layoutContent.Split(Environment.NewLine)
-            .Where(x => x.Trim().ToLowerInvariant().StartsWith("@layout"))
-            .ToArray());
+        // Erstelle den vollständigen Pfad zur Layout-Datei.
+        string fullPath = Path.Combine(baseDirectory, layoutFilePath);
 
-        return output;
+        // Lade den Inhalt der Layout-Datei.
+        string layoutContent;
+        try
+        {
+            layoutContent = await this._fileSystemService.FileReadAllTextAsync(fullPath);
+        }
+        catch (Exception ex)
+        {
+            throw new FileNotFoundException($"Layout file not found or couldn't be read: {fullPath}", ex);
+        }
+
+        // Entferne die Zeile mit dem @Layout-Platzhalter aus dem ersten Inhalt.
+        string cleanedContent = content.Substring(0, layoutIndex) + content.Substring(layoutPathEnd + 1);
+
+        // Suchen nach dem @Body-Platzhalter in der Layout-Datei und ersetzen ihn durch den bereinigten Inhalt.
+        int bodyIndex = layoutContent.IndexOf(bodyPlaceholder);
+        if (bodyIndex == -1)
+        {
+            // Kein @Body-Platzhalter gefunden, gibt den bereinigten Inhalt der Layout-Datei zurück.
+            return cleanedContent;
+        }
+
+        // Ersetzen des @Body-Platzhalters durch den bereinigten Inhalt.
+        string result = layoutContent.Substring(0, bodyIndex) + cleanedContent + layoutContent.Substring(bodyIndex + bodyPlaceholder.Length);
+
+        return result;
     }
 }
