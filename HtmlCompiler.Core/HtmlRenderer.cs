@@ -20,7 +20,7 @@ public class HtmlRenderer : IHtmlRenderer
     {
         sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
         string baseDirectory = GetBaseDirectory(sourceFullFilePath);
-        string originalContent = await LoadFileContent(sourceFullFilePath);
+        string originalContent = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
         string renderedContent = string.Empty;
 
         // replace all @File=...
@@ -216,18 +216,6 @@ public class HtmlRenderer : IHtmlRenderer
         string layoutPath = content.Substring(layoutMatch.Index + 8, lineBreakIndex - layoutMatch.Index - 8).Trim();
 
         return layoutPath;
-    }
-
-    private static async Task<string> LoadFileContent(string sourceFile)
-    {
-        string content = string.Empty;
-
-        using (StreamReader streamReader = new StreamReader(sourceFile))
-        {
-            content = await streamReader.ReadToEndAsync();
-        }
-
-        return content;
     }
 
     private static string GetBaseDirectory(string sourceFile)
