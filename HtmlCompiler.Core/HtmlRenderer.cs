@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
@@ -13,18 +14,20 @@ public class HtmlRenderer : IHtmlRenderer
         this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
 
+    /// <inheritdoc />
     public async Task<string> RenderHtmlAsync(string sourceFullFilePath,
         string sourceDirectory,
         string outputDirectory,
         string? cssOutputFilePath)
     {
         sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
-        string baseDirectory = GetBaseDirectory(sourceFullFilePath);
-        string originalContent = await LoadFileContent(sourceFullFilePath);
+        string baseDirectory = sourceFullFilePath.GetBaseDirectory();
+        string originalContent = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
         string renderedContent = string.Empty;
 
         // replace all @File=...
-        renderedContent = await this.ReplaceFilePlaceholdersAsync(originalContent, baseDirectory, sourceDirectory, outputDirectory, cssOutputFilePath);
+        renderedContent = await this.ReplaceFilePlaceholdersAsync(originalContent, baseDirectory, sourceDirectory,
+            outputDirectory, cssOutputFilePath);
 
         // replace @Layout=...
         renderedContent = await this.ReplaceLayoutPlaceholderAsync(renderedContent, baseDirectory);
@@ -33,7 +36,8 @@ public class HtmlRenderer : IHtmlRenderer
         baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
 
         // replace all @File=...
-        renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory, sourceDirectory, outputDirectory, cssOutputFilePath);
+        renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory, sourceDirectory,
+            outputDirectory, cssOutputFilePath);
 
         // replace all @Comment=...
         renderedContent = renderedContent.ReplaceCommentTags();
@@ -51,11 +55,11 @@ public class HtmlRenderer : IHtmlRenderer
             renderedContent = ReplaceStylePath(renderedContent, relativeStylePath);
         }
 
-        // add meta-tag "generator"
-        renderedContent = renderedContent.AddMetaTag("generator", "htmlc");
-
         // replace @PageTitle=...
         renderedContent = await this.ReplacePageTitlePlaceholderAsync(renderedContent);
+
+        // add meta-tag "generator"
+        renderedContent = renderedContent.AddMetaTag("generator", "htmlc");
 
         return renderedContent;
     }
@@ -108,7 +112,7 @@ public class HtmlRenderer : IHtmlRenderer
     private string AdjustBaseDirectoryToLayoutFile(string content,
         string baseDirectory)
     {
-        string? layoutPath = GetLayoutFilePath(content);
+        string? layoutPath = content.GetLayoutFilePath();
         if (string.IsNullOrEmpty(layoutPath))
         {
             return baseDirectory;
@@ -141,104 +145,74 @@ public class HtmlRenderer : IHtmlRenderer
 
         return content;
     }
+    
+    private static readonly Regex TitleDeclarationRegex = new Regex(@"@PageTitle=(.*?)(\r\n|\n|$)", RegexOptions.Compiled);
+    private static readonly Regex TitleUseRegex = new Regex(@"@PageTitle", RegexOptions.Compiled);
 
     public async Task<string> ReplacePageTitlePlaceholderAsync(string content)
     {
-        string? pageTitle = GetPageTitle(ref content);
-        if (string.IsNullOrEmpty(pageTitle))
+        string pageTitle = string.Empty;
+
+        // Find title declarations
+        content = TitleDeclarationRegex.Replace(content, match =>
         {
-            return content;
-        }
+            pageTitle = match.Groups[1].Value;
+            return string.Empty; // Remove declaration
+        });
 
-        Regex regex = new Regex("@PageTitle", RegexOptions.IgnoreCase);
+        // Replace usages of the title
+        content = TitleUseRegex.Replace(content, match => pageTitle);
 
-        string output = regex.Replace(content, pageTitle);
-
-        return output;
-    }
-
-    private static string? GetPageTitle(ref string content)
-    {
-        // Definiere den regulären Ausdruck mit Groß- und Kleinschreibung ignorieren
-        Regex regex = new Regex(@"(?i)^@PageTitle=(.*(?:\r?\n|$))");
-
-        // Suche nach der Zeile, die mit "@PageTitle=" beginnt
-        Match match = regex.Match(content);
-
-        // Wenn ein Treffer gefunden wurde, entferne die Zeile und gib den modifizierten Inhalt zurück
-        if (match.Success)
-        {
-            content = regex.Replace(content, string.Empty);
-            return match.Groups[1].Value.Trim();
-        }
-        else
-        {
-            return null;
-        }
+        return content;
     }
 
     private async Task<string> ReplaceLayoutPlaceholderAsync(string content,
         string baseDirectory)
     {
-        string? layoutPath = GetLayoutFilePath(content);
-        if (string.IsNullOrEmpty(layoutPath))
+        string layoutPlaceholder = "@Layout=";
+        string bodyPlaceholder = "@Body";
+
+        int layoutIndex = content.IndexOf(layoutPlaceholder);
+        if (layoutIndex == -1)
         {
+            // Kein @Layout-Platzhalter gefunden, gibt einfach den ursprünglichen Inhalt zurück.
             return content;
         }
 
-        string fullPath = Path.Combine(baseDirectory, layoutPath);
-        string layoutContent = await this._fileSystemService.FileReadAllTextAsync(fullPath);
-        layoutContent = layoutContent.Replace("@Body", content);
+        // Extrahiere den Pfad zur Layout-Datei.
+        int layoutPathStart = layoutIndex + layoutPlaceholder.Length;
+        int layoutPathEnd = content.IndexOf('\n', layoutPathStart);
+        string layoutFilePath = content[layoutPathStart..layoutPathEnd].Trim();
 
-        string output = string.Join(Environment.NewLine, layoutContent.Split(Environment.NewLine)
-            .Where(x => x.Trim().ToLowerInvariant().StartsWith("@layout"))
-            .ToArray());
+        // Erstelle den vollständigen Pfad zur Layout-Datei.
+        string fullPath = Path.Combine(baseDirectory, layoutFilePath);
 
-        return output;
-    }
-
-    private static string? GetLayoutFilePath(string content)
-    {
-        Regex layoutRegex = new Regex("@Layout", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
-
-        Match layoutMatch = layoutRegex.Match(content);
-        if (!layoutMatch.Success)
+        // Lade den Inhalt der Layout-Datei.
+        string layoutContent;
+        try
         {
-            return null;
+            layoutContent = await this._fileSystemService.FileReadAllTextAsync(fullPath);
+        }
+        catch (Exception ex)
+        {
+            throw new FileNotFoundException($"Layout file not found or couldn't be read: {fullPath}", ex);
         }
 
-        int lineBreakIndex = content.IndexOf(Environment.NewLine, layoutMatch.Index);
-        if (lineBreakIndex < 0)
+        // Entferne die Zeile mit dem @Layout-Platzhalter aus dem ersten Inhalt.
+        string cleanedContent = content.Substring(0, layoutIndex) + content.Substring(layoutPathEnd + 1);
+
+        // Suchen nach dem @Body-Platzhalter in der Layout-Datei und ersetzen ihn durch den bereinigten Inhalt.
+        int bodyIndex = layoutContent.IndexOf(bodyPlaceholder);
+        if (bodyIndex == -1)
         {
-            return null;
+            // Kein @Body-Platzhalter gefunden, gibt den bereinigten Inhalt der Layout-Datei zurück.
+            return cleanedContent;
         }
 
-        string layoutPath = content.Substring(layoutMatch.Index + 8, lineBreakIndex - layoutMatch.Index - 8).Trim();
+        // Ersetzen des @Body-Platzhalters durch den bereinigten Inhalt.
+        string result = layoutContent.Substring(0, bodyIndex) + cleanedContent +
+                        layoutContent.Substring(bodyIndex + bodyPlaceholder.Length);
 
-        return layoutPath;
-    }
-
-    private static async Task<string> LoadFileContent(string sourceFile)
-    {
-        string content = string.Empty;
-
-        using (StreamReader streamReader = new StreamReader(sourceFile))
-        {
-            content = await streamReader.ReadToEndAsync();
-        }
-
-        return content;
-    }
-
-    private static string GetBaseDirectory(string sourceFile)
-    {
-        string? baseDirectory = Path.GetDirectoryName(sourceFile);
-
-        if (string.IsNullOrEmpty(baseDirectory))
-        {
-            throw new FileNotFoundException($"\"{nameof(baseDirectory)}\" cannot be NULL or empty.", nameof(baseDirectory));
-        }
-
-        return baseDirectory;
+        return result;
     }
 }

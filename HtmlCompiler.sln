@@ -12,6 +12,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{91E9535A-2D7B-4E57-951B-0FDC1C50904F}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		.gitignore = .gitignore
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		.github\workflows\nuget-deploy.yml = .github\workflows\nuget-deploy.yml
+		.github\workflows\pull-request.yml = .github\workflows\pull-request.yml
+		.github\FUNDING.yml = .github\FUNDING.yml
 	EndProjectSection
 EndProject
 Global
