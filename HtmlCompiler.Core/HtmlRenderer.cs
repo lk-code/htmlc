@@ -13,18 +13,20 @@ public class HtmlRenderer : IHtmlRenderer
         this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
 
+    /// <inheritdoc />
     public async Task<string> RenderHtmlAsync(string sourceFullFilePath,
         string sourceDirectory,
         string outputDirectory,
         string? cssOutputFilePath)
     {
         sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
-        string baseDirectory = GetBaseDirectory(sourceFullFilePath);
+        string baseDirectory = sourceFullFilePath.GetBaseDirectory();
         string originalContent = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
         string renderedContent = string.Empty;
 
         // replace all @File=...
-        renderedContent = await this.ReplaceFilePlaceholdersAsync(originalContent, baseDirectory, sourceDirectory, outputDirectory, cssOutputFilePath);
+        renderedContent = await this.ReplaceFilePlaceholdersAsync(originalContent, baseDirectory, sourceDirectory,
+            outputDirectory, cssOutputFilePath);
 
         // replace @Layout=...
         renderedContent = await this.ReplaceLayoutPlaceholderAsync(renderedContent, baseDirectory);
@@ -33,7 +35,8 @@ public class HtmlRenderer : IHtmlRenderer
         baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
 
         // replace all @File=...
-        renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory, sourceDirectory, outputDirectory, cssOutputFilePath);
+        renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory, sourceDirectory,
+            outputDirectory, cssOutputFilePath);
 
         // replace all @Comment=...
         renderedContent = renderedContent.ReplaceCommentTags();
@@ -108,7 +111,7 @@ public class HtmlRenderer : IHtmlRenderer
     private string AdjustBaseDirectoryToLayoutFile(string content,
         string baseDirectory)
     {
-        string? layoutPath = GetLayoutFilePath(content);
+        string? layoutPath = content.GetLayoutFilePath();
         if (string.IsNullOrEmpty(layoutPath))
         {
             return baseDirectory;
@@ -180,7 +183,7 @@ public class HtmlRenderer : IHtmlRenderer
     private async Task<string> ReplaceLayoutPlaceholderAsync(string content,
         string baseDirectory)
     {
-        string? layoutPath = GetLayoutFilePath(content);
+        string? layoutPath = content.GetLayoutFilePath();
         if (string.IsNullOrEmpty(layoutPath))
         {
             return content;
@@ -195,38 +198,5 @@ public class HtmlRenderer : IHtmlRenderer
             .ToArray());
 
         return output;
-    }
-
-    private static string? GetLayoutFilePath(string content)
-    {
-        Regex layoutRegex = new Regex("@Layout", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
-
-        Match layoutMatch = layoutRegex.Match(content);
-        if (!layoutMatch.Success)
-        {
-            return null;
-        }
-
-        int lineBreakIndex = content.IndexOf(Environment.NewLine, layoutMatch.Index);
-        if (lineBreakIndex < 0)
-        {
-            return null;
-        }
-
-        string layoutPath = content.Substring(layoutMatch.Index + 8, lineBreakIndex - layoutMatch.Index - 8).Trim();
-
-        return layoutPath;
-    }
-
-    private static string GetBaseDirectory(string sourceFile)
-    {
-        string? baseDirectory = Path.GetDirectoryName(sourceFile);
-
-        if (string.IsNullOrEmpty(baseDirectory))
-        {
-            throw new FileNotFoundException($"\"{nameof(baseDirectory)}\" cannot be NULL or empty.", nameof(baseDirectory));
-        }
-
-        return baseDirectory;
     }
 }

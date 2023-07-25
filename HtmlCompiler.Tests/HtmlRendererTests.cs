@@ -97,4 +97,20 @@ public class HtmlRendererTests
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
     }
+
+    [TestMethod]
+    public async Task RenderHtmlAsync_WithMultipleFiles_Return()
+    {
+        string sourceFullFilePath = "/project/src/index.html";
+        string sourceDirectory = "/project/src";
+        string outputDirectory = "/project/dist";
+        string? cssOutputFilePath = null;
+        
+        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+            sourceDirectory,
+            outputDirectory,
+            cssOutputFilePath);
+        
+        result.Should().NotBeNullOrEmpty();
+    }
 }
