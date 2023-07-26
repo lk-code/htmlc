@@ -1,4 +1,4 @@
-﻿using DartSassHost;
+using DartSassHost;
 using DartSassHost.Helpers;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
@@ -30,7 +30,7 @@ public class StyleCompiler : IStyleCompiler
 
         Console.WriteLine($"looking for style at {styleSourceFilePath}");
 
-        if(this._fileSystemService.FileExists(styleSourceFilePath))
+        if(!this._fileSystemService.FileExists(styleSourceFilePath))
         {
             // no style found
             Console.WriteLine("ERR: no style file found!");
