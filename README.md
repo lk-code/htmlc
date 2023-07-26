@@ -34,6 +34,7 @@ This is the HTML Compiler Tool for your cli. htmlc is a small tool with which ve
      - [layout](#layout)
      - [reusable components](#reusable-components)
    - [supported tags and its functionality](#supported-tags-and-its-functionality)
+     - [The @PageTitle-Tag](#the-pagetitle-tag)
      - [The @Layout-Tag](#the-layout-tag)
      - [The @Body-Tag](#the-body-tag)
      - [The @File-Tag](#the-file-tag)
