@@ -6,13 +6,13 @@ namespace HtmlCompiler.Commands;
 
 public class HtmlcCommand
 {
-    private readonly IHtmlWatcher _htmlWatcher;
+    private readonly IFileWatcher _fileWatcher;
     private readonly IProjectManager _projectManager;
 
-    public HtmlcCommand(IHtmlWatcher htmlWatcher,
+    public HtmlcCommand(IFileWatcher fileWatcher,
         IProjectManager projectManager)
     {
-        this._htmlWatcher = htmlWatcher ?? throw new ArgumentNullException(nameof(htmlWatcher));
+        this._fileWatcher = fileWatcher ?? throw new ArgumentNullException(nameof(fileWatcher));
         this._projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
     }
 
@@ -52,7 +52,7 @@ public class HtmlcCommand
         [Argument(Description = "path for the output. if empty, then the /dist folder is used in the current directory")] string? outputPath = null,
         [Option('s', Description = "path to the style file to compile (scss or sass)")] string? style = null)
     {
-        await this._htmlWatcher.WatchDirectoryAsync(sourcePath, outputPath, style, false);
+        await this._fileWatcher.WatchDirectoryAsync(sourcePath, outputPath, style, false);
     }
 
     [Command("watch")]
@@ -60,6 +60,6 @@ public class HtmlcCommand
         [Argument(Description = "path for the output. if empty, then the /dist folder is used in the current directory")] string? outputPath = null,
         [Option('s', Description = "path to the style file to compile (scss or sass)")] string? style = null)
     {
-        await this._htmlWatcher.WatchDirectoryAsync(sourcePath, outputPath, style);
+        await this._fileWatcher.WatchDirectoryAsync(sourcePath, outputPath, style);
     }
 }

@@ -7,9 +7,9 @@ using Moq;
 namespace HtmlCompiler.Tests;
 
 [TestClass]
-public class HtmlWatcherTests
+public class FileWatcherTests
 {
-    private HtmlWatcher _instance = null!;
+    private FileWatcher _instance = null!;
     private Mock<IConfiguration> _configuration = null!;
     private Mock<IHtmlRenderer> _htmlRenderer = null!;
     private Mock<IStyleCompiler> _styleCompiler = null!;
@@ -23,7 +23,7 @@ public class HtmlWatcherTests
         this._styleCompiler = new Mock<IStyleCompiler>();
         this._fileSystemService = new Mock<IFileSystemService>();
 
-        this._instance = new HtmlWatcher(
+        this._instance = new FileWatcher(
             this._configuration.Object,
             this._htmlRenderer.Object,
             this._styleCompiler.Object,
@@ -37,7 +37,7 @@ public class HtmlWatcherTests
         string sourceFile = "/path/to/project/src/test.html";   // /Users/larskramer/Desktop/htmlc-test/src/pages.html
         string outputPath = "/path/to/project/dist";            // /Users/larskramer/Desktop/htmlc-test/dist
 
-        string outputFile = HtmlWatcher.GetOutputPathForSource(sourceFile, projectPath, outputPath);
+        string outputFile = FileWatcher.GetOutputPathForSource(sourceFile, projectPath, outputPath);
 
         outputFile.Should().NotBeNullOrEmpty();
         outputFile.Should().Be($"/path/to/project/dist/test.html");
@@ -50,7 +50,7 @@ public class HtmlWatcherTests
         string sourceFile = "/path/to/project/src/components/test.html";
         string outputPath = "/path/to/project/dist";
 
-        string outputFile = HtmlWatcher.GetOutputPathForSource(sourceFile, projectPath, outputPath);
+        string outputFile = FileWatcher.GetOutputPathForSource(sourceFile, projectPath, outputPath);
 
         outputFile.Should().NotBeNullOrEmpty();
         outputFile.Should().Be($"/path/to/project/dist/components/test.html");

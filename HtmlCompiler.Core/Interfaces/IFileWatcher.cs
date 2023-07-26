@@ -1,7 +1,7 @@
 ﻿using System;
 namespace HtmlCompiler.Core.Interfaces;
 
-public interface IHtmlWatcher
+public interface IFileWatcher
 {
     /// <summary>
     /// 

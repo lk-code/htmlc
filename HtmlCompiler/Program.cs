@@ -26,7 +26,7 @@ if (!File.Exists(Globals.USER_CONFIG))
 builder.Configuration.AddJsonStream(new StreamReader(Globals.USER_CONFIG).BaseStream);
 
 builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
-builder.Services.AddTransient<IHtmlWatcher, HtmlWatcher>();
+builder.Services.AddTransient<IFileWatcher, FileWatcher>();
 builder.Services.AddTransient<IStyleCompiler, StyleCompiler>();
 builder.Services.AddTransient<IProjectManager, ProjectManager>();
 builder.Services.AddTransient<IFileSystemService, FileSystemService>();
