@@ -13,7 +13,8 @@ public class HtmlRenderer : IHtmlRenderer
         typeof(FileTagRenderer),
         typeof(CommentTagRenderer),
         typeof(HtmlEscapeBlockRenderer),
-        typeof(StylePathRenderer)
+        typeof(StylePathRenderer),
+        typeof(PageTitleRenderer)
     };
 
     private readonly IFileSystemService _fileSystemService;
@@ -95,8 +96,8 @@ public class HtmlRenderer : IHtmlRenderer
         //     renderedContent = ReplaceStylePath(renderedContent, relativeStylePath);
         // }
 
-        // replace @PageTitle=...
-        renderedContent = await this.ReplacePageTitlePlaceholderAsync(renderedContent);
+        // // replace @PageTitle=...
+        // renderedContent = await this.ReplacePageTitlePlaceholderAsync(renderedContent);
 
         // add meta-tag "generator"
         renderedContent = renderedContent.AddMetaTag("generator", "htmlc");
@@ -186,27 +187,27 @@ public class HtmlRenderer : IHtmlRenderer
     //     return content;
     // }
 
-    private static readonly Regex TitleDeclarationRegex =
-        new Regex(@"@PageTitle=(.*?)(\r\n|\n|$)", RegexOptions.Compiled);
-
-    private static readonly Regex TitleUseRegex = new Regex(@"@PageTitle", RegexOptions.Compiled);
-
-    public async Task<string> ReplacePageTitlePlaceholderAsync(string content)
-    {
-        string pageTitle = string.Empty;
-
-        // Find title declarations
-        content = TitleDeclarationRegex.Replace(content, match =>
-        {
-            pageTitle = match.Groups[1].Value;
-            return string.Empty; // Remove declaration
-        });
-
-        // Replace usages of the title
-        content = TitleUseRegex.Replace(content, match => pageTitle);
-
-        return content;
-    }
+    // private static readonly Regex TitleDeclarationRegex =
+    //     new Regex(@"@PageTitle=(.*?)(\r\n|\n|$)", RegexOptions.Compiled);
+    //
+    // private static readonly Regex TitleUseRegex = new Regex(@"@PageTitle", RegexOptions.Compiled);
+    //
+    // public async Task<string> ReplacePageTitlePlaceholderAsync(string content)
+    // {
+    //     string pageTitle = string.Empty;
+    //
+    //     // Find title declarations
+    //     content = TitleDeclarationRegex.Replace(content, match =>
+    //     {
+    //         pageTitle = match.Groups[1].Value;
+    //         return string.Empty; // Remove declaration
+    //     });
+    //
+    //     // Replace usages of the title
+    //     content = TitleUseRegex.Replace(content, match => pageTitle);
+    //
+    //     return content;
+    // }
 
     private async Task<string> ReplaceLayoutPlaceholderAsync(string content,
         string baseDirectory)

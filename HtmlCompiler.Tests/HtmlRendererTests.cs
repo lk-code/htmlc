@@ -22,23 +22,6 @@ public class HtmlRendererTests
     }
 
     [TestMethod]
-    public async Task RenderPageTitle_WithDefault_Returns()
-    {
-        string html = "@PageTitle=Test Page :D" + Environment.NewLine +
-                      "<section>" + Environment.NewLine +
-                      "<h1>@PageTitle</h1>" + Environment.NewLine +
-                      "</section>";
-        string expectedHtml = "<section>" + Environment.NewLine +
-                              "<h1>Test Page :D</h1>" + Environment.NewLine +
-                              "</section>";
-
-        string result = await this._instance.ReplacePageTitlePlaceholderAsync(html);
-
-        result.Should().NotBeNullOrEmpty();
-        result.Should().Be(expectedHtml);
-    }
-
-    [TestMethod]
     public async Task RenderHtmlAsync_WithSimpleFileWithoutTags_Return()
     {
         string sourceFullFilePath = "/project/src/index.html";
