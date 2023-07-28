@@ -2,9 +2,9 @@ namespace HtmlCompiler.Core.Renderer;
 
 public class RenderingConfiguration
 {
-    public string BaseDirectory { get; set; }
-    public string SourceDirectory { get; init; }
-    public string OutputDirectory { get; init; }
-    public string CssOutputFilePath { get; init; }
-    public string SourceFullFilePath { get; init; }
+    public string BaseDirectory { get; set; } = string.Empty;
+    public string SourceDirectory { get; init; } = string.Empty;
+    public string OutputDirectory { get; init; } = string.Empty;
+    public string CssOutputFilePath { get; init; } = string.Empty;
+    public string SourceFullFilePath { get; init; } = string.Empty;
 }
