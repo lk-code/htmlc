@@ -56,7 +56,10 @@ public class LayoutRenderer : RenderingBase
             throw new FileNotFoundException($"Layout file not found or couldn't be read: {fullPath}", ex);
         }
 
-        string cleanedContent = content.Substring(0, layoutIndex) + content.Substring(layoutPathEnd + 1);
+        string cleanedContent = string.Concat(
+            content.AsSpan(0, layoutIndex),
+            content.AsSpan(layoutPathEnd + 1)
+            );
 
         int bodyIndex = layoutContent.IndexOf(BODY_TAG);
         if (bodyIndex == -1)
@@ -64,9 +67,11 @@ public class LayoutRenderer : RenderingBase
             return cleanedContent;
         }
 
-        string result = string.Concat(layoutContent.AsSpan(0, bodyIndex),
+        string result = string.Concat(
+            layoutContent.AsSpan(0, bodyIndex),
             cleanedContent,
-            layoutContent.AsSpan(bodyIndex + BODY_TAG.Length));
+            layoutContent.AsSpan(bodyIndex + BODY_TAG.Length)
+            );
 
         return result;
     }
