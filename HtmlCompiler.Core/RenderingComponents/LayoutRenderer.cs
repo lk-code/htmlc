@@ -10,9 +10,6 @@ public class LayoutRenderer : RenderingBase
     public const string BODY_TAG = "@Body";
 
     /// <inheritdoc />
-    public override short Order { get; } = 200;
-
-    /// <inheritdoc />
     public override async Task<string> RenderAsync(string content)
     {
         string result = await this.RenderContentWithLayout(content);

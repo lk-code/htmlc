@@ -5,8 +5,6 @@ namespace HtmlCompiler.Core.RenderingComponents;
 public class CommentTagRenderer : RenderingBase
 {
     public const string COMMENT_TAG = "@Comment";
-    
-    public override short Order { get; } = 300;
 
     public override async Task<string> RenderAsync(string content)
     {

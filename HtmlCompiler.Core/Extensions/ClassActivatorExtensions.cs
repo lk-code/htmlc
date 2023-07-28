@@ -12,7 +12,7 @@ public static class ClassActivatorExtensions
     /// <param name="renderingComponents">A list of types from which the instances should be created.</param>
     /// <param name="configuration">The rendering configuration to be passed to the constructor of the instances.</param>
     /// <returns>A list of instances of type T that implement the IRenderingComponent interface and are configured accordingly.</returns>
-    public static List<IRenderingComponent> BuildRenderingComponents(this List<Type> renderingComponents,
+    public static IEnumerable<IRenderingComponent> BuildRenderingComponents(this IEnumerable<Type> renderingComponents,
         RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)

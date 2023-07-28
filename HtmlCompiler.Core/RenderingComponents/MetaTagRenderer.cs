@@ -5,8 +5,6 @@ namespace HtmlCompiler.Core.RenderingComponents;
 
 public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
 {
-    public override short Order { get; } = 700;
-
     public override async Task<string> RenderAsync(string content)
     {
         content = this.AddMetaTagToContent(content, "generator", "htmlc");

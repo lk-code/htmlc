@@ -7,9 +7,6 @@ public abstract class RenderingBase : IRenderingComponent
     protected readonly RenderingConfiguration _configuration;
     protected readonly IFileSystemService _fileSystemService;
     protected readonly IHtmlRenderer _htmlRenderer;
-    
-    /// <inheritdoc />
-    public abstract short Order { get; }
 
     /// <inheritdoc />
     public abstract Task<string> RenderAsync(string content);

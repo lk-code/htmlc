@@ -7,8 +7,6 @@ public class HtmlEscapeBlockRenderer : RenderingBase
 {
     public const string START_TAG = "@StartHtmlSpecialChars";
     public const string END_TAG = "@EndHtmlSpecialChars";
-    
-    public override short Order { get; } = 400;
 
     public override async Task<string> RenderAsync(string content)
     {

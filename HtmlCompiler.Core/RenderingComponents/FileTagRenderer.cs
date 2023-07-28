@@ -6,9 +6,6 @@ namespace HtmlCompiler.Core.RenderingComponents;
 public class FileTagRenderer : RenderingBase
 {
     /// <inheritdoc />
-    public override short Order { get; } = 100;
-
-    /// <inheritdoc />
     public override async Task<string> RenderAsync(string content)
     {
         Regex fileTagRegex = new Regex(@"@File=([^\s]+)", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));

@@ -10,8 +10,6 @@ public class PageTitleRenderer : RenderingBase
 
     private static readonly Regex TitleUseRegex = new Regex(@"@PageTitle", RegexOptions.Compiled);
 
-    public override short Order { get; } = 600;
-
     public override async Task<string> RenderAsync(string content)
     {
         string pageTitle = string.Empty;

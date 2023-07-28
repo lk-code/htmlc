@@ -7,8 +7,6 @@ namespace HtmlCompiler.Core.RenderingComponents;
 public class StylePathRenderer : RenderingBase
 {
     public const string STYLEPATH_TAG = "@StylePath";
-    
-    public override short Order { get; } = 500;
 
     public override async Task<string> RenderAsync(string content)
     {
