@@ -64,8 +64,9 @@ public class LayoutRenderer : RenderingBase
             return cleanedContent;
         }
 
-        string result = layoutContent.Substring(0, bodyIndex) + cleanedContent +
-                        layoutContent.Substring(bodyIndex + BODY_TAG.Length);
+        string result = string.Concat(layoutContent.AsSpan(0, bodyIndex),
+            cleanedContent,
+            layoutContent.AsSpan(bodyIndex + BODY_TAG.Length));
 
         return result;
     }
