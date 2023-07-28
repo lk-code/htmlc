@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
@@ -12,7 +11,8 @@ public class HtmlRenderer : IHtmlRenderer
     {
         typeof(LayoutRenderer),
         typeof(FileTagRenderer),
-        typeof(CommentTagRenderer)
+        typeof(CommentTagRenderer),
+        typeof(HtmlEscapeBlockRenderer)
     };
 
     private readonly IFileSystemService _fileSystemService;
@@ -80,8 +80,8 @@ public class HtmlRenderer : IHtmlRenderer
         // // replace all @Comment=...
         // renderedContent = renderedContent.ReplaceCommentTags();
 
-        // replace all HTML Escape Blocks=...
-        renderedContent = RenderHtmlEscapeBlocks(renderedContent);
+        // // replace all HTML Escape Blocks=...
+        // renderedContent = RenderHtmlEscapeBlocks(renderedContent);
 
         // replace all @StylePath
         if (!string.IsNullOrEmpty(cssOutputFilePath))
@@ -102,43 +102,42 @@ public class HtmlRenderer : IHtmlRenderer
         return renderedContent;
     }
 
-
-    public static string RenderHtmlEscapeBlocks(string html)
-    {
-        string startTag = "@StartHtmlSpecialChars";
-        string endTag = "@EndHtmlSpecialChars";
-        int startIndex = html.IndexOf(startTag);
-
-        while (startIndex != -1)
-        {
-            int endIndex = html.IndexOf(endTag, startIndex);
-            if (endIndex == -1)
-            {
-                endIndex = html.Length;
-            }
-
-            string textToEscape = html.Substring(startIndex + startTag.Length, endIndex - startIndex - startTag.Length);
-            string escapedText = Regex.Replace(textToEscape, "[<>&\"']", m =>
-            {
-                switch (m.Value)
-                {
-                    case "<": return "&#60;";
-                    case ">": return "&#62;";
-                    case "&": return "&#38;";
-                    case "\"": return "&#34;";
-                    case "'": return "&#39;";
-                }
-
-                return m.Value;
-            }, RegexOptions.None, TimeSpan.FromMilliseconds(100));
-            escapedText = escapedText.Replace("\n", "<br>\n");
-            html = html.Remove(startIndex, endIndex - startIndex + endTag.Length).Insert(startIndex, escapedText);
-
-            startIndex = html.IndexOf(startTag, startIndex + escapedText.Length);
-        }
-
-        return html;
-    }
+    // public static string RenderHtmlEscapeBlocks(string html)
+    // {
+    //     string startTag = "@StartHtmlSpecialChars";
+    //     string endTag = "@EndHtmlSpecialChars";
+    //     int startIndex = html.IndexOf(startTag);
+    //
+    //     while (startIndex != -1)
+    //     {
+    //         int endIndex = html.IndexOf(endTag, startIndex);
+    //         if (endIndex == -1)
+    //         {
+    //             endIndex = html.Length;
+    //         }
+    //
+    //         string textToEscape = html.Substring(startIndex + startTag.Length, endIndex - startIndex - startTag.Length);
+    //         string escapedText = Regex.Replace(textToEscape, "[<>&\"']", m =>
+    //         {
+    //             switch (m.Value)
+    //             {
+    //                 case "<": return "&#60;";
+    //                 case ">": return "&#62;";
+    //                 case "&": return "&#38;";
+    //                 case "\"": return "&#34;";
+    //                 case "'": return "&#39;";
+    //             }
+    //
+    //             return m.Value;
+    //         }, RegexOptions.None, TimeSpan.FromMilliseconds(100));
+    //         escapedText = escapedText.Replace("\n", "<br>\n");
+    //         html = html.Remove(startIndex, endIndex - startIndex + endTag.Length).Insert(startIndex, escapedText);
+    //
+    //         startIndex = html.IndexOf(startTag, startIndex + escapedText.Length);
+    //     }
+    //
+    //     return html;
+    // }
 
     private static string ReplaceStylePath(string content,
         string cssPath)
