@@ -1,6 +1,4 @@
-using HtmlCompiler.Core.Interfaces;
-
-namespace HtmlCompiler.Core.RenderingComponents;
+namespace HtmlCompiler.Core.Renderer;
 
 public class RenderingConfiguration
 {

@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 
-namespace HtmlCompiler.Core.RenderingComponents;
+namespace HtmlCompiler.Core.Renderer;
 
 public class StylePathRenderer : RenderingBase
 {

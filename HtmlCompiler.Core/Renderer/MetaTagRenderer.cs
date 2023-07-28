@@ -1,7 +1,7 @@
 using HtmlAgilityPack;
 using HtmlCompiler.Core.Interfaces;
 
-namespace HtmlCompiler.Core.RenderingComponents;
+namespace HtmlCompiler.Core.Renderer;
 
 public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
 {

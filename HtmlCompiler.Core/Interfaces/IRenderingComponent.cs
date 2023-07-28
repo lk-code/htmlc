@@ -1,5 +1,3 @@
-using HtmlCompiler.Core.RenderingComponents;
-
 namespace HtmlCompiler.Core.Interfaces;
 
 public interface IRenderingComponent

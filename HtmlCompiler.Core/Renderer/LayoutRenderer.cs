@@ -1,8 +1,7 @@
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
-using JavaScriptEngineSwitcher.Core.Resources;
 
-namespace HtmlCompiler.Core.RenderingComponents;
+namespace HtmlCompiler.Core.Renderer;
 
 public class LayoutRenderer : RenderingBase
 {

@@ -1,6 +1,6 @@
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
-using HtmlCompiler.Core.RenderingComponents;
+using HtmlCompiler.Core.Renderer;
 
 namespace HtmlCompiler.Core;
 
