@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace HtmlCompiler.Core;
 
-public class HtmlWatcher : IHtmlWatcher
+public class FileWatcher : IFileWatcher
 {
     private readonly IConfiguration _configuration;
     private readonly IHtmlRenderer _htmlRenderer;
@@ -17,7 +17,7 @@ public class HtmlWatcher : IHtmlWatcher
     private FileSystemWatcher? _fileSystemWatcher = null;
     private bool _watchDirectory = false;
 
-    public HtmlWatcher(IConfiguration configuration,
+    public FileWatcher(IConfiguration configuration,
         IHtmlRenderer htmlRenderer,
         IStyleCompiler styleCompiler,
         IFileSystemService fileSystemService)
@@ -28,7 +28,7 @@ public class HtmlWatcher : IHtmlWatcher
         this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
 
-    ~HtmlWatcher()
+    ~FileWatcher()
     {
         this.UnregisterFileDetector();
     }
