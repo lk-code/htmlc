@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Interfaces;
 
-namespace HtmlCompiler.Core.RenderingComponents;
+namespace HtmlCompiler.Core.Renderer;
 
 public class HtmlEscapeBlockRenderer : RenderingBase
 {

@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 
-namespace HtmlCompiler.Core.RenderingComponents;
+namespace HtmlCompiler.Core.Renderer;
 
 public class StylePathRenderer : RenderingBase
 {
@@ -27,7 +27,7 @@ public class StylePathRenderer : RenderingBase
         return content;
     }
 
-    private string ReplaceStylePath(string content,
+    private static string ReplaceStylePath(string content,
         string cssPath)
     {
         Regex stylePathRegex = new Regex(STYLEPATH_TAG, RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));

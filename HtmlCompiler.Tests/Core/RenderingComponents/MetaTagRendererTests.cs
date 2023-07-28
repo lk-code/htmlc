@@ -1,7 +1,7 @@
 using FluentAssertions;
 using HtmlAgilityPack;
 using HtmlCompiler.Core.Interfaces;
-using HtmlCompiler.Core.RenderingComponents;
+using HtmlCompiler.Core.Renderer;
 using Moq;
 
 namespace HtmlCompiler.Tests.Core.RenderingComponents;
