@@ -14,7 +14,8 @@ public class HtmlRenderer : IHtmlRenderer
         typeof(CommentTagRenderer),
         typeof(HtmlEscapeBlockRenderer),
         typeof(StylePathRenderer),
-        typeof(PageTitleRenderer)
+        typeof(PageTitleRenderer),
+        typeof(MetaTagRenderer)
     };
 
     private readonly IFileSystemService _fileSystemService;
@@ -99,8 +100,8 @@ public class HtmlRenderer : IHtmlRenderer
         // // replace @PageTitle=...
         // renderedContent = await this.ReplacePageTitlePlaceholderAsync(renderedContent);
 
-        // add meta-tag "generator"
-        renderedContent = renderedContent.AddMetaTag("generator", "htmlc");
+        // // add meta-tag "generator"
+        // renderedContent = renderedContent.AddMetaTag("generator", "htmlc");
 
         return renderedContent;
     }
