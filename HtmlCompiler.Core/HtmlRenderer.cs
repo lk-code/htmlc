@@ -2,11 +2,18 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
+using HtmlCompiler.Core.RenderingComponents;
 
 namespace HtmlCompiler.Core;
 
 public class HtmlRenderer : IHtmlRenderer
 {
+    private List<Type> _renderingComponents = new List<Type>
+    {
+        typeof(LayoutRenderer),
+        typeof(FileTagRenderer)
+    };
+
     private readonly IFileSystemService _fileSystemService;
 
     public HtmlRenderer(IFileSystemService fileSystemService)
@@ -23,21 +30,52 @@ public class HtmlRenderer : IHtmlRenderer
         sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
         string baseDirectory = sourceFullFilePath.GetBaseDirectory();
         string originalContent = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
+
+
+        
+        
+        // ############
+        // NEW
         string renderedContent = string.Empty;
+        RenderingConfiguration configuration = new RenderingConfiguration
+        {
+            BaseDirectory = sourceFullFilePath.GetBaseDirectory(),
+            SourceDirectory = sourceDirectory,
+            OutputDirectory = outputDirectory,
+            CssOutputFilePath = cssOutputFilePath
+        };
+        List<IRenderingComponent> renderingComponents = this._renderingComponents.BuildRenderingComponents(
+            configuration,
+            this._fileSystemService,
+            this);
+
+        string masterOutput = string.Empty;
+        foreach (IRenderingComponent renderingComponent in renderingComponents.OrderBy(x => x.Order))
+        {
+            renderedContent = await renderingComponent.RenderAsync(originalContent);
+
+            int i = 0;
+        }
+
+        // NEW
+        // ############
+
+        
+        
+        
+        // // replace all @File=...
+        // renderedContent = await this.ReplaceFilePlaceholdersAsync(originalContent, baseDirectory, sourceDirectory,
+        //     outputDirectory, cssOutputFilePath);
+        //
+        // // replace @Layout=...
+        // renderedContent = await this.ReplaceLayoutPlaceholderAsync(renderedContent, baseDirectory);
+
+        // // check if layout-file and source-html-file are on different directories => baseDirectory must be adjusted
+        // baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
 
         // replace all @File=...
-        renderedContent = await this.ReplaceFilePlaceholdersAsync(originalContent, baseDirectory, sourceDirectory,
-            outputDirectory, cssOutputFilePath);
-
-        // replace @Layout=...
-        renderedContent = await this.ReplaceLayoutPlaceholderAsync(renderedContent, baseDirectory);
-
-        // check if layout-file and source-html-file are on different directories => baseDirectory must be adjusted
-        baseDirectory = this.AdjustBaseDirectoryToLayoutFile(originalContent, baseDirectory);
-
-        // replace all @File=...
-        renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory, sourceDirectory,
-            outputDirectory, cssOutputFilePath);
+        // renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory, sourceDirectory,
+        //     outputDirectory, cssOutputFilePath);
 
         // replace all @Comment=...
         renderedContent = renderedContent.ReplaceCommentTags();
@@ -63,6 +101,7 @@ public class HtmlRenderer : IHtmlRenderer
 
         return renderedContent;
     }
+
 
     public static string RenderHtmlEscapeBlocks(string html)
     {
@@ -145,8 +184,10 @@ public class HtmlRenderer : IHtmlRenderer
 
         return content;
     }
-    
-    private static readonly Regex TitleDeclarationRegex = new Regex(@"@PageTitle=(.*?)(\r\n|\n|$)", RegexOptions.Compiled);
+
+    private static readonly Regex TitleDeclarationRegex =
+        new Regex(@"@PageTitle=(.*?)(\r\n|\n|$)", RegexOptions.Compiled);
+
     private static readonly Regex TitleUseRegex = new Regex(@"@PageTitle", RegexOptions.Compiled);
 
     public async Task<string> ReplacePageTitlePlaceholderAsync(string content)
