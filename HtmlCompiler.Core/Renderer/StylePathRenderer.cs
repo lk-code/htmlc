@@ -27,7 +27,7 @@ public class StylePathRenderer : RenderingBase
         return content;
     }
 
-    private string ReplaceStylePath(string content,
+    private static string ReplaceStylePath(string content,
         string cssPath)
     {
         Regex stylePathRegex = new Regex(STYLEPATH_TAG, RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
