@@ -8,4 +8,5 @@ public class RenderingConfiguration
     public string SourceDirectory { get; init; }
     public string OutputDirectory { get; init; }
     public string CssOutputFilePath { get; init; }
+    public string SourceFullFilePath { get; init; }
 }

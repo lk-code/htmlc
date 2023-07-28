@@ -12,7 +12,8 @@ public class HtmlRenderer : IHtmlRenderer
         typeof(LayoutRenderer),
         typeof(FileTagRenderer),
         typeof(CommentTagRenderer),
-        typeof(HtmlEscapeBlockRenderer)
+        typeof(HtmlEscapeBlockRenderer),
+        typeof(StylePathRenderer)
     };
 
     private readonly IFileSystemService _fileSystemService;
@@ -42,7 +43,8 @@ public class HtmlRenderer : IHtmlRenderer
             BaseDirectory = sourceFullFilePath.GetBaseDirectory(),
             SourceDirectory = sourceDirectory,
             OutputDirectory = outputDirectory,
-            CssOutputFilePath = cssOutputFilePath
+            CssOutputFilePath = cssOutputFilePath,
+            SourceFullFilePath = sourceFullFilePath
         };
         List<IRenderingComponent> renderingComponents = this._renderingComponents.BuildRenderingComponents(
             configuration,
@@ -83,15 +85,15 @@ public class HtmlRenderer : IHtmlRenderer
         // // replace all HTML Escape Blocks=...
         // renderedContent = RenderHtmlEscapeBlocks(renderedContent);
 
-        // replace all @StylePath
-        if (!string.IsNullOrEmpty(cssOutputFilePath))
-        {
-            string entryFilePath = sourceFullFilePath.Replace(sourceDirectory, string.Empty);
-            entryFilePath = $"{outputDirectory}{entryFilePath}";
-            string relativeStylePath = entryFilePath.GetRelativePath(outputDirectory, cssOutputFilePath);
-
-            renderedContent = ReplaceStylePath(renderedContent, relativeStylePath);
-        }
+        // // replace all @StylePath
+        // if (!string.IsNullOrEmpty(cssOutputFilePath))
+        // {
+        //     string entryFilePath = sourceFullFilePath.Replace(sourceDirectory, string.Empty);
+        //     entryFilePath = $"{outputDirectory}{entryFilePath}";
+        //     string relativeStylePath = entryFilePath.GetRelativePath(outputDirectory, cssOutputFilePath);
+        //
+        //     renderedContent = ReplaceStylePath(renderedContent, relativeStylePath);
+        // }
 
         // replace @PageTitle=...
         renderedContent = await this.ReplacePageTitlePlaceholderAsync(renderedContent);
@@ -139,50 +141,50 @@ public class HtmlRenderer : IHtmlRenderer
     //     return html;
     // }
 
-    private static string ReplaceStylePath(string content,
-        string cssPath)
-    {
-        Regex stylePathRegex = new Regex("@StylePath", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+    // private static string ReplaceStylePath(string content,
+    //     string cssPath)
+    // {
+    //     Regex stylePathRegex = new Regex("@StylePath", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+    //
+    //     return stylePathRegex.Replace(content, cssPath);
+    // }
 
-        return stylePathRegex.Replace(content, cssPath);
-    }
+    // private string AdjustBaseDirectoryToLayoutFile(string content,
+    //     string baseDirectory)
+    // {
+    //     string? layoutPath = content.GetLayoutFilePath();
+    //     if (string.IsNullOrEmpty(layoutPath))
+    //     {
+    //         return baseDirectory;
+    //     }
+    //
+    //     baseDirectory = Path.Combine(baseDirectory, Path.GetDirectoryName(layoutPath)!);
+    //
+    //     return baseDirectory;
+    // }
 
-    private string AdjustBaseDirectoryToLayoutFile(string content,
-        string baseDirectory)
-    {
-        string? layoutPath = content.GetLayoutFilePath();
-        if (string.IsNullOrEmpty(layoutPath))
-        {
-            return baseDirectory;
-        }
-
-        baseDirectory = Path.Combine(baseDirectory, Path.GetDirectoryName(layoutPath)!);
-
-        return baseDirectory;
-    }
-
-    private async Task<string> ReplaceFilePlaceholdersAsync(string content,
-        string baseDirectory,
-        string sourceDirectory,
-        string outputDirectory,
-        string? cssPath)
-    {
-        Regex fileTagRegex = new Regex(@"@File=([^\s]+)", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
-
-        foreach (Match match in fileTagRegex.Matches(content))
-        {
-            string fileValue = match.Groups[1].Value;
-
-            string fullPath = Path.Combine(baseDirectory, fileValue);
-
-            // render the new file and return the rendered content
-            string fileContent = await this.RenderHtmlAsync(fullPath, sourceDirectory, outputDirectory, cssPath);
-
-            content = content.Replace(match.Value, fileContent);
-        }
-
-        return content;
-    }
+    // private async Task<string> ReplaceFilePlaceholdersAsync(string content,
+    //     string baseDirectory,
+    //     string sourceDirectory,
+    //     string outputDirectory,
+    //     string? cssPath)
+    // {
+    //     Regex fileTagRegex = new Regex(@"@File=([^\s]+)", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+    //
+    //     foreach (Match match in fileTagRegex.Matches(content))
+    //     {
+    //         string fileValue = match.Groups[1].Value;
+    //
+    //         string fullPath = Path.Combine(baseDirectory, fileValue);
+    //
+    //         // render the new file and return the rendered content
+    //         string fileContent = await this.RenderHtmlAsync(fullPath, sourceDirectory, outputDirectory, cssPath);
+    //
+    //         content = content.Replace(match.Value, fileContent);
+    //     }
+    //
+    //     return content;
+    // }
 
     private static readonly Regex TitleDeclarationRegex =
         new Regex(@"@PageTitle=(.*?)(\r\n|\n|$)", RegexOptions.Compiled);
