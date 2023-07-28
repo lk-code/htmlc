@@ -24,23 +24,6 @@ public static class StringExtensions
 
         return doc.DocumentNode.OuterHtml;
     }
-
-    public static string ReplaceCommentTags(this string html)
-    {
-        string pattern = "@Comment";
-        var lines = html.Split(Environment.NewLine);
-        for (int i = 0; i < lines.Length; i++)
-        {
-            if (lines[i].Contains(pattern))
-            {
-                int commentIndex = lines[i].IndexOf(pattern);
-                string comment = lines[i].Substring(commentIndex + pattern.Length);
-                comment = comment.Trim().Replace("=", "");
-                lines[i] = "<!-- " + comment + " -->";
-            }
-        }
-        return string.Join(Environment.NewLine, lines);
-    }
     
     public static string EnsureString(this string? val, string err)
     {

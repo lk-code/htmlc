@@ -11,7 +11,8 @@ public class HtmlRenderer : IHtmlRenderer
     private List<Type> _renderingComponents = new List<Type>
     {
         typeof(LayoutRenderer),
-        typeof(FileTagRenderer)
+        typeof(FileTagRenderer),
+        typeof(CommentTagRenderer)
     };
 
     private readonly IFileSystemService _fileSystemService;
@@ -28,7 +29,6 @@ public class HtmlRenderer : IHtmlRenderer
         string? cssOutputFilePath)
     {
         sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
-        string baseDirectory = sourceFullFilePath.GetBaseDirectory();
         string originalContent = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
 
 
@@ -49,10 +49,10 @@ public class HtmlRenderer : IHtmlRenderer
             this._fileSystemService,
             this);
 
-        string masterOutput = string.Empty;
+        string masterOutput = originalContent;
         foreach (IRenderingComponent renderingComponent in renderingComponents.OrderBy(x => x.Order))
         {
-            renderedContent = await renderingComponent.RenderAsync(originalContent);
+            masterOutput = await renderingComponent.RenderAsync(masterOutput);
 
             int i = 0;
         }
@@ -60,7 +60,7 @@ public class HtmlRenderer : IHtmlRenderer
         // NEW
         // ############
 
-        
+        renderedContent = masterOutput;
         
         
         // // replace all @File=...
@@ -77,8 +77,8 @@ public class HtmlRenderer : IHtmlRenderer
         // renderedContent = await this.ReplaceFilePlaceholdersAsync(renderedContent, baseDirectory, sourceDirectory,
         //     outputDirectory, cssOutputFilePath);
 
-        // replace all @Comment=...
-        renderedContent = renderedContent.ReplaceCommentTags();
+        // // replace all @Comment=...
+        // renderedContent = renderedContent.ReplaceCommentTags();
 
         // replace all HTML Escape Blocks=...
         renderedContent = RenderHtmlEscapeBlocks(renderedContent);
