@@ -30,6 +30,7 @@ public class MetaTagRendererTests
             this._fileSystemService.Object,
             this._htmlRenderer.Object);
     }
+    
     [TestMethod]
     public void AddMetaTag_WithDefaultHtml_Returns()
     {
