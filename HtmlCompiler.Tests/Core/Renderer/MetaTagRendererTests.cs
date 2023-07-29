@@ -4,7 +4,7 @@ using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
 using Moq;
 
-namespace HtmlCompiler.Tests.Core.RenderingComponents;
+namespace HtmlCompiler.Tests.Core.Renderer;
 
 [TestClass]
 public class MetaTagRendererTests
