@@ -5,10 +5,10 @@ namespace HtmlCompiler.Core.Renderer;
 
 public class PageTitleRenderer : RenderingBase
 {
-    private static readonly Regex TitleDeclarationRegex =
-        new Regex(@"@PageTitle=(.*?)(\r\n|\n|$)", RegexOptions.Compiled);
-
-    private static readonly Regex TitleUseRegex = new Regex(@"@PageTitle", RegexOptions.Compiled);
+    public const string PAGETITLE_TAG = "@PageTitle";
+    
+    private static readonly Regex TitleDeclarationRegex = new Regex(PAGETITLE_TAG + @"=(.*?)(\r\n|\n|$)", RegexOptions.Compiled, TimeSpan.FromSeconds(10));
+    private static readonly Regex TitleUseRegex = new Regex(PAGETITLE_TAG, RegexOptions.Compiled, TimeSpan.FromSeconds(10));
 
     public override async Task<string> RenderAsync(string content)
     {

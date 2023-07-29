@@ -4,7 +4,7 @@ using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
 using Moq;
 
-namespace HtmlCompiler.Tests.Core.RenderingComponents;
+namespace HtmlCompiler.Tests.Core.Renderer;
 
 [TestClass]
 public class MetaTagRendererTests
@@ -30,6 +30,7 @@ public class MetaTagRendererTests
             this._fileSystemService.Object,
             this._htmlRenderer.Object);
     }
+    
     [TestMethod]
     public void AddMetaTag_WithDefaultHtml_Returns()
     {
