@@ -43,4 +43,20 @@ public class LayoutRendererTests
 
         Assert.ThrowsExceptionAsync<FileNotFoundException>(() => this._instance.RenderAsync(sourceHtml));
     }
+
+    [TestMethod]
+    public async Task RenderAsync_WithoutLayoutTag_Returns()
+    {
+        var sourceHtml = new StringBuilder()
+            .AppendLine("@Layout=_layout.html")
+            .Append("<h1>Hello World!</h1>")
+            .ToString().Trim();
+
+        this._fileSystemService.Setup(x => x.FileReadAllTextAsync("/project/src/_layout.html"))
+            .ReturnsAsync("<section>Hello World!</section>");
+        
+        string result = await this._instance.RenderAsync(sourceHtml);
+        
+        Assert.AreEqual(result, "<h1>Hello World!</h1>");
+    }
 }
