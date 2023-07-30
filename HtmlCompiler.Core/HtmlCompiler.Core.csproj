@@ -32,7 +32,7 @@
 		</AssemblyAttribute>
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="DartSassHost" Version="1.0.4" />
+	  <PackageReference Include="DartSassHost" Version="1.0.5" />
 	  <PackageReference Include="JavaScriptEngineSwitcher.V8" Version="3.21.3" />
 	  <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x86" Version="7.4.2" />
 	  <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.4.2" />
