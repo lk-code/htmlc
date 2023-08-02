@@ -26,7 +26,6 @@ public class ConfigCommand
         string userConfigPath = this._configuration.GetSection("Core:UserConfigPath").Get<string>();
         // read user config file
         string userJsonConfig = await this._fileSystemService.FileReadAllTextAsync(userConfigPath);
-        // string userJsonConfig = await this._fileSystemService.FileReadAllTextAsync(Globals.USER_CONFIG);
         ConfigModel? userConfig = JsonSerializer.Deserialize<ConfigModel>(userJsonConfig);
         if (userConfig == null)
         {
@@ -53,7 +52,6 @@ public class ConfigCommand
         // write user config file
         userJsonConfig = JsonSerializer.Serialize(userConfig);
         await this._fileSystemService.FileWriteAllTextAsync(userConfigPath, userJsonConfig);
-        // await this._fileSystemService.FileWriteAllTextAsync(Globals.USER_CONFIG, userJsonConfig);
     }
 
     private ConfigModel? EditOnConfig(ConfigModel userConfig, string key, string? action, string? value)
