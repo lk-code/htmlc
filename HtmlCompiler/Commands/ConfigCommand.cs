@@ -23,8 +23,9 @@ public class ConfigCommand
         [Argument(Description = "the action on array-based config entries (add, remove or replace)")] string? action,
         [Argument(Description = "the config value as json string")] string? value)
     {
+        string userConfigPath = this._configuration.GetSection("Core:UserConfigPath").Get<string>();
         // read user config file
-        string userJsonConfig = await this._fileSystemService.FileReadAllTextAsync(Globals.USER_CONFIG);
+        string userJsonConfig = await this._fileSystemService.FileReadAllTextAsync(userConfigPath);
         ConfigModel? userConfig = JsonSerializer.Deserialize<ConfigModel>(userJsonConfig);
         if (userConfig == null)
         {
@@ -50,7 +51,7 @@ public class ConfigCommand
 
         // write user config file
         userJsonConfig = JsonSerializer.Serialize(userConfig);
-        await this._fileSystemService.FileWriteAllTextAsync(Globals.USER_CONFIG, userJsonConfig);
+        await this._fileSystemService.FileWriteAllTextAsync(userConfigPath, userJsonConfig);
     }
 
     private ConfigModel? EditOnConfig(ConfigModel userConfig, string key, string? action, string? value)

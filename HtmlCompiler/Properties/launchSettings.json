@@ -1,8 +1,12 @@
 {
   "profiles": {
-    "HtmlCompiler": {
+    "htmlc compile": {
       "commandName": "Project",
       "commandLineArgs": " D:\\Desktop\\test\\source\\demo.html D:\\Desktop\\test\\output\\"
+    },
+    "htmlc config add": {
+      "commandName": "Project",
+      "commandLineArgs": "config build-blacklist add .png"
     }
   }
 }

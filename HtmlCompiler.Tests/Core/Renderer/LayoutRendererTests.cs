@@ -31,7 +31,7 @@ public class LayoutRendererTests
     }
 
     [TestMethod]
-    public async Task RenderAsync_WithNonExistingLayout_Throws()
+    public void RenderAsync_WithNonExistingLayout_Throws()
     {
         var sourceHtml = new StringBuilder()
             .AppendLine("@Layout=_unknownlayout.html")
