@@ -36,7 +36,6 @@ public class FileTagRendererTests
         // Arrange
         string content = "Some content @File=example.txt here.";
         string fileContent = "Rendered file content";
-        string fileValue = "example.txt";
 
         // Mock the FileExists method to return true for this test
         this._fileSystemService.Setup(f => f.FileExists(It.IsAny<string>())).Returns(true);

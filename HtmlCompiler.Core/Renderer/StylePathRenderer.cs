@@ -10,6 +10,8 @@ public class StylePathRenderer : RenderingBase
 
     public override async Task<string> RenderAsync(string content)
     {
+        await Task.CompletedTask;
+        
         string cssOutputFilePath = this._configuration.CssOutputFilePath;
         string sourceFullFilePath = this._configuration.SourceFullFilePath;
         string sourceDirectory = this._configuration.SourceDirectory;

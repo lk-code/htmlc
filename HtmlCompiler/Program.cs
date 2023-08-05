@@ -13,32 +13,30 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HtmlCompiler;
 
-class Program
+static class Program
 {
-    private static string _userConfigPath = string.Empty;
-
     static void Main(string[] args)
     {
-        Program._userConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".htmlc");
+        string userConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".htmlc");
 
         // user config file
         // if not exists => create
-        if (!File.Exists(Program._userConfigPath))
+        if (!File.Exists(userConfigPath))
         {
-            using (StreamWriter sw = File.CreateText(Program._userConfigPath))
+            using (StreamWriter sw = File.CreateText(userConfigPath))
             {
                 ConfigModel basicConfiguration = ConfigModel.GetBasicConfig();
                 string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
                 sw.WriteLine(basicJsonConfiguration);
             }
 
-            File.SetAttributes(Program._userConfigPath, FileAttributes.Hidden);
+            File.SetAttributes(userConfigPath, FileAttributes.Hidden);
         }
         
         CoconaAppBuilder? builder = CoconaApp.CreateBuilder(args);
 
         // add user configuration
-        builder.Configuration.AddJsonStream(new StreamReader(Program._userConfigPath).BaseStream);
+        builder.Configuration.AddJsonStream(new StreamReader(userConfigPath).BaseStream);
 
         builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
         builder.Services.AddTransient<IFileWatcher, FileWatcher>();
@@ -49,7 +47,7 @@ class Program
 
         IDataBuilder dataBuilder = new DataBuilder();
         dataBuilder.Add("Core", new DataBuilder()
-            .Add("UserConfigPath", Program._userConfigPath));
+            .Add("UserConfigPath", userConfigPath));
 
         string jsonString = dataBuilder.Build().RootElement.GetRawText();
         using MemoryStream coreConfigJsonStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonString));

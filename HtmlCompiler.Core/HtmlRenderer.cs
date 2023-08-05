@@ -39,7 +39,7 @@ public class HtmlRenderer : IHtmlRenderer
             BaseDirectory = sourceFullFilePath.GetBaseDirectory(),
             SourceDirectory = sourceDirectory,
             OutputDirectory = outputDirectory,
-            CssOutputFilePath = cssOutputFilePath,
+            CssOutputFilePath = cssOutputFilePath!,
             SourceFullFilePath = sourceFullFilePath
         };
         
