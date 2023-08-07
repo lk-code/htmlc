@@ -1,13 +1,13 @@
-﻿using System.Text;
 using System.Text.Json;
 using Cocona;
 using Cocona.Builder;
 using FluentDataBuilder;
 using FluentDataBuilder.Json;
-using HtmlCompiler;
 using HtmlCompiler.Commands;
+using HtmlCompiler.Config;
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
+using HtmlCompiler.Core.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,6 +37,8 @@ static class Program
 
         // add user configuration
         builder.Configuration.AddJsonStream(new StreamReader(userConfigPath).BaseStream);
+
+        builder.Services.AddTransient<IConfigurationManager>(x => new Config.ConfigurationManager(userConfigPath, x.GetRequiredService<IFileSystemService>()));
 
         builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
         builder.Services.AddTransient<IFileWatcher, FileWatcher>();

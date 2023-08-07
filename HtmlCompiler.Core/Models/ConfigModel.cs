@@ -1,8 +1,10 @@
-﻿using System;
-namespace HtmlCompiler;
+﻿using System.Text.Json.Serialization;
+
+namespace HtmlCompiler.Core.Models;
 
 public class ConfigModel
 {
+    [JsonPropertyName("build-blacklist")]
     public string[] BuildBlackList { get; set; } = Array.Empty<string>();
 
     public static ConfigModel GetBasicConfig()
