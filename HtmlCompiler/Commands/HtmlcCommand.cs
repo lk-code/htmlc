@@ -19,7 +19,8 @@ public class HtmlcCommand
     [Command("new")]
     public async Task New([Option('v', Description = "added Visual Studio Code settings file")] bool? vscode = null,
         [Option('l', Description = "add configuration for VSCode Extension LiveServer (see documentation)")] bool? vsliveserver = null,
-        [Option('d', Description = "creates a simple Dockerfile with nginx configuration")] bool? docker = null)
+        [Option('d', Description = "creates a simple Dockerfile with nginx configuration")] bool? docker = null,
+        [Option('t', Description = "creates a project based on the given template name")] string? template = null)
     {
         // create new project
         string projectPath = Directory.GetCurrentDirectory();

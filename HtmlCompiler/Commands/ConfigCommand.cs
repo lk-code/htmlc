@@ -38,8 +38,7 @@ public class ConfigCommand
                     break;
                 case "set":
                 {
-                    await this._configurationManager.SetAsync(key,
-                        value.EnsureString($"value for {key} can not be empty!"));
+                    await this._configurationManager.SetAsync(key, value.EnsureString($"value for {key} can not be empty!"));
                 }
                     break;
                 default:

@@ -83,6 +83,10 @@ you can use the following options with the new command:
 
 **example:** `htmlc new -d`
 
+`-t --template` - creates a project based on the given template name
+
+**example:** `htmlc new -t Demo`
+
 `-v --vscode` - add configuration directory for Visual Studio Code (.vscode) and settings-file
 
 **example:** `htmlc new -v`
@@ -103,9 +107,15 @@ With this command, a file type (e.g. *.png) can be blocked for the compilation p
 
 `htmlc config build-blacklist <add|remove> {fileextensions}`
 
+#### template-repositories
+
+With this command you can add more html template repositories or remove existing ones.
+
+`htmlc config template-repositories <add|remove> {repository-url}`
+
 **examples:**
 
-`htmlc config build-blacklist add .png` this command adds a block for all .png-files
+`htmlc config build-blacklist add BaseRepository:https://url-to-repository.com` this command adds a block for all .png-files
 
 `htmlc config build-blacklist remove .png` this command removes the entry for .png-files so all png files are copied.
 
