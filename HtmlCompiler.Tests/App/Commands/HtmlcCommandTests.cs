@@ -14,7 +14,6 @@ public class HtmlcCommandTests
     private Mock<IFileWatcher> _fileWatcher = null!;
     private Mock<IProjectManager> _projectManager = null!;
     private Mock<ITemplateManager> _templateManager = null!;
-    private Mock<ILogger> _logger = null!;
 
     [TestInitialize]
     public void SetUp()
@@ -22,12 +21,10 @@ public class HtmlcCommandTests
         this._fileWatcher = new Mock<IFileWatcher>();
         this._projectManager = new Mock<IProjectManager>();
         this._templateManager = new Mock<ITemplateManager>();
-        this._logger = new Mock<ILogger>();
 
         this._instance = new HtmlcCommand(this._fileWatcher.Object,
             this._projectManager.Object,
-            this._templateManager.Object,
-            this._logger.Object);
+            this._templateManager.Object);
     }
 
     [TestMethod]

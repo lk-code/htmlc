@@ -7,6 +7,10 @@
     "htmlc config add": {
       "commandName": "Project",
       "commandLineArgs": "config build-blacklist add .png"
+    },
+    "htmlc new template": {
+      "commandName": "Project",
+      "commandLineArgs": "new -t DemoTemplate"
     }
   }
 }

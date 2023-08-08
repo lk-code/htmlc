@@ -23,22 +23,24 @@ static class Program
         // if not exists => create
         if (!File.Exists(userConfigPath))
         {
-            using (StreamWriter sw = File.CreateText(userConfigPath))
-            {
-                ConfigModel basicConfiguration = ConfigModel.GetBasicConfig();
-                string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
-                sw.WriteLine(basicJsonConfiguration);
-            }
+            using StreamWriter sw = File.CreateText(userConfigPath);
+            ConfigModel basicConfiguration = ConfigModel.GetBasicConfig();
+            string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
+            sw.WriteLine(basicJsonConfiguration);
 
             File.SetAttributes(userConfigPath, FileAttributes.Hidden);
         }
-        
+
+        // upgrade config to latest model
+        UpgradeUserConfigJson(userConfigPath);    
+
         CoconaAppBuilder? builder = CoconaApp.CreateBuilder(args);
 
         // add user configuration
         builder.Configuration.AddJsonStream(new StreamReader(userConfigPath).BaseStream);
 
-        builder.Services.AddTransient<IConfigurationManager>(x => new Config.ConfigurationManager(userConfigPath, x.GetRequiredService<IFileSystemService>()));
+        builder.Services.AddTransient<IConfigurationManager>(x =>
+            new Config.ConfigurationManager(userConfigPath, x.GetRequiredService<IFileSystemService>()));
 
         builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
         builder.Services.AddTransient<IFileWatcher, FileWatcher>();
@@ -55,12 +57,24 @@ static class Program
         string jsonString = dataBuilder.Build().RootElement.GetRawText();
         using MemoryStream coreConfigJsonStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonString));
         builder.Configuration.AddJsonStream(coreConfigJsonStream);
-        
+
         CoconaApp? app = builder.Build();
 
         app.AddCommands<HtmlcCommand>();
         app.AddCommands<ConfigCommand>();
 
         app.Run();
+    }
+
+    private static void UpgradeUserConfigJson(string userConfigPath)
+    {
+        string userConfigJson = File.ReadAllText(userConfigPath);
+        ConfigModel basicConfiguration = JsonSerializer.Deserialize<ConfigModel>(userConfigJson);
+        string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
+        
+        using StreamWriter sw = File.CreateText(userConfigPath);
+        sw.WriteLine(basicJsonConfiguration);
+
+        File.SetAttributes(userConfigPath, FileAttributes.Hidden);
     }
 }

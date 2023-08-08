@@ -10,17 +10,14 @@ public class HtmlcCommand
     private readonly IFileWatcher _fileWatcher;
     private readonly IProjectManager _projectManager;
     private readonly ITemplateManager _templateManager;
-    private readonly ILogger _logger;
 
     public HtmlcCommand(IFileWatcher fileWatcher,
         IProjectManager projectManager,
-        ITemplateManager templateManager,
-        ILogger logger)
+        ITemplateManager templateManager)
     {
         this._fileWatcher = fileWatcher ?? throw new ArgumentNullException(nameof(fileWatcher));
         this._projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
         this._templateManager = templateManager ?? throw new ArgumentNullException(nameof(templateManager));
-        this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     [Command("new")]
@@ -36,13 +33,13 @@ public class HtmlcCommand
         IEnumerable<Template> templates = await this._templateManager.SearchTemplatesAsync(template);
         if (!templates.Any())
         {
-            this._logger.LogError("No templates found.");
+            Console.WriteLine("No templates found.");
             
             return;
         }
         else if (templates.Count() > 1)
         {
-            this._logger.LogError("Multiple templates found. Please specify the template name.");
+            Console.WriteLine("Multiple templates found. Please specify the template name.");
             
             return;
         }
