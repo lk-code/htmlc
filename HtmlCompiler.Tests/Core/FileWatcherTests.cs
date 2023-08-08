@@ -4,7 +4,7 @@ using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Moq;
 
-namespace HtmlCompiler.Tests;
+namespace HtmlCompiler.Tests.Core;
 
 [TestClass]
 public class FileWatcherTests

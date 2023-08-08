@@ -6,6 +6,9 @@ public class ConfigModel
 {
     [JsonPropertyName("build-blacklist")]
     public string[] BuildBlackList { get; set; } = Array.Empty<string>();
+    
+    [JsonPropertyName("template-repositories")]
+    public string[] TemplateRepositories { get; set; } = Array.Empty<string>();
 
     public static ConfigModel GetBasicConfig()
     {

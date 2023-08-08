@@ -1,8 +1,7 @@
-using System.Text;
-using FluentDataBuilder;
-using FluentDataBuilder.Json;
+using System.Text.Json;
 using HtmlCompiler.Config;
 using HtmlCompiler.Core.Interfaces;
+using HtmlCompiler.Core.Models;
 using Moq;
 
 namespace HtmlCompiler.Tests.Core;
@@ -28,22 +27,20 @@ public class ConfigurationManagerTests
         string key = "build-blacklist";
         string value = ".png";
 
-        string htmlConfig = new DataBuilder()
-            .Build()
-            .RootElement.GetRawText();
+        ConfigModel config = new();
+        string configJson = JsonSerializer.Serialize(config);
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync(this._userConfigPath))
-            .ReturnsAsync(htmlConfig);
+            .ReturnsAsync(configJson);
 
         this._instance.AddAsync(key, value);
 
-        string expectedConfig = new DataBuilder()
-            .Add("build-blacklist", new string[] { ".png" })
-            .Build()
-            .RootElement.GetRawText();
+        ConfigModel expectedConfig = new();
+        expectedConfig.BuildBlackList = new string[] { ".png" };
+        string expectedJson = JsonSerializer.Serialize(expectedConfig);
         this._fileSystemService.Verify(fs =>
             fs.FileWriteAllTextAsync(
                 this._userConfigPath,
-                It.Is<string>(content => content.Contains("{\"build-blacklist\":[\".png\"]}"))
+                It.Is<string>(content => content.Contains(expectedJson))
             ), Times.Once);
     }
 
@@ -53,23 +50,21 @@ public class ConfigurationManagerTests
         string key = "build-blacklist";
         string value = ".png";
 
-        string htmlConfig = new DataBuilder()
-            .Add("build-blacklist", new string[] { ".png", ".jpeg", ".svg" })
-            .Build()
-            .RootElement.GetRawText();
+        ConfigModel config = new();
+        config.BuildBlackList = new string[] { ".png", ".jpeg", ".svg" };
+        string configJson = JsonSerializer.Serialize(config);
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync(this._userConfigPath))
-            .ReturnsAsync(htmlConfig);
+            .ReturnsAsync(configJson);
 
         this._instance.RemoveAsync(key, value);
 
-        string expectedConfig = new DataBuilder()
-            .Add("build-blacklist", new string[] { ".jpeg", ".svg" })
-            .Build()
-            .RootElement.GetRawText();
+        ConfigModel expectedConfig = new();
+        expectedConfig.BuildBlackList = new string[] { ".jpeg", ".svg" };
+        string expectedJson = JsonSerializer.Serialize(expectedConfig);
         this._fileSystemService.Verify(fs =>
             fs.FileWriteAllTextAsync(
                 this._userConfigPath,
-                It.Is<string>(content => content.Contains(expectedConfig))
+                It.Is<string>(content => content.Contains(expectedJson))
             ), Times.Once);
     }
 }
