@@ -18,21 +18,17 @@ static class Program
     static void Main(string[] args)
     {
         string userConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".htmlc");
+        string userCacheDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".htmlc-cache");
 
         // user config file
         // if not exists => create
-        if (!File.Exists(userConfigPath))
-        {
-            using StreamWriter sw = File.CreateText(userConfigPath);
-            ConfigModel basicConfiguration = ConfigModel.GetBasicConfig();
-            string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
-            sw.WriteLine(basicJsonConfiguration);
-
-            File.SetAttributes(userConfigPath, FileAttributes.Hidden);
-        }
+        EnsureUserConfigFile(userConfigPath);
 
         // upgrade config to latest model
-        UpgradeUserConfigJson(userConfigPath);    
+        UpgradeUserConfigJson(userConfigPath);
+        
+        // ensure cache directory
+        EnsureUserCacheDirectory(userCacheDirectoryPath);
 
         CoconaAppBuilder? builder = CoconaApp.CreateBuilder(args);
 
@@ -53,7 +49,8 @@ static class Program
 
         IDataBuilder dataBuilder = new DataBuilder();
         dataBuilder.Add("Core", new DataBuilder()
-            .Add("UserConfigPath", userConfigPath));
+            .Add("UserConfigPath", userConfigPath)
+            .Add("UserCacheDirectoryPath", userCacheDirectoryPath));
 
         string jsonString = dataBuilder.Build().RootElement.GetRawText();
         using MemoryStream coreConfigJsonStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonString));
@@ -65,6 +62,28 @@ static class Program
         app.AddCommands<ConfigCommand>();
 
         app.Run();
+    }
+
+    private static void EnsureUserCacheDirectory(string userCacheDirectoryPath)
+    {
+        if (!Directory.Exists(userCacheDirectoryPath))
+        {
+            DirectoryInfo directoryInfo = Directory.CreateDirectory(userCacheDirectoryPath);
+            directoryInfo.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+        }
+    }
+
+    private static void EnsureUserConfigFile(string userConfigPath)
+    {
+        if (!File.Exists(userConfigPath))
+        {
+            using StreamWriter sw = File.CreateText(userConfigPath);
+            ConfigModel basicConfiguration = ConfigModel.GetBasicConfig();
+            string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
+            sw.WriteLine(basicJsonConfiguration);
+
+            File.SetAttributes(userConfigPath, FileAttributes.Hidden);
+        }
     }
 
     private static void UpgradeUserConfigJson(string userConfigPath)

@@ -83,8 +83,16 @@ public class TemplateManager : ITemplateManager
     }
 
     /// <inheritdoc />
-    public Task DownloadTemplateAsync(Template template)
+    public async Task DownloadTemplateAsync(Template template)
     {
-        throw new NotImplementedException();
+        string userCacheDirectoryPath = this._configuration.GetValue<string>("Core:UserCacheDirectoryPath");
+        string templateCacheDirectory = $"{userCacheDirectoryPath}/templates";
+        
+        // create template directory in cache directory
+        Directory.CreateDirectory(templateCacheDirectory);
+        
+        Console.WriteLine($"Download template '{Path.GetFileName(template.FileName)}'");
+        await this._httpClientService.DownloadFileAsync(new Uri(template.Url), $"{templateCacheDirectory}/{Path.GetFileName(template.FileName)}");
+        Console.WriteLine($"Download finished :)");
     }
 }

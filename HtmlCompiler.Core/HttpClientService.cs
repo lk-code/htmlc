@@ -17,4 +17,19 @@ public class HttpClientService : IHttpClientService
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsStringAsync();
     }
+
+    public async Task DownloadFileAsync(Uri uri, string targetFilePath)
+    {
+        using HttpClient httpClient = new HttpClient();
+
+        using HttpResponseMessage response = await httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException($"HTTP request failed with status code {response.StatusCode}");
+        }
+
+        await using FileStream fileStream = File.Create(targetFilePath);
+        
+        await response.Content.CopyToAsync(fileStream);
+    }
 }
