@@ -50,11 +50,25 @@ public class TemplateManager : ITemplateManager
         }
 
         IEnumerable<Template> templates = indexContents
-            .SelectMany(indexContentEntry => indexContentEntry.Value.Select(entry => 
+            .SelectMany(indexContentEntry => indexContentEntry.Value.Select(entry =>
                 new Template(entry.Name, entry.File, $"{indexContentEntry.Key}{entry.File}")
-            ))
-            .Where(template => template.Name.ToLowerInvariant().Contains(templateName.ToLowerInvariant() ?? string.Empty));
+            ));
 
+        // search for template via name
+        IEnumerable<Template> searchNameResults = templates.Where(template => template.Name.ToLowerInvariant().Contains(templateName.ToLowerInvariant() ?? string.Empty));
+        if (searchNameResults.Count() == 1)
+        {
+            return searchNameResults;
+        }
+        
+        // search for template via complete url
+        IEnumerable<Template> searchUrlResults = templates.Where(template => template.Url.ToLowerInvariant() == templateName.ToLowerInvariant());
+        if (searchUrlResults.Count() == 1)
+        {
+            return searchUrlResults;
+        }
+
+        // else return all templates
         return templates;
     }
 
