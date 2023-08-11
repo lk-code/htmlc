@@ -7,6 +7,8 @@ public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
 {
     public override async Task<string> RenderAsync(string content)
     {
+        await Task.CompletedTask;
+        
         content = this.AddMetaTagToContent(content, "generator", "htmlc");
 
         return content;

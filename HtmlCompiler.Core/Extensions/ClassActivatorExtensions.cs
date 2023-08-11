@@ -26,7 +26,7 @@ public static class ClassActivatorExtensions
                 IRenderingComponent instance = (IRenderingComponent)Activator.CreateInstance(type,
                     configuration,
                     fileSystemService,
-                    htmlRenderer);
+                    htmlRenderer)!;
                 instances.Add(instance);
             }
         }

@@ -10,6 +10,8 @@ public class HtmlEscapeBlockRenderer : RenderingBase
 
     public override async Task<string> RenderAsync(string content)
     {
+        await Task.CompletedTask;
+        
         int startIndex = content.IndexOf(START_TAG);
 
         while (startIndex != -1)

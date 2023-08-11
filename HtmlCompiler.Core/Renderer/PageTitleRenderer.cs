@@ -12,6 +12,8 @@ public class PageTitleRenderer : RenderingBase
 
     public override async Task<string> RenderAsync(string content)
     {
+        await Task.CompletedTask;
+        
         string pageTitle = string.Empty;
 
         content = TitleDeclarationRegex.Replace(content, match =>

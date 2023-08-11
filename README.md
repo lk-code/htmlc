@@ -26,6 +26,7 @@ This is the HTML Compiler Tool for your cli. htmlc is a small tool with which ve
      - [options](#options)
    - [config-command](#config-command)
      - [build-blacklist](#build-blacklist)
+     - [template-repositories](#template-repositories)
    - [compile-command](#compile-command)
    - [watch-command](#watch-command)
  - [html files](#html-files)
@@ -79,11 +80,15 @@ The new command creates a new project at the current folder location. The projec
 #### options
 you can use the following options with the new command:
 
-`-d --docker` - creates a simple Dockerfile with nginx configuration
+`-d --docker` - creates a simple Dockerfile with nginx configuration.
 
 **example:** `htmlc new -d`
 
-`-v --vscode` - add configuration directory for Visual Studio Code (.vscode) and settings-file
+`-t --template` - creates a project based on the given template name. If several templates matching the search filter are found, a url can be specified (which must be available in one of the template repositories!)
+
+**example:** `htmlc new -t Demo`
+
+`-v --vscode` - add configuration directory for Visual Studio Code (.vscode) and settings-file.
 
 **example:** `htmlc new -v`
 
@@ -103,9 +108,15 @@ With this command, a file type (e.g. *.png) can be blocked for the compilation p
 
 `htmlc config build-blacklist <add|remove> {fileextensions}`
 
+#### template-repositories
+
+With this command you can add more html template repositories or remove existing ones.
+
+`htmlc config template-repositories <add|remove> {repository-url}`
+
 **examples:**
 
-`htmlc config build-blacklist add .png` this command adds a block for all .png-files
+`htmlc config build-blacklist add BaseRepository:https://url-to-repository.com` this command adds a block for all .png-files
 
 `htmlc config build-blacklist remove .png` this command removes the entry for .png-files so all png files are copied.
 

@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using System.IO.Compression;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 
@@ -51,6 +51,28 @@ public class ProjectManager : IProjectManager
             }
         }
     }
+        
+    private async Task ExtractZipAsync(string zipFilePath, string extractPath)
+    {
+        using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read))
+        using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Read))
+        {
+            foreach (var entry in archive.Entries)
+            {
+                var entryFilePath = Path.Combine(extractPath, entry.FullName);
+                Directory.CreateDirectory(Path.GetDirectoryName(entryFilePath));
+
+                if (!entry.FullName.EndsWith("/")) // Ignoriere Verzeichniseinträge
+                {
+                    using (var entryStream = entry.Open())
+                    using (var targetStream = File.Create(entryFilePath))
+                    {
+                        await entryStream.CopyToAsync(targetStream);
+                    }
+                }
+            }
+        }
+    }
 
     /// <inheritdoc/>
     public async Task AddDockerSupportAsync(string sourcePath)
@@ -92,6 +114,17 @@ public class ProjectManager : IProjectManager
         fileContent = fileContent.UpdateJsonProperty("liveServer.settings.root", "/dist");
         
         await this._fileSystemService.FileWriteAllTextAsync(fullFilePath, fileContent);
+    }
+
+    /// <inheritdoc/>
+    public async Task AddTemplateAsync(string downloadedTemplatePath, string sourcePath)
+    {
+        // cleanup source directoy
+        Directory.Delete(sourcePath, recursive: true);
+        Directory.CreateDirectory(sourcePath);
+        
+        // load template
+        await this.ExtractZipAsync(downloadedTemplatePath, sourcePath);
     }
 
     private async Task<string?> GetTemplateContentAsync(string template)

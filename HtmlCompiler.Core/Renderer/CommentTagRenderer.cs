@@ -8,6 +8,8 @@ public class CommentTagRenderer : RenderingBase
 
     public override async Task<string> RenderAsync(string content)
     {
+        await Task.CompletedTask;
+        
         string[] lines = content.Split(Environment.NewLine);
         for (int i = 0; i < lines.Length; i++)
         {

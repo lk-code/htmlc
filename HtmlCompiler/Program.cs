@@ -1,44 +1,42 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Cocona;
 using Cocona.Builder;
 using FluentDataBuilder;
 using FluentDataBuilder.Json;
-using HtmlCompiler;
 using HtmlCompiler.Commands;
+using HtmlCompiler.Config;
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
+using HtmlCompiler.Core.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HtmlCompiler;
 
-class Program
+static class Program
 {
-    private static string _userConfigPath = string.Empty;
-
     static void Main(string[] args)
     {
-        Program._userConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".htmlc");
+        string userConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".htmlc");
+        string userCacheDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".htmlc-cache");
 
         // user config file
         // if not exists => create
-        if (!File.Exists(Program._userConfigPath))
-        {
-            using (StreamWriter sw = File.CreateText(Program._userConfigPath))
-            {
-                ConfigModel basicConfiguration = ConfigModel.GetBasicConfig();
-                string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
-                sw.WriteLine(basicJsonConfiguration);
-            }
+        EnsureUserConfigFile(userConfigPath);
 
-            File.SetAttributes(Program._userConfigPath, FileAttributes.Hidden);
-        }
+        // upgrade config to latest model
+        UpgradeUserConfigJson(userConfigPath);
         
+        // ensure cache directory
+        EnsureUserCacheDirectory(userCacheDirectoryPath);
+
         CoconaAppBuilder? builder = CoconaApp.CreateBuilder(args);
 
         // add user configuration
-        builder.Configuration.AddJsonStream(new StreamReader(Program._userConfigPath).BaseStream);
+        builder.Configuration.AddJsonStream(new StreamReader(userConfigPath).BaseStream);
+
+        builder.Services.AddTransient<IConfigurationManager>(x =>
+            new Config.ConfigurationManager(userConfigPath, x.GetRequiredService<IFileSystemService>()));
 
         builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
         builder.Services.AddTransient<IFileWatcher, FileWatcher>();
@@ -46,20 +44,57 @@ class Program
         builder.Services.AddTransient<IProjectManager, ProjectManager>();
         builder.Services.AddTransient<IFileSystemService, FileSystemService>();
         builder.Services.AddTransient<IResourceLoader, ResourceLoader>();
+        builder.Services.AddTransient<ITemplateManager, TemplateManager>();
+        builder.Services.AddTransient<IHttpClientService, HttpClientService>();
 
         IDataBuilder dataBuilder = new DataBuilder();
         dataBuilder.Add("Core", new DataBuilder()
-            .Add("UserConfigPath", Program._userConfigPath));
+            .Add("UserConfigPath", userConfigPath)
+            .Add("UserCacheDirectoryPath", userCacheDirectoryPath));
 
         string jsonString = dataBuilder.Build().RootElement.GetRawText();
         using MemoryStream coreConfigJsonStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonString));
         builder.Configuration.AddJsonStream(coreConfigJsonStream);
-        
+
         CoconaApp? app = builder.Build();
 
         app.AddCommands<HtmlcCommand>();
         app.AddCommands<ConfigCommand>();
 
         app.Run();
+    }
+
+    private static void EnsureUserCacheDirectory(string userCacheDirectoryPath)
+    {
+        if (!Directory.Exists(userCacheDirectoryPath))
+        {
+            DirectoryInfo directoryInfo = Directory.CreateDirectory(userCacheDirectoryPath);
+            directoryInfo.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+        }
+    }
+
+    private static void EnsureUserConfigFile(string userConfigPath)
+    {
+        if (!File.Exists(userConfigPath))
+        {
+            using StreamWriter sw = File.CreateText(userConfigPath);
+            ConfigModel basicConfiguration = ConfigModel.GetBasicConfig();
+            string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
+            sw.WriteLine(basicJsonConfiguration);
+
+            File.SetAttributes(userConfigPath, FileAttributes.Hidden);
+        }
+    }
+
+    private static void UpgradeUserConfigJson(string userConfigPath)
+    {
+        string userConfigJson = File.ReadAllText(userConfigPath);
+        ConfigModel basicConfiguration = JsonSerializer.Deserialize<ConfigModel>(userConfigJson);
+        string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
+        
+        using StreamWriter sw = File.CreateText(userConfigPath);
+        sw.WriteLine(basicJsonConfiguration);
+
+        File.SetAttributes(userConfigPath, FileAttributes.Hidden);
     }
 }
