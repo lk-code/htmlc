@@ -14,7 +14,7 @@ public interface ITemplateManager
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="first"></param>
+    /// <param name="template"></param>
     /// <returns></returns>
-    Task DownloadTemplateAsync(Template template);
+    Task<string> DownloadTemplateAsync(Template template);
 }

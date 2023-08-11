@@ -1,4 +1,4 @@
-﻿using Cocona;
+using Cocona;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
 using Microsoft.Extensions.Logging;
@@ -22,30 +22,31 @@ public class HtmlcCommand
 
     [Command("new")]
     public async Task New([Option('v', Description = "added Visual Studio Code settings file")] bool? vscode = null,
-        [Option('l', Description = "add configuration for VSCode Extension LiveServer (see documentation)")]
-        bool? vsliveserver = null,
-        [Option('d', Description = "creates a simple Dockerfile with nginx configuration")]
-        bool? docker = null,
-        [Option('t', Description = "creates a project based on the given template name")]
-        string? template = null)
+        [Option('l', Description = "add configuration for VSCode Extension LiveServer (see documentation)")] bool? vsliveserver = null,
+        [Option('d', Description = "creates a simple Dockerfile with nginx configuration")] bool? docker = null,
+        [Option('t', Description = "creates a project based on the given template name")] string? template = null)
     {
-        // search for template
-        List<Template> templates = (await this._templateManager.SearchTemplatesAsync(template)).ToList();
-        if (!templates.Any())
+        string? downloadedTemplatePath = null;
+        if (template is not null)
         {
-            Console.WriteLine("No templates found.");
+            // search for template
+            List<Template> templates = (await this._templateManager.SearchTemplatesAsync(template)).ToList();
+            if (!templates.Any())
+            {
+                Console.WriteLine("No templates found.");
+                
+                return;
+            }
+            else if (templates.Count() > 1)
+            {
+                Console.WriteLine("Multiple templates found. Please specify the full template name (with repository url).");
+                
+                return;
+            }
             
-            return;
+            // load template
+            downloadedTemplatePath = await this._templateManager.DownloadTemplateAsync(templates.First());
         }
-        else if (templates.Count() > 1)
-        {
-            Console.WriteLine("Multiple templates found. Please specify the full template name (with repository url).");
-            
-            return;
-        }
-        
-        // load template
-        await this._templateManager.DownloadTemplateAsync(templates.First());
 
         // create new project
         string projectPath = Directory.GetCurrentDirectory();
@@ -70,6 +71,12 @@ public class HtmlcCommand
         if (docker == true)
         {
             await this._projectManager.AddDockerSupportAsync(sourcePath);
+        }
+
+        // add template files
+        if (downloadedTemplatePath is not null)
+        {
+            await this._projectManager.AddTemplateAsync(downloadedTemplatePath, sourcePath);
         }
     }
 

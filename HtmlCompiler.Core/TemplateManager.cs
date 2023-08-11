@@ -83,16 +83,19 @@ public class TemplateManager : ITemplateManager
     }
 
     /// <inheritdoc />
-    public async Task DownloadTemplateAsync(Template template)
+    public async Task<string> DownloadTemplateAsync(Template template)
     {
         string userCacheDirectoryPath = this._configuration.GetValue<string>("Core:UserCacheDirectoryPath");
         string templateCacheDirectory = $"{userCacheDirectoryPath}/templates";
+        string outputFilePath = $"{templateCacheDirectory}/{Path.GetFileName(template.FileName)}";
         
         // create template directory in cache directory
         Directory.CreateDirectory(templateCacheDirectory);
         
         Console.WriteLine($"Download template '{Path.GetFileName(template.FileName)}'");
-        await this._httpClientService.DownloadFileAsync(new Uri(template.Url), $"{templateCacheDirectory}/{Path.GetFileName(template.FileName)}");
+        await this._httpClientService.DownloadFileAsync(new Uri(template.Url), outputFilePath);
         Console.WriteLine($"Download finished :)");
+
+        return outputFilePath;
     }
 }

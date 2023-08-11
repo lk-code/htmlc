@@ -29,4 +29,12 @@ public interface IProjectManager
     /// <param name="projectPath"></param>
     /// <returns></returns>
     Task AddVSCodeLiveServerConfigurationAsync(string projectPath);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="downloadedTemplatePath"></param>
+    /// <param name="sourcePath"></param>
+    /// <returns></returns>
+    Task AddTemplateAsync(string downloadedTemplatePath, string sourcePath);
 }
