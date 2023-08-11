@@ -26,6 +26,7 @@ This is the HTML Compiler Tool for your cli. htmlc is a small tool with which ve
      - [options](#options)
    - [config-command](#config-command)
      - [build-blacklist](#build-blacklist)
+     - [template-repositories](#template-repositories)
    - [compile-command](#compile-command)
    - [watch-command](#watch-command)
  - [html files](#html-files)
@@ -79,15 +80,15 @@ The new command creates a new project at the current folder location. The projec
 #### options
 you can use the following options with the new command:
 
-`-d --docker` - creates a simple Dockerfile with nginx configuration
+`-d --docker` - creates a simple Dockerfile with nginx configuration.
 
 **example:** `htmlc new -d`
 
-`-t --template` - creates a project based on the given template name
+`-t --template` - creates a project based on the given template name. If several templates matching the search filter are found, a url can be specified (which must be available in one of the template repositories!)
 
 **example:** `htmlc new -t Demo`
 
-`-v --vscode` - add configuration directory for Visual Studio Code (.vscode) and settings-file
+`-v --vscode` - add configuration directory for Visual Studio Code (.vscode) and settings-file.
 
 **example:** `htmlc new -v`
 
