@@ -64,8 +64,8 @@ public class HtmlcCommandTests
         this._templateManager.Setup(x => x.SearchTemplatesAsync(It.IsAny<string>()))
             .ReturnsAsync(new List<Template>
             {
-                new() { Name = "DemoTemplate", FileName = "demo.zip", Url = "https://example.com/demo.zip" },
-                new() { Name = "DemoTemplate", FileName = "demo.zip", Url = "https://another-repository.com/demo.zip" },
+                new("DemoTemplate", "demo.zip", "https://example.com/demo.zip"),
+                new("DemoTemplate", "demo.zip", "https://another-repository.com/demo.zip"),
             });
 
         await this._instance.New(false, false, false, "DemoTemplate");

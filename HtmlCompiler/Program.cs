@@ -49,6 +49,7 @@ static class Program
         builder.Services.AddTransient<IFileSystemService, FileSystemService>();
         builder.Services.AddTransient<IResourceLoader, ResourceLoader>();
         builder.Services.AddTransient<ITemplateManager, TemplateManager>();
+        builder.Services.AddTransient<IHttpClientService, HttpClientService>();
 
         IDataBuilder dataBuilder = new DataBuilder();
         dataBuilder.Add("Core", new DataBuilder()

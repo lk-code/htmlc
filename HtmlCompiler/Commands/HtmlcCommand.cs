@@ -30,7 +30,7 @@ public class HtmlcCommand
         string? template = null)
     {
         // search for template
-        IEnumerable<Template> templates = await this._templateManager.SearchTemplatesAsync(template);
+        List<Template> templates = (await this._templateManager.SearchTemplatesAsync(template)).ToList();
         if (!templates.Any())
         {
             Console.WriteLine("No templates found.");
@@ -39,7 +39,7 @@ public class HtmlcCommand
         }
         else if (templates.Count() > 1)
         {
-            Console.WriteLine("Multiple templates found. Please specify the template name.");
+            Console.WriteLine("Multiple templates found. Please specify the full template name (with repository url).");
             
             return;
         }

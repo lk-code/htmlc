@@ -1,3 +1,4 @@
+using System.Text.Json;
 using HtmlCompiler.Config;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
@@ -7,16 +8,19 @@ namespace HtmlCompiler.Core;
 
 public class TemplateManager : ITemplateManager
 {
-    private const string DEFAULT_TEMPLATE_REPOSITORY = "https://raw.githubusercontent.com/lk-code/htmlc-templates/main/";
-    
+    public const string DEFAULT_TEMPLATE_REPOSITORY = "https://github.com/lk-code/htmlc-templates/raw/main/";
+
     private readonly IConfiguration _configuration;
     private readonly IConfigurationManager _configurationManager;
+    private readonly IHttpClientService _httpClientService;
 
     public TemplateManager(IConfiguration configuration,
-        IConfigurationManager configurationManager)
+        IConfigurationManager configurationManager,
+        IHttpClientService httpClientService)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
+        _httpClientService = httpClientService ?? throw new ArgumentNullException(nameof(httpClientService));
     }
 
     /// <inheritdoc />
@@ -29,11 +33,29 @@ public class TemplateManager : ITemplateManager
         {
             repositories = new List<string>();
         }
-        
+
         // add default template repository if not set
         await this.EnsureDefaultRepository(repositories);
 
-        throw new NotImplementedException();
+        // load all index-files
+        // hostname => index-content
+        Dictionary<string, List<TemplateIndexEntry>> indexContents = new Dictionary<string, List<TemplateIndexEntry>>();
+        foreach (string repository in repositories)
+        {
+            Uri repositoryUri = new Uri($"{repository}index.json");
+            string content = await this._httpClientService.GetAsync(repositoryUri);
+            TemplateIndex templateIndex = JsonSerializer.Deserialize<TemplateIndex>(content);
+
+            indexContents.Add(repository, templateIndex.Templates);
+        }
+
+        IEnumerable<Template> templates = indexContents
+            .SelectMany(indexContentEntry => indexContentEntry.Value.Select(entry => 
+                new Template(entry.Name, entry.File, $"{indexContentEntry.Key}{entry.File}")
+            ))
+            .Where(template => template.Name.ToLowerInvariant().Contains(templateName.ToLowerInvariant() ?? string.Empty));
+
+        return templates;
     }
 
     private async Task EnsureDefaultRepository(List<string> repositories)
