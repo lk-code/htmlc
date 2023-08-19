@@ -9,12 +9,12 @@ namespace HtmlCompiler.Tests.Core.Extensions;
 [TestClass]
 public class StyleFileExtensionsTests
 {
-    private Mock<IStyleCompiler> _styleCompiler = null!;
+    private Mock<IStyleManager> _styleCompiler = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._styleCompiler = new Mock<IStyleCompiler>();
+        this._styleCompiler = new Mock<IStyleManager>();
     }
 
     [TestMethod]
