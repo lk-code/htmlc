@@ -1,24 +1,33 @@
 using DartSassHost;
 using DartSassHost.Helpers;
+using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
-using JavaScriptEngineSwitcher.V8;
+using HtmlCompiler.Core.Models;
+using HtmlCompiler.Core.StyleRenderer;
 
 namespace HtmlCompiler.Core;
 
 public class StyleManager : IStyleManager
 {
     private readonly IFileSystemService _fileSystemService;
+    private readonly SassRenderer _sassRenderer;
+    private readonly LessRenderer _lessRenderer;
 
     private string _sourceDirectoryPath = null!;
     private string _outputDirectoryPath = null!;
 
-    public StyleManager(IFileSystemService fileSystemService)
+    public StyleManager(IFileSystemService fileSystemService,
+        SassRenderer sassRenderer,
+        LessRenderer lessRenderer)
     {
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+        _sassRenderer = sassRenderer ?? throw new ArgumentNullException(nameof(sassRenderer));
+        _lessRenderer = lessRenderer ?? throw new ArgumentNullException(nameof(lessRenderer));
     }
 
-    public async Task<string?> CompileStyleAsync(string sourceDirectoryPath, string outputDirectoryPath, string? styleSourceFilePath)
+    public async Task<string?> CompileStyleAsync(string sourceDirectoryPath, string outputDirectoryPath,
+        string? styleSourceFilePath)
     {
         this._sourceDirectoryPath = sourceDirectoryPath;
         this._outputDirectoryPath = outputDirectoryPath;
@@ -30,7 +39,7 @@ public class StyleManager : IStyleManager
 
         Console.WriteLine($"looking for style at {styleSourceFilePath}");
 
-        if(!this._fileSystemService.FileExists(styleSourceFilePath))
+        if (!this._fileSystemService.FileExists(styleSourceFilePath))
         {
             // no style found
             Console.WriteLine("ERR: no style file found!");
@@ -57,19 +66,36 @@ public class StyleManager : IStyleManager
         string inputContent = await this.GetStyleContent(this._sourceDirectoryPath, sourceFileName);
 
         // compile style
-        switch (fileExtension)
+        StyleRenderingResult? styleRenderingResult = null;
+
+        try
         {
-            case ".scss":
-            case ".sass":
+            switch (fileExtension)
+            {
+                case ".scss":
+                case ".sass":
                 {
-                    await this.CompileSass(inputContent, sourceFilePath, outputFilePath);
+                    // await this._sassRenderer.CompileStyle(inputContent, sourceFilePath, outputFilePath);
+                    styleRenderingResult = await this._sassRenderer.Compile(inputContent);
                 }
-                break;
-            case ".less":
+                    break;
+                case ".less":
                 {
-                    // TODO: add less support
+                    styleRenderingResult = await this._lessRenderer.Compile(inputContent);
                 }
-                break;
+                    break;
+            }
+        }
+        catch (StyleException err)
+        {
+            Console.WriteLine("An error occurred during style compilation:");
+            Console.WriteLine();
+            Console.WriteLine(err.CompilerInformations);
+        }
+
+        if (styleRenderingResult is null)
+        {
+            return null;
         }
 
         return outputFilePath;
@@ -103,59 +129,5 @@ public class StyleManager : IStyleManager
         }
 
         return content;
-    }
-
-    private async Task CompileSass(string inputContent, string styleSourceFilePath, string styleOutputFilePath)
-    {
-        CompilationOptions options = new CompilationOptions { SourceMap = true };
-
-        string inputFilePath = styleSourceFilePath;
-        string outputFilePath = styleOutputFilePath;
-        string outputMappingFilePath = $"{styleOutputFilePath}.map";
-
-        try
-        {
-            using (var sassCompiler = new SassCompiler(new V8JsEngineFactory()))
-            {
-                CompilationResult result = sassCompiler.Compile(
-                    inputContent,
-                    inputFilePath,
-                    outputFilePath,
-                    outputMappingFilePath,
-                    options);
-
-                string? outputDirectory = Path.GetDirectoryName(outputFilePath);
-                if (!string.IsNullOrEmpty(outputDirectory))
-                {
-                    this._fileSystemService.EnsurePath(outputDirectory);
-                }
-
-                string compiledCss = result.CompiledContent;
-                await this._fileSystemService.FileWriteAllTextAsync(outputFilePath, compiledCss);
-
-                string mappingCss = result.SourceMap;
-                await this._fileSystemService.FileWriteAllTextAsync(outputMappingFilePath, mappingCss);
-
-                Console.WriteLine($"compiled style to {outputFilePath} (mapping: {outputMappingFilePath})");
-            }
-        }
-        catch (SassCompilerLoadException e)
-        {
-            Console.WriteLine("During loading of Sass compiler an error occurred. See details:");
-            Console.WriteLine();
-            Console.WriteLine(SassErrorHelpers.GenerateErrorDetails(e));
-        }
-        catch (SassCompilationException e)
-        {
-            Console.WriteLine("During compilation of SCSS code an error occurred. See details:");
-            Console.WriteLine();
-            Console.WriteLine(SassErrorHelpers.GenerateErrorDetails(e));
-        }
-        catch (SassException e)
-        {
-            Console.WriteLine("During working of Sass compiler an unknown error occurred. See details:");
-            Console.WriteLine();
-            Console.WriteLine(SassErrorHelpers.GenerateErrorDetails(e));
-        }
     }
 }

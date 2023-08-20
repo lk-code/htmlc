@@ -8,6 +8,7 @@ using HtmlCompiler.Config;
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
+using HtmlCompiler.Core.StyleRenderer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,12 +41,15 @@ static class Program
 
         builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
         builder.Services.AddTransient<IFileWatcher, FileWatcher>();
-        builder.Services.AddTransient<IStyleManager, StyleManager>();
         builder.Services.AddTransient<IProjectManager, ProjectManager>();
         builder.Services.AddTransient<IFileSystemService, FileSystemService>();
         builder.Services.AddTransient<IResourceLoader, ResourceLoader>();
         builder.Services.AddTransient<ITemplateManager, TemplateManager>();
         builder.Services.AddTransient<IHttpClientService, HttpClientService>();
+        
+        builder.Services.AddTransient<IStyleManager, StyleManager>();
+        builder.Services.AddTransient<IStyleRenderer, SassRenderer>();
+        builder.Services.AddTransient<IStyleRenderer, LessRenderer>();
 
         IDataBuilder dataBuilder = new DataBuilder();
         dataBuilder.Add("Core", new DataBuilder()
