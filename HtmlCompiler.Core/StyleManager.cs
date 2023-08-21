@@ -1,29 +1,29 @@
-using DartSassHost;
-using DartSassHost.Helpers;
 using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
-using HtmlCompiler.Core.StyleRenderer;
 
 namespace HtmlCompiler.Core;
 
 public class StyleManager : IStyleManager
 {
     private readonly IFileSystemService _fileSystemService;
-    private readonly SassRenderer _sassRenderer;
-    private readonly LessRenderer _lessRenderer;
+    private readonly IStyleRenderer _scssRenderer;
+    private readonly IStyleRenderer _sassRenderer;
+    private readonly IStyleRenderer _lessRenderer;
 
     private string _sourceDirectoryPath = null!;
     private string _outputDirectoryPath = null!;
 
     public StyleManager(IFileSystemService fileSystemService,
-        SassRenderer sassRenderer,
-        LessRenderer lessRenderer)
+        ISassStyleRenderer sassRenderer,
+        ILessStyleRenderer lessRenderer,
+        IScssStyleRenderer scssRenderer)
     {
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
-        _sassRenderer = sassRenderer ?? throw new ArgumentNullException(nameof(sassRenderer));
-        _lessRenderer = lessRenderer ?? throw new ArgumentNullException(nameof(lessRenderer));
+        _scssRenderer = scssRenderer as IStyleRenderer ?? throw new ArgumentNullException(nameof(scssRenderer));
+        _sassRenderer = sassRenderer as IStyleRenderer ?? throw new ArgumentNullException(nameof(sassRenderer));
+        _lessRenderer = lessRenderer as IStyleRenderer ?? throw new ArgumentNullException(nameof(lessRenderer));
     }
 
     public async Task<string?> CompileStyleAsync(string sourceDirectoryPath, string outputDirectoryPath,
@@ -70,12 +70,17 @@ public class StyleManager : IStyleManager
 
         try
         {
+            // await this._sassRenderer.CompileStyle(inputContent, sourceFilePath, outputFilePath);
+
             switch (fileExtension)
             {
                 case ".scss":
+                {
+                    styleRenderingResult = await this._scssRenderer.Compile(inputContent);
+                }
+                    break;
                 case ".sass":
                 {
-                    // await this._sassRenderer.CompileStyle(inputContent, sourceFilePath, outputFilePath);
                     styleRenderingResult = await this._sassRenderer.Compile(inputContent);
                 }
                     break;

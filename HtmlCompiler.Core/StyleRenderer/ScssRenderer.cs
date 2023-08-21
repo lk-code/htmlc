@@ -3,7 +3,7 @@ using HtmlCompiler.Core.Models;
 
 namespace HtmlCompiler.Core.StyleRenderer;
 
-public class LessRenderer : ILessStyleRenderer
+public class ScssRenderer : IScssStyleRenderer
 {
     /// <inheritdoc />
     public Task CompileStyle(string inputContent, string styleSourceFilePath, string styleOutputFilePath)

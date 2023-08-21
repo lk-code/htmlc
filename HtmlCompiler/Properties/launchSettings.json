@@ -2,7 +2,7 @@
   "profiles": {
     "htmlc compile": {
       "commandName": "Project",
-      "commandLineArgs": "compile ~/Desktop/htmlc-test -s /css/site.scss"
+      "commandLineArgs": "compile /Users/larskramer/Desktop/htmlc-test/ -s /css/site.scss"
     },
     "htmlc config add": {
       "commandName": "Project",

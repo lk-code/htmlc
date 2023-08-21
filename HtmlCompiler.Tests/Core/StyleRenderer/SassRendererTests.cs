@@ -1,3 +1,4 @@
+using System.Text;
 using ExCSS;
 using FluentAssertions;
 using HtmlCompiler.Core.Interfaces;
@@ -42,5 +43,48 @@ public class SassRendererTests
         var bodyRule = stylesheet.StyleRules.First() as StyleRule;
         bodyRule.SelectorText.Should().Be("body");
         bodyRule.Style.Color.Should().Be("rgb(255, 0, 0)");
+    }
+
+    [TestMethod]
+    public async Task GetImports_WithMultipleInline_Return()
+    {
+        string styleContent = "@import 'foundation/code', 'foundation/lists '; body { color: red; }";
+        
+        IEnumerable<string> importResults = await this._instance.GetImports(styleContent);
+        
+        importResults.Should().NotBeNull();
+        importResults.Count().Should().Be(6);
+        importResults.Should().Contain("foundation/code/");
+        importResults.Should().Contain("foundation/code.sass");
+        importResults.Should().Contain("foundation/_code.sass");
+        importResults.Should().Contain("foundation/lists/");
+        importResults.Should().Contain("foundation/lists.sass");
+        importResults.Should().Contain("foundation/_lists.sass");
+    }
+
+    [TestMethod]
+    public async Task GetImports_WithMultipleFormatted_Return()
+    {
+        string styleContent = new StringBuilder()
+            .Append("@import \"scss/theme\";")
+            .Append("@import \"scss/fonts\";")
+            .Append("@import \"scss/theme\";")
+            .Append("")
+            .Append("body")
+            .Append("{")
+            .Append("color: red;")
+            .Append("}")
+            .ToString().Trim();
+        
+        IEnumerable<string> importResults = await this._instance.GetImports(styleContent);
+        
+        importResults.Should().NotBeNull();
+        importResults.Count().Should().Be(6);
+        importResults.Should().Contain("scss/fonts/");
+        importResults.Should().Contain("scss/fonts.sass");
+        importResults.Should().Contain("scss/_fonts.sass");
+        importResults.Should().Contain("scss/theme/");
+        importResults.Should().Contain("scss/theme.sass");
+        importResults.Should().Contain("scss/_theme.sass");
     }
 }

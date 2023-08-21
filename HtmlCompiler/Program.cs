@@ -48,8 +48,9 @@ static class Program
         builder.Services.AddTransient<IHttpClientService, HttpClientService>();
         
         builder.Services.AddTransient<IStyleManager, StyleManager>();
-        builder.Services.AddTransient<IStyleRenderer, SassRenderer>();
-        builder.Services.AddTransient<IStyleRenderer, LessRenderer>();
+        builder.Services.AddTransient<ISassStyleRenderer, SassRenderer>();
+        builder.Services.AddTransient<IScssStyleRenderer, ScssRenderer>();
+        builder.Services.AddTransient<ILessStyleRenderer, LessRenderer>();
 
         IDataBuilder dataBuilder = new DataBuilder();
         dataBuilder.Add("Core", new DataBuilder()
