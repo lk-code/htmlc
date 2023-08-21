@@ -5,6 +5,15 @@ namespace HtmlCompiler.Core.StyleRenderer;
 
 public class LessRenderer : ILessStyleRenderer
 {
+    private const string FILE_EXTENSION = "less";
+
+    private readonly IFileSystemService _fileSystemService;
+
+    public LessRenderer(IFileSystemService fileSystemService)
+    {
+        _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+    }
+
     /// <inheritdoc />
     public Task CompileStyle(string inputContent, string styleSourceFilePath, string styleOutputFilePath)
     {

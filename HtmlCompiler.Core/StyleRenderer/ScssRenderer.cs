@@ -5,6 +5,15 @@ namespace HtmlCompiler.Core.StyleRenderer;
 
 public class ScssRenderer : IScssStyleRenderer
 {
+    private const string FILE_EXTENSION = "scss";
+
+    private readonly IFileSystemService _fileSystemService;
+
+    public ScssRenderer(IFileSystemService fileSystemService)
+    {
+        _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+    }
+
     /// <inheritdoc />
     public Task CompileStyle(string inputContent, string styleSourceFilePath, string styleOutputFilePath)
     {
