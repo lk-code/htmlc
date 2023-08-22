@@ -48,7 +48,11 @@ public class SassRendererTests
     [TestMethod]
     public async Task GetImports_WithMultipleInline_Return()
     {
-        string styleContent = "@import 'foundation/code', 'foundation/lists '; body { color: red; }";
+        string styleContent = new StringBuilder()
+            .AppendLine("@import foundation/code, foundation/lists ")
+            .AppendLine("")
+            .AppendLine("body { color: red; }")
+            .ToString().Trim();
         
         IEnumerable<string> importResults = await this._instance.GetImports(styleContent);
         
@@ -66,25 +70,25 @@ public class SassRendererTests
     public async Task GetImports_WithMultipleFormatted_Return()
     {
         string styleContent = new StringBuilder()
-            .Append("@import \"scss/theme\";")
-            .Append("@import \"scss/fonts\";")
-            .Append("@import \"scss/theme\";")
-            .Append("")
-            .Append("body")
-            .Append("{")
-            .Append("color: red;")
-            .Append("}")
+            .AppendLine("@import foundation/theme")
+            .AppendLine("@import foundation/fonts")
+            .AppendLine("@import foundation/theme")
+            .AppendLine("")
+            .AppendLine("body")
+            .AppendLine("{")
+            .AppendLine("color: red;")
+            .AppendLine("}")
             .ToString().Trim();
         
         IEnumerable<string> importResults = await this._instance.GetImports(styleContent);
         
         importResults.Should().NotBeNull();
         importResults.Count().Should().Be(6);
-        importResults.Should().Contain("scss/fonts/");
-        importResults.Should().Contain("scss/fonts.sass");
-        importResults.Should().Contain("scss/_fonts.sass");
-        importResults.Should().Contain("scss/theme/");
-        importResults.Should().Contain("scss/theme.sass");
-        importResults.Should().Contain("scss/_theme.sass");
+        importResults.Should().Contain("foundation/fonts/");
+        importResults.Should().Contain("foundation/fonts.sass");
+        importResults.Should().Contain("foundation/_fonts.sass");
+        importResults.Should().Contain("foundation/theme/");
+        importResults.Should().Contain("foundation/theme.sass");
+        importResults.Should().Contain("foundation/_theme.sass");
     }
 }

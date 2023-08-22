@@ -144,7 +144,7 @@ public class SassRenderer : ISassStyleRenderer
 
     private IEnumerable<string> GetRawImports(string inputContent)
     {
-        string importPattern = @"@import\s+((?:'(.*?)')|(?:""(.*?)""))\s*;";
+        string importPattern = @"@import\s+(.*?)(?:\r?\n|$)";
         IEnumerable<string> imports = new List<string>();
 
         MatchCollection matches = Regex.Matches(inputContent, importPattern);
@@ -160,6 +160,8 @@ public class SassRenderer : ISassStyleRenderer
                 .Select(part => part.Trim()
                     .Trim('\'')
                     .Trim('\"')
+                    .Trim('\r')
+                    .Trim('\n')
                     .Trim());
             imports = imports.Concat(importsFromLine);
         }

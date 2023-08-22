@@ -1,8 +1,10 @@
 using System.Text;
 using ExCSS;
 using FluentAssertions;
+using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
 using HtmlCompiler.Core.StyleRenderer;
+using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core.StyleRenderer;
 
@@ -10,11 +12,13 @@ namespace HtmlCompiler.Tests.Core.StyleRenderer;
 public class LessRendererTests
 {
     private LessRenderer _instance = null!;
+    private IFileSystemService _fileSystemService = null!;
     
     [TestInitialize]
     public void SetUp()
     {
-        this._instance = new LessRenderer();
+        this._fileSystemService = Substitute.For<IFileSystemService>();
+        this._instance = new LessRenderer(this._fileSystemService);
     }
 
     [TestMethod]
@@ -62,14 +66,14 @@ public class LessRendererTests
     public async Task GetImports_WithMultipleFormatted_Return()
     {
         string styleContent = new StringBuilder()
-            .Append("@import \"scss/theme\";")
-            .Append("@import \"scss/fonts\";")
-            .Append("@import \"scss/theme\";")
-            .Append("")
-            .Append("body")
-            .Append("{")
-            .Append("color: red;")
-            .Append("}")
+            .AppendLine("@import \"scss/theme\";")
+            .AppendLine("@import \"scss/fonts\";")
+            .AppendLine("@import \"scss/theme\";")
+            .AppendLine("")
+            .AppendLine("body")
+            .AppendLine("{")
+            .AppendLine("color: red;")
+            .AppendLine("}")
             .ToString().Trim();
         
         IEnumerable<string> importResults = await this._instance.GetImports(styleContent);

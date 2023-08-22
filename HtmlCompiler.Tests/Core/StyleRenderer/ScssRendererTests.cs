@@ -66,25 +66,25 @@ public class ScssRendererTests
     public async Task GetImports_WithMultipleFormatted_Return()
     {
         string styleContent = new StringBuilder()
-            .Append("@import \"scss/theme\";")
-            .Append("@import \"scss/fonts\";")
-            .Append("@import \"scss/theme\";")
-            .Append("")
-            .Append("body")
-            .Append("{")
-            .Append("color: red;")
-            .Append("}")
+            .AppendLine("@import \"foundation/theme\";")
+            .AppendLine("@import \"foundation/fonts\";")
+            .AppendLine("@import \"foundation/theme\";")
+            .AppendLine("")
+            .AppendLine("body")
+            .AppendLine("{")
+            .AppendLine("color: red;")
+            .AppendLine("}")
             .ToString().Trim();
         
         IEnumerable<string> importResults = await this._instance.GetImports(styleContent);
         
         importResults.Should().NotBeNull();
         importResults.Count().Should().Be(6);
-        importResults.Should().Contain("scss/fonts/");
-        importResults.Should().Contain("scss/fonts.scss");
-        importResults.Should().Contain("scss/_fonts.scss");
-        importResults.Should().Contain("scss/theme/");
-        importResults.Should().Contain("scss/theme.scss");
-        importResults.Should().Contain("scss/_theme.scss");
+        importResults.Should().Contain("foundation/fonts/");
+        importResults.Should().Contain("foundation/fonts.scss");
+        importResults.Should().Contain("foundation/_fonts.scss");
+        importResults.Should().Contain("foundation/theme/");
+        importResults.Should().Contain("foundation/theme.scss");
+        importResults.Should().Contain("foundation/_theme.scss");
     }
 }
