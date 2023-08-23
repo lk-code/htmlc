@@ -6,14 +6,14 @@ using JavaScriptEngineSwitcher.V8;
 
 namespace HtmlCompiler.Core;
 
-public class StyleCompiler : IStyleCompiler
+public class StyleManager : IStyleManager
 {
     private readonly IFileSystemService _fileSystemService;
 
     private string _sourceDirectoryPath = null!;
     private string _outputDirectoryPath = null!;
 
-    public StyleCompiler(IFileSystemService fileSystemService)
+    public StyleManager(IFileSystemService fileSystemService)
     {
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }

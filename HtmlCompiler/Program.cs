@@ -40,7 +40,7 @@ static class Program
 
         builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
         builder.Services.AddTransient<IFileWatcher, FileWatcher>();
-        builder.Services.AddTransient<IStyleCompiler, StyleCompiler>();
+        builder.Services.AddTransient<IStyleManager, StyleManager>();
         builder.Services.AddTransient<IProjectManager, ProjectManager>();
         builder.Services.AddTransient<IFileSystemService, FileSystemService>();
         builder.Services.AddTransient<IResourceLoader, ResourceLoader>();

@@ -61,7 +61,7 @@ public static class StyleFileExtensions
     }
 
     public static async Task<string> ReplaceSassImports(this string input,
-        IStyleCompiler styleCompiler,
+        IStyleManager styleManager,
         string sourceDirectoryPath,
         string currentSubDirectory,
         string fileExtension)
@@ -75,7 +75,7 @@ public static class StyleFileExtensions
 
             requestedSassFile = Path.Combine(sourceDirectoryPath, currentSubDirectory, requestedSassFile);
 
-            string replacement = await styleCompiler.GetStyleContent(sourceDirectoryPath, requestedSassFile);
+            string replacement = await styleManager.GetStyleContent(sourceDirectoryPath, requestedSassFile);
 
             input = input.Replace(match.Value, replacement);
         }

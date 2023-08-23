@@ -12,7 +12,7 @@ public class FileWatcherTests
     private FileWatcher _instance = null!;
     private Mock<IConfiguration> _configuration = null!;
     private Mock<IHtmlRenderer> _htmlRenderer = null!;
-    private Mock<IStyleCompiler> _styleCompiler = null!;
+    private Mock<IStyleManager> _styleCompiler = null!;
     private Mock<IFileSystemService> _fileSystemService = null!;
 
     [TestInitialize]
@@ -20,7 +20,7 @@ public class FileWatcherTests
     {
         this._configuration = new Mock<IConfiguration>();
         this._htmlRenderer = new Mock<IHtmlRenderer>();
-        this._styleCompiler = new Mock<IStyleCompiler>();
+        this._styleCompiler = new Mock<IStyleManager>();
         this._fileSystemService = new Mock<IFileSystemService>();
 
         this._instance = new FileWatcher(
