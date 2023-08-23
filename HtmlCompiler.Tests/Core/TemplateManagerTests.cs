@@ -69,7 +69,7 @@ namespace HtmlCompiler.Tests.Core
             string templateName = "demo";
             
             IDataBuilder dataBuilder = new DataBuilder();
-            dataBuilder.Add("template-repositories", new List<string>
+            dataBuilder.Add(TemplateManager.APPSETTINGS_KEY, new List<string>
             {
                 "https://repository.com/",
                 "https://storage.azure.com/test/",
@@ -126,7 +126,7 @@ namespace HtmlCompiler.Tests.Core
             string templateName = "https://storage.azure.com/test/templates/Demo.zip";
             
             IDataBuilder dataBuilder = new DataBuilder();
-            dataBuilder.Add("template-repositories", new List<string>
+            dataBuilder.Add(TemplateManager.APPSETTINGS_KEY, new List<string>
             {
                 "https://repository.com/",
                 "https://storage.azure.com/test/",

@@ -9,6 +9,7 @@ namespace HtmlCompiler.Core;
 public class TemplateManager : ITemplateManager
 {
     public const string DEFAULT_TEMPLATE_REPOSITORY = "https://github.com/lk-code/htmlc-templates/raw/main/";
+    public const string APPSETTINGS_KEY = "template-repositories";
 
     private readonly IConfiguration _configuration;
     private readonly IConfigurationManager _configurationManager;
@@ -26,7 +27,7 @@ public class TemplateManager : ITemplateManager
     /// <inheritdoc />
     public async Task<IEnumerable<Template>> SearchTemplatesAsync(string templateName)
     {
-        List<string>? repositories = this._configuration.GetSection("template-repositories").Get<List<string>>();
+        List<string>? repositories = this._configuration.GetSection(APPSETTINGS_KEY).Get<List<string>>();
 
         // ensure repositories is not null
         if (repositories is null)
@@ -76,7 +77,7 @@ public class TemplateManager : ITemplateManager
     {
         if (!repositories.Contains(DEFAULT_TEMPLATE_REPOSITORY))
         {
-            await this._configurationManager.AddAsync("template-repositories", DEFAULT_TEMPLATE_REPOSITORY);
+            await this._configurationManager.AddAsync(APPSETTINGS_KEY, DEFAULT_TEMPLATE_REPOSITORY);
 
             repositories.Add(DEFAULT_TEMPLATE_REPOSITORY);
         }
