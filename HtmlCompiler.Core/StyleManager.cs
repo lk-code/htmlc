@@ -76,6 +76,8 @@ public class StyleManager : IStyleManager
             {
                 case ".scss":
                 {
+                    IEnumerable<string> importFiles = await this._scssRenderer.GetImports(inputContent);
+                    
                     styleRenderingResult = await this._scssRenderer.Compile(inputContent);
                 }
                     break;

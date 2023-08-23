@@ -111,7 +111,7 @@ public class ScssRenderer : IScssStyleRenderer
     public async Task<IEnumerable<string>> GetImports(string inputContent)
     {
         IEnumerable<string> imports = this.GetRawImports(inputContent);
-        imports = imports.SelectMany(x => this.GetFullQualified(x))
+        imports = imports.SelectMany(this.GetFullQualified)
             .ToList()
             .Distinct();
 
