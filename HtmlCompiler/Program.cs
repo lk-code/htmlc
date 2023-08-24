@@ -60,6 +60,7 @@ static class Program
 
         app.AddCommands<HtmlcCommand>();
         app.AddCommands<ConfigCommand>();
+        app.AddCommands<EnvironmentCommand>();
 
         app.Run();
     }
