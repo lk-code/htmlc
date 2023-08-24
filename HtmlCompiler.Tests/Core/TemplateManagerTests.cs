@@ -22,8 +22,6 @@ namespace HtmlCompiler.Tests.Core
         [TestInitialize]
         public void SetUp()
         {
-            this._configurationManager = Substitute.For<IConfigurationManager>();
-            this._httpClientService = Substitute.For<IHttpClientService>();
         }
 
         private TemplateManager CreateTestInstance(IConfiguration configuration)

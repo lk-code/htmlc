@@ -4,6 +4,10 @@
       "commandName": "Project",
       "commandLineArgs": " D:\\Desktop\\test\\source\\demo.html D:\\Desktop\\test\\output\\"
     },
+    "htmlc check": {
+      "commandName": "Project",
+      "commandLineArgs": "check"
+    },
     "htmlc config add": {
       "commandName": "Project",
       "commandLineArgs": "config build-blacklist add .png"

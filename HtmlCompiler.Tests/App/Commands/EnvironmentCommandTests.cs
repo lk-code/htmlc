@@ -2,7 +2,9 @@ using System.Text;
 using FluentDataBuilder;
 using FluentDataBuilder.Json;
 using HtmlCompiler.Commands;
+using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
+using NSubstitute;
 
 namespace HtmlCompiler.Tests.App.Commands;
 
@@ -10,6 +12,7 @@ namespace HtmlCompiler.Tests.App.Commands;
 public class EnvironmentCommandTests
 {
     private EnvironmentCommand _instance = null!;
+    private IDependencyManager _dependencyManager = null!;
 
     [TestInitialize]
     public void SetUp()
@@ -18,7 +21,10 @@ public class EnvironmentCommandTests
 
     private EnvironmentCommand CreateTestInstance(IConfiguration configuration)
     {
-        return new EnvironmentCommand(configuration);
+        this._dependencyManager = Substitute.For<IDependencyManager>();
+        
+        return new EnvironmentCommand(configuration,
+            this._dependencyManager);
     }
 
     [TestMethod]
