@@ -1,7 +1,9 @@
 using FluentAssertions;
 using HtmlCompiler.Core.Dependencies;
+using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Interfaces;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 
 namespace HtmlCompiler.Tests.Core.Dependencies;
 
@@ -40,8 +42,7 @@ public class NodeDependencyTests
         this._cliManager.ExecuteCommand(Arg.Any<string>())
             .Returns(consoleResult);
         
-        bool result = await this._instance.CheckAsync();
-        
-        result.Should().BeFalse();
+        Func<Task> act = () => this._instance.CheckAsync();
+        act.Should().ThrowAsync<DependencyCheckFailedException>().Where(e => e.Message.Contains("Please install NodeJS"));
     }
 }

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Interfaces;
 
 namespace HtmlCompiler.Core;
@@ -25,39 +26,37 @@ public class CLIManager : ICLIManager
         StringBuilder outputBuilder = new StringBuilder();
         StringBuilder errorBuilder = new StringBuilder();
 
-        using (Process process = new Process())
+        using Process process = new Process();
+        process.StartInfo = processInfo;
+
+        process.OutputDataReceived += (sender, e) =>
         {
-            process.StartInfo = processInfo;
-
-            process.OutputDataReceived += (sender, e) =>
+            if (!string.IsNullOrEmpty(e.Data))
             {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    outputBuilder.AppendLine(e.Data);
-                }
-            };
+                outputBuilder.AppendLine(e.Data);
+            }
+        };
 
-            process.ErrorDataReceived += (sender, e) =>
+        process.ErrorDataReceived += (sender, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
             {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    errorBuilder.AppendLine(e.Data);
-                }
-            };
+                errorBuilder.AppendLine(e.Data);
+            }
+        };
 
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
 
-            process.WaitForExit();
-        }
+        process.WaitForExit();
 
         string output = outputBuilder.ToString();
         string error = errorBuilder.ToString();
 
         if (!string.IsNullOrEmpty(error))
         {
-            throw new Exception(error);
+            throw new ConsoleExecutionException(error);
         }
 
         return output;

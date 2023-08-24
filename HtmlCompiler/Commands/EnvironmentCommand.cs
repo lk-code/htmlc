@@ -1,4 +1,5 @@
 using Cocona;
+using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 
@@ -19,12 +20,30 @@ public class EnvironmentCommand
     [Command("check")]
     public async Task Check()
     {
-        await this._dependencyManager.CheckEnvironmentAsync();
+        try
+        {
+            string output = await this._dependencyManager.CheckEnvironmentAsync();
+            Console.WriteLine(output);
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine("Error while dependency check:");
+            Console.WriteLine(err.Message);
+        }
     }
 
     [Command("setup")]
     public async Task Setup()
     {
-        
+        try
+        {
+            string output = await this._dependencyManager.SetupEnvironmentAsync();
+            Console.WriteLine(output);
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine("Error while dependency setup:");
+            Console.WriteLine(err.Message);
+        }
     }
 }
