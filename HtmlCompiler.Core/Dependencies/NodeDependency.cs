@@ -24,12 +24,14 @@ public class NodeDependency : IDependencyObject
 
         try
         {
-            result = _cliManager.ExecuteCommand("nope --version");
+            result = _cliManager.ExecuteCommand("node --version");
         }
         catch (ConsoleExecutionException err)
         {
             result = err.Message;
         }
+
+        result = result.TrimEnd(Environment.NewLine.ToCharArray());
 
         if (Regex.IsMatch(result, NODE_VERSION_PATTERN))
         {
@@ -42,7 +44,7 @@ public class NodeDependency : IDependencyObject
         }
     }
 
-    public async Task<bool> SetupAsync()
+    public async Task SetupAsync()
     {
         throw new DependencySetupFailedException("Please install NodeJS from the official website and try again :)");
     }

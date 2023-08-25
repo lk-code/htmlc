@@ -8,6 +8,10 @@
       "commandName": "Project",
       "commandLineArgs": "check"
     },
+    "htmlc setup": {
+      "commandName": "Project",
+      "commandLineArgs": "setup"
+    },
     "htmlc config add": {
       "commandName": "Project",
       "commandLineArgs": "config build-blacklist add .png"

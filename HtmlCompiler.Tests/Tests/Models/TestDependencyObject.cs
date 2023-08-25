@@ -18,7 +18,7 @@ public class TestDependencyObject : IDependencyObject
         throw new NotImplementedException();
     }
 
-    public Task<bool> SetupAsync()
+    public Task SetupAsync()
     {
         throw new NotImplementedException();
     }

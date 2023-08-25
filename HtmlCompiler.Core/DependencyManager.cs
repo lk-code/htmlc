@@ -26,7 +26,7 @@ public class DependencyManager : IDependencyManager
         return await this.CheckEnvironmentAndSetupAsync();
     }
 
-    private async Task<string> CheckEnvironmentAndSetupAsync(bool setup = true)
+    private async Task<string> CheckEnvironmentAndSetupAsync(bool executeSetup = true)
     {
         StringBuilder checkConsoleOutput = new StringBuilder();
         
@@ -47,15 +47,13 @@ public class DependencyManager : IDependencyManager
                     checkConsoleOutput.AppendLine($"{dependency.Name} is NOT installed");
                 }
 
-                if (setup)
+                if (executeSetup && !isInstalled)
                 {
                     checkConsoleOutput.AppendLine($"Try to install {dependency.Name}");
                     
-                    bool setupSuccessful = await dependency.SetupAsync();
-                    if (!setupSuccessful)
-                    {
-                        checkConsoleOutput.AppendLine($"Setup for {dependency.Name} failed");
-                    }
+                    await dependency.SetupAsync();
+                    
+                    checkConsoleOutput.AppendLine($"{dependency.Name} successfully installed");
                 }
 
             }

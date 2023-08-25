@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Interfaces;
 
 namespace HtmlCompiler.Core.Dependencies;
@@ -5,7 +7,10 @@ namespace HtmlCompiler.Core.Dependencies;
 public class SassDependency : IDependencyObject
 {
     private readonly ICLIManager _cliManager;
+    
+    private const string SASS_VERSION_PATTERN = @"^\d+\.\d+\.\d+.*$";
 
+    
     public string Name { get; } = "Sass Compiler";
 
     public List<IDependencyObject> Dependencies { get; } = new()
@@ -20,13 +25,38 @@ public class SassDependency : IDependencyObject
 
     public async Task<bool> CheckAsync()
     {
-        Console.WriteLine("Checking Sass Compiler");
+        string result = string.Empty;
 
-        return true;
+        try
+        {
+            result = _cliManager.ExecuteCommand("sass --version");
+        }
+        catch (ConsoleExecutionException err)
+        {
+            result = err.Message;
+        }
+
+        if (Regex.IsMatch(result, SASS_VERSION_PATTERN))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    public async Task<bool> SetupAsync()
+    public async Task SetupAsync()
     {
-        throw new NotImplementedException();
+        string blub = "";
+        
+        try
+        {
+            blub = this._cliManager.ExecuteCommand("npm install -g sass");
+        }
+        catch (Exception err)
+        {
+            throw new DependencySetupFailedException("Setup Failure", err);
+        }
     }
 }

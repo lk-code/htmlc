@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Interfaces;
 
 namespace HtmlCompiler.Core.Dependencies;
@@ -5,6 +7,8 @@ namespace HtmlCompiler.Core.Dependencies;
 public class LessDependency : IDependencyObject
 {
     private readonly ICLIManager _cliManager;
+    
+    private const string LESS_VERSION_PATTERN = @"^less \d+\.\d+.*$";
 
     public string Name { get; } = "Less Compiler";
 
@@ -20,13 +24,38 @@ public class LessDependency : IDependencyObject
 
     public async Task<bool> CheckAsync()
     {
-        Console.WriteLine("Checking Less Compiler");
+        string result = string.Empty;
 
-        return true;
+        try
+        {
+            result = _cliManager.ExecuteCommand("less --version");
+            string[] resultLines = result.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            result = resultLines[0];
+        }
+        catch (ConsoleExecutionException err)
+        {
+            result = err.Message;
+        }
+
+        if (Regex.IsMatch(result, LESS_VERSION_PATTERN))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    public async Task<bool> SetupAsync()
+    public async Task SetupAsync()
     {
-        throw new NotImplementedException();
+        try
+        {
+            this._cliManager.ExecuteCommand("npm install -g less");
+        }
+        catch (Exception err)
+        {
+            throw new DependencySetupFailedException("Setup Failure", err);
+        }
     }
 }
