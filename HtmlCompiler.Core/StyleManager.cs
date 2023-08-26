@@ -9,15 +9,18 @@ public class StyleManager : IStyleManager
 {
     private readonly IConfiguration _configuration;
     private readonly IFileSystemService _fileSystemService;
+    private readonly ICLIManager _cliManager;
 
     private string _sourceDirectoryPath = null!;
     private string _outputDirectoryPath = null!;
 
     public StyleManager(IConfiguration configuration,
-        IFileSystemService fileSystemService)
+        IFileSystemService fileSystemService,
+        ICLIManager cliManager)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+        _cliManager = cliManager ?? throw new ArgumentNullException(nameof(cliManager));
     }
 
     public async Task<string?> CompileStyleAsync(string sourceDirectoryPath, string outputDirectoryPath, string? styleSourceFilePath)
@@ -25,8 +28,6 @@ public class StyleManager : IStyleManager
         this._sourceDirectoryPath = sourceDirectoryPath;
         this._outputDirectoryPath = outputDirectoryPath;
         
-        string blub = this._configuration.GetValue<string>("MEGA_TEST");
-
         if (string.IsNullOrEmpty(styleSourceFilePath))
         {
             return null;
@@ -42,30 +43,18 @@ public class StyleManager : IStyleManager
         string fileExtension = Path.GetExtension(styleSourceFilePath)
             .ToLowerInvariant();
         fileExtension.IsSupportedStyleFileOrThrow();
-
-        string sourceFileName = styleSourceFilePath.Replace(sourceDirectoryPath, "");
+        fileExtension = fileExtension.TrimStart('.');
+        
         string sourceFilePath = styleSourceFilePath;
+        string sourceFullFilePath = $"{sourceDirectoryPath}{sourceFilePath}";
+        string sourceFileName = styleSourceFilePath.Replace(sourceDirectoryPath, "");
         string outputFileName = Path.ChangeExtension(sourceFileName, "css");
         string outputFilePath = $"{this._outputDirectoryPath}{outputFileName}";
 
-        // load complete style
-        string inputContent = await this.GetStyleContent(this._sourceDirectoryPath, sourceFileName);
-
-        // compile style
-        switch (fileExtension)
-        {
-            case ".scss":
-            case ".sass":
-                {
-                    // await this.CompileSass(inputContent, sourceFilePath, outputFilePath);
-                }
-                break;
-            case ".less":
-                {
-                    // TODO: add less support
-                }
-                break;
-        }
+        string styleCompileCommandTemplate = this._configuration[$"style-commands:{fileExtension}"];
+        string styleCompileCommand = string.Format(styleCompileCommandTemplate, $"\"{sourceFilePath}\"", $"\"{outputFilePath}\"");
+        
+        string result = this._cliManager.ExecuteCommand(styleCompileCommand);
 
         return outputFilePath;
     }
