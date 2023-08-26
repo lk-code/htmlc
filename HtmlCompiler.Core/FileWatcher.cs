@@ -1,4 +1,5 @@
-﻿using HtmlCompiler.Core.Extensions;
+﻿using HtmlCompiler.Core.Exceptions;
+using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 
@@ -157,22 +158,63 @@ public class FileWatcher : IFileWatcher
 
     private async Task CompileFilesAsync()
     {
+        IEnumerable<string> files = Enumerable.Empty<string>();
+        
         try
         {
             Console.WriteLine($"compiling...");
 
-            this._fileSystemService.GetAllFiles(this._sourceDirectoryPath);
-            IEnumerable<string> files = this._fileSystemService.GetAllFiles(this._sourceDirectoryPath);
+            files = this._fileSystemService.GetAllFiles(this._sourceDirectoryPath);
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine($"error: {err.Message}");
 
+            if (!this._watchDirectory)
+            {
+                return;
+            }
+        }
+
+        string? cssOutputFilePath = null;
+        try
+        {
             // compile style file
-            string? cssOutputFilePath = await this._styleManager.CompileStyleAsync(
+            cssOutputFilePath = await this._styleManager.CompileStyleAsync(
                 this._sourceDirectoryPath,
                 this._outputDirectoryPath,
                 this._styleEntryFilePath);
+        }
+        catch (StyleNotFoundException err)
+        {
+            Console.WriteLine($"error: {err.Message}");
 
+            if (!this._watchDirectory)
+            {
+                return;
+            }
+        }
+
+        try
+        {
             // compile html
             await this.RenderHtmlFiles(files, cssOutputFilePath);
 
+            // copy additional assets (like js, css, images, etc.)
+            this.CopyAssetsToOutput(files);
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine($"error: {err.Message}");
+
+            if (!this._watchDirectory)
+            {
+                return;
+            }
+        }
+
+        try
+        {
             // copy additional assets (like js, css, images, etc.)
             this.CopyAssetsToOutput(files);
         }
