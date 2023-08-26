@@ -58,34 +58,4 @@ public class StyleManager : IStyleManager
 
         return outputFilePath;
     }
-
-    public async Task<string> GetStyleContent(string sourceDirectoryPath, string sourceFilePath)
-    {
-        string sourceFullFilePath = $"{sourceDirectoryPath}{sourceFilePath}";
-
-        string content = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
-        string extension = Path.GetExtension(sourceFullFilePath)
-            .ToLowerInvariant();
-        string? currentSubDirectory = Path.GetDirectoryName(sourceFilePath);
-        if (string.IsNullOrEmpty(currentSubDirectory))
-        {
-            currentSubDirectory = string.Empty;
-        }
-
-        if (extension == ".scss"
-            || extension == ".sass")
-        {
-            // replace sass imports
-            content = await content.ReplaceSassImports(this,
-                sourceDirectoryPath,
-                currentSubDirectory,
-                extension);
-        }
-        else if (extension == ".less")
-        {
-            // replace less imports
-        }
-
-        return content;
-    }
 }
