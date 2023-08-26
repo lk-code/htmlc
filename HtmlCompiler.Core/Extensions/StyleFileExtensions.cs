@@ -2,23 +2,24 @@
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
+using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Interfaces;
 
 namespace HtmlCompiler.Core.Extensions;
 
 public static class StyleFileExtensions
 {
-    public static bool IsSupportedStyleFile(this string fileExtension)
+    public static bool IsSupportedStyleFileOrThrow(this string fileExtension)
     {
-        string ext = fileExtension.ToLowerInvariant();
-        if (ext == ".scss"
+        string ext = fileExtension.ToLowerInvariant().TrimStart('.');
+        if (ext == "scss"
             || ext == "sass"
             || ext == "less")
         {
             return true;
         }
 
-        return false;
+        throw new UnsupportedStyleTypeException("style type is not supported (only sass, scss and less is supported to compile)");
     }
 
     /// <summary>

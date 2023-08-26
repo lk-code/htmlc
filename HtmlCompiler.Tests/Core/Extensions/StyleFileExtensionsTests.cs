@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 using Moq;
@@ -136,54 +137,49 @@ public class StyleFileExtensionsTests
     }
     
     [TestMethod]
-    public void IsSupportedStyleFile_ReturnsTrue_ForSCSSFile()
+    [DataRow("sass")]
+    [DataRow("scss")]
+    [DataRow("less")]
+    public void IsSupportedStyleFileOrThrow_WithExplicitSupported_Returns(string fileExtension)
+    {
+        // Act
+        bool result = fileExtension.IsSupportedStyleFileOrThrow();
+
+        // Assert
+        result.Should().BeTrue();
+    }
+    
+    [TestMethod]
+    [DataRow("test.sass")]
+    [DataRow("test.scss")]
+    [DataRow("test.less")]
+    public void IsSupportedStyleFileOrThrow_WithSupported_Returns(string fileName)
     {
         // Arrange
-        string fileExtension = ".scss";
+        // fileExtension is some like ".sass", ".scss" or ".less" (with leading dot)
+        string fileExtension = Path.GetExtension(fileName);
 
         // Act
-        bool result = fileExtension.IsSupportedStyleFile();
+        bool result = fileExtension.IsSupportedStyleFileOrThrow();
 
         // Assert
         result.Should().BeTrue();
     }
 
     [TestMethod]
-    public void IsSupportedStyleFile_ReturnsTrue_ForSASSFile()
+    [DataRow("test.txt")]
+    [DataRow("test.docx")]
+    [DataRow("test.exe")]
+    [DataRow("test.css")]
+    public void IsSupportedStyleFileOrThrow_WithUnsupported_Throws(string fileName)
     {
         // Arrange
-        string fileExtension = "sass";
+        string fileExtension = Path.GetExtension(fileName);
 
         // Act
-        bool result = fileExtension.IsSupportedStyleFile();
-
+        Action act = () => fileExtension.IsSupportedStyleFileOrThrow();
+        
         // Assert
-        result.Should().BeTrue();
-    }
-
-    [TestMethod]
-    public void IsSupportedStyleFile_ReturnsTrue_ForLESSFile()
-    {
-        // Arrange
-        string fileExtension = "less";
-
-        // Act
-        bool result = fileExtension.IsSupportedStyleFile();
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [TestMethod]
-    public void IsSupportedStyleFile_ReturnsFalse_ForUnsupportedFile()
-    {
-        // Arrange
-        string fileExtension = "txt";
-
-        // Act
-        bool result = fileExtension.IsSupportedStyleFile();
-
-        // Assert
-        result.Should().BeFalse();
+        act.Should().Throw<UnsupportedStyleTypeException>();
     }
 }
