@@ -27,7 +27,7 @@ static class Program
 
         // upgrade config to latest model
         UpgradeUserConfigJson(userConfigPath);
-        
+
         // ensure cache directory
         EnsureUserCacheDirectory(userCacheDirectoryPath);
 
@@ -49,7 +49,7 @@ static class Program
         builder.Services.AddTransient<IHttpClientService, HttpClientService>();
         builder.Services.AddTransient<ICLIManager, CLIManager>();
         builder.Services.AddTransient<IDependencyManager, DependencyManager>();
-        
+
         builder.Services.AddTransient<IDependencyObject, SassDependency>();
         builder.Services.AddTransient<IDependencyObject, LessDependency>();
         builder.Services.AddTransient<IDependencyObject, NodeDependency>();

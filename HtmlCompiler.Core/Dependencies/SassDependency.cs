@@ -7,10 +7,10 @@ namespace HtmlCompiler.Core.Dependencies;
 public class SassDependency : IDependencyObject
 {
     private readonly ICLIManager _cliManager;
-    
+
     private const string SASS_VERSION_PATTERN = @"^\d+\.\d+\.\d+.*$";
 
-    
+
     public string Name { get; } = "Sass Compiler";
 
     public List<IDependencyObject> Dependencies { get; } = new()
@@ -48,11 +48,9 @@ public class SassDependency : IDependencyObject
 
     public async Task SetupAsync()
     {
-        string blub = "";
-        
         try
         {
-            blub = this._cliManager.ExecuteCommand("npm install -g sass");
+            this._cliManager.ExecuteCommand("npm install -g sass");
         }
         catch (Exception err)
         {
