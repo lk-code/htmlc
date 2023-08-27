@@ -31,6 +31,7 @@ public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
         metaTag.SetAttributeValue("name", name);
         metaTag.SetAttributeValue("content", content);
         head.AppendChild(metaTag);
+        head.AppendChild(HtmlNode.CreateNode("\n"));
 
         return doc.DocumentNode.OuterHtml;
     }

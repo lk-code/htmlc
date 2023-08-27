@@ -167,4 +167,54 @@ public class HtmlRendererTests
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
     }
+
+    [TestMethod]
+    public async Task RenderHtmlAsync_WithGlobalTag_Return()
+    {
+        string sourceFullFilePath = "/project/src/index.html";
+        string sourceDirectory = "/project/src";
+        string outputDirectory = "/project/dist";
+        string? cssOutputFilePath = null;
+        
+        var expectedHtml = new StringBuilder()
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<title>Demo</title>")
+            .AppendLine("<meta name=\"generator\" content=\"htmlc\">")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("<h1>Hello World!</h1>")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
+            .ToString().Trim();
+
+        var indexContent = new StringBuilder()
+            .AppendLine("@Layout=_layoutbase.html")
+            .AppendLine("@PageTitle=Demo")
+            .Append("<h1>Hello World!</h1>")
+            .ToString().Trim();
+        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
+            .ReturnsAsync(indexContent);
+        
+        var layoutContent = new StringBuilder()
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<title>@PageTitle</title>")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("@Body")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
+            .ToString().Trim();
+        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html"))
+            .ReturnsAsync(layoutContent);
+        
+        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+            sourceDirectory,
+            outputDirectory,
+            cssOutputFilePath);
+        
+        result.Should().NotBeNullOrEmpty();
+        result.Should().Be(expectedHtml);
+    }
 }
