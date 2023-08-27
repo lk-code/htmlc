@@ -16,18 +16,20 @@ public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
 
     public string AddMetaTagToContent(string html, string name, string content)
     {
-        var doc = new HtmlDocument();
+        HtmlDocument doc = new HtmlDocument();
         doc.LoadHtml(html);
 
-        var head = doc.DocumentNode.SelectSingleNode("//head");
+        HtmlNode? head = doc.DocumentNode.SelectSingleNode("//head");
         if (head == null)
         {
-            var htmlNode = doc.DocumentNode.SelectSingleNode("html");
+            HtmlNode? htmlNode = doc.DocumentNode.SelectSingleNode("html");
             head = doc.CreateElement("head");
-            htmlNode?.AppendChild(head);
+            htmlNode?.PrependChild(head);
+            htmlNode?.PrependChild(HtmlNode.CreateNode("\n"));
+            head.AppendChild(HtmlNode.CreateNode("\n"));
         }
 
-        var metaTag = doc.CreateElement("meta");
+        HtmlNode? metaTag = doc.CreateElement("meta");
         metaTag.SetAttributeValue("name", name);
         metaTag.SetAttributeValue("content", content);
         head.AppendChild(metaTag);

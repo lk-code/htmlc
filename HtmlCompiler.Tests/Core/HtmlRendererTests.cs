@@ -50,12 +50,34 @@ public class HtmlRendererTests
         string outputDirectory = "/project/dist";
         string? cssOutputFilePath = null;
         
-        string expectedHtml = "<html><body><h1>Hello World!</h1></body><head><meta name=\"generator\" content=\"htmlc\"></head></html>";
+        var expectedHtml = new StringBuilder()
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<meta name=\"generator\" content=\"htmlc\">")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("<h1>Hello World!</h1>")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
+            .ToString().Trim();
+        
+        var layoutHtml = new StringBuilder()
+            .AppendLine("<html>")
+            .AppendLine("<body>")
+            .AppendLine("@Body")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
+            .ToString().Trim();
+
+        var contentHtml = new StringBuilder()
+            .AppendLine("@Layout=_layoutbase.html")
+            .AppendLine("<h1>Hello World!</h1>")
+            .ToString().Trim();
 
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
-            .ReturnsAsync("@Layout=_layoutbase.html" + Environment.NewLine + "<h1>Hello World!</h1>");
+            .ReturnsAsync(contentHtml);
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html"))
-            .ReturnsAsync("<html><body>@Body</body></html>");
+            .ReturnsAsync(layoutHtml);
         
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,
@@ -75,34 +97,34 @@ public class HtmlRendererTests
         string? cssOutputFilePath = null;
         
         var expectedHtml = new StringBuilder()
-            .Append("<html>")
-            .Append("<head>")
-            .Append("<title>Demo</title>")
-            .Append("<meta name=\"generator\" content=\"htmlc\">")
-            .Append("</head>")
-            .Append("<body>")
-            .Append("<h1>Hello World!</h1>")
-            .Append("</body>")
-            .Append("</html>")
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<title>Demo</title>")
+            .AppendLine("<meta name=\"generator\" content=\"htmlc\">")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("<h1>Hello World!</h1>")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
             .ToString().Trim();
 
         var indexContent = new StringBuilder()
             .AppendLine("@Layout=_layoutbase.html")
             .AppendLine("@PageTitle=Demo")
-            .Append("<h1>Hello World!</h1>")
+            .AppendLine("<h1>Hello World!</h1>")
             .ToString().Trim();
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
             .ReturnsAsync(indexContent);
         
         var layoutContent = new StringBuilder()
-            .Append("<html>")
-            .Append("<head>")
-            .Append("<title>@PageTitle</title>")
-            .Append("</head>")
-            .Append("<body>")
-            .Append("@Body")
-            .Append("</body>")
-            .Append("</html>")
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<title>@PageTitle</title>")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("@Body")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
             .ToString().Trim();
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html"))
             .ReturnsAsync(layoutContent);
@@ -125,36 +147,36 @@ public class HtmlRendererTests
         string? cssOutputFilePath = "/css/site.scss";
         
         var expectedHtml = new StringBuilder()
-            .Append("<html>")
-            .Append("<head>")
-            .Append("<title>Demo</title>")
-            .Append("<link rel=\"stylesheet\" href=\"../../css/site.scss\">")
-            .Append("<meta name=\"generator\" content=\"htmlc\">")
-            .Append("</head>")
-            .Append("<body>")
-            .Append("<h1>Hello World!</h1>")
-            .Append("</body>")
-            .Append("</html>")
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<title>Demo</title>")
+            .AppendLine("<link rel=\"stylesheet\" href=\"../../css/site.scss\">")
+            .AppendLine("<meta name=\"generator\" content=\"htmlc\">")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("<h1>Hello World!</h1>")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
             .ToString().Trim();
 
         var indexContent = new StringBuilder()
             .AppendLine("@Layout=_layoutbase.html")
             .AppendLine("@PageTitle=Demo")
-            .Append("<h1>Hello World!</h1>")
+            .AppendLine("<h1>Hello World!</h1>")
             .ToString().Trim();
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
             .ReturnsAsync(indexContent);
         
         var layoutContent = new StringBuilder()
-            .Append("<html>")
-            .Append("<head>")
-            .Append("<title>@PageTitle</title>")
-            .Append("<link rel=\"stylesheet\" href=\"@StylePath\">")
-            .Append("</head>")
-            .Append("<body>")
-            .Append("@Body")
-            .Append("</body>")
-            .Append("</html>")
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<title>@PageTitle</title>")
+            .AppendLine("<link rel=\"stylesheet\" href=\"@StylePath\">")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("@Body")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
             .ToString().Trim();
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html"))
             .ReturnsAsync(layoutContent);
@@ -191,7 +213,7 @@ public class HtmlRendererTests
         var indexContent = new StringBuilder()
             .AppendLine("@Layout=_layoutbase.html")
             .AppendLine("@PageTitle=Demo")
-            .Append("<h1>Hello World!</h1>")
+            .AppendLine("<h1>Hello World!</h1>")
             .ToString().Trim();
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
             .ReturnsAsync(indexContent);
