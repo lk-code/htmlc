@@ -194,6 +194,24 @@ public class FileWatcher : IFileWatcher
                 return;
             }
         }
+        catch (StyleCommandNotFoundException err)
+        {
+            Console.WriteLine($"error: {err.Message}");
+
+            if (!this._watchDirectory)
+            {
+                return;
+            }
+        }
+        catch (UnsupportedStyleTypeException err)
+        {
+            Console.WriteLine($"error: {err.Message}");
+
+            if (!this._watchDirectory)
+            {
+                return;
+            }
+        }
 
         try
         {

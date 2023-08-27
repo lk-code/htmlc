@@ -1,7 +1,5 @@
-using System.Text;
 using FluentAssertions;
 using FluentDataBuilder;
-using FluentDataBuilder.Json;
 using FluentDataBuilder.Microsoft.Extensions.Configuration;
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Exceptions;
@@ -30,6 +28,22 @@ public class StyleManagerTests
         this._instance = new StyleManager(configuration,
             this._fileSystemService,
             this._cliManager);
+    }
+
+    [TestMethod]
+    public async Task CompileStyleAsync_WithNonExistingStyleCommand_Throws()
+    {
+        string sourceDirectoryPath = "/Users/larskramer/htmlc-test/src";
+        string outputDirectoryPath = "/Users/larskramer/htmlc-test/dist";
+        string? styleSourceFilePath = "/Users/larskramer/htmlc-test/src/styles/main.scss";
+
+        IDataBuilder dataBuilder = new DataBuilder();
+        this.CreateTestInstance(dataBuilder.ToConfiguration());
+
+        this._fileSystemService.FileExists(styleSourceFilePath).Returns(true);
+        
+        Func<Task> act = () => this._instance.CompileStyleAsync(sourceDirectoryPath, outputDirectoryPath, styleSourceFilePath);
+        act.Should().ThrowAsync<StyleCommandNotFoundException>().Where(e => e.Message.Contains($"style compile command for 'scss' not found"));
     }
 
     [TestMethod]

@@ -33,8 +33,6 @@ public class StyleManager : IStyleManager
             return null;
         }
 
-        Console.WriteLine($"looking for style at {styleSourceFilePath}");
-
         if(!this._fileSystemService.FileExists(styleSourceFilePath))
         {
             throw new StyleNotFoundException($"style file not found at {styleSourceFilePath}");
@@ -46,15 +44,19 @@ public class StyleManager : IStyleManager
         fileExtension = fileExtension.TrimStart('.');
         
         string sourceFilePath = styleSourceFilePath;
-        string sourceFullFilePath = $"{sourceDirectoryPath}{sourceFilePath}";
         string sourceFileName = styleSourceFilePath.Replace(sourceDirectoryPath, "");
         string outputFileName = Path.ChangeExtension(sourceFileName, "css");
         string outputFilePath = $"{this._outputDirectoryPath}{outputFileName}";
 
-        string styleCompileCommandTemplate = this._configuration[$"style-commands:{fileExtension}"];
+        string? styleCompileCommandTemplate = this._configuration[$"style-commands:{fileExtension}"];
+        if (styleCompileCommandTemplate is null)
+        {
+            throw new StyleCommandNotFoundException($"style compile command for '{fileExtension}' not found");
+        }
+        
         string styleCompileCommand = string.Format(styleCompileCommandTemplate, $"\"{sourceFilePath}\"", $"\"{outputFilePath}\"");
         
-        string result = this._cliManager.ExecuteCommand(styleCompileCommand);
+        this._cliManager.ExecuteCommand(styleCompileCommand);
 
         return outputFilePath;
     }
