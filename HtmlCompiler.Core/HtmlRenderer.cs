@@ -15,7 +15,8 @@ public class HtmlRenderer : IHtmlRenderer
         { 500, typeof(HtmlEscapeBlockRenderer) },
         { 600, typeof(StylePathRenderer) },
         { 700, typeof(PageTitleRenderer) },
-        { 800, typeof(MetaTagRenderer) }
+        { 800, typeof(GlobalTagRenderer) },
+        { 2000, typeof(MetaTagRenderer) }
     };
 
     private readonly IFileSystemService _fileSystemService;

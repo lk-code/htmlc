@@ -59,13 +59,14 @@ public class ProjectManager : IProjectManager
         {
             foreach (var entry in archive.Entries)
             {
-                var entryFilePath = Path.Combine(extractPath, entry.FullName);
-                Directory.CreateDirectory(Path.GetDirectoryName(entryFilePath));
+                string entryFilePath = Path.Combine(extractPath, entry.FullName);
+                string canonicalDestinationPath = Path.GetFullPath(entryFilePath);
+                Directory.CreateDirectory(Path.GetDirectoryName(canonicalDestinationPath));
 
                 if (!entry.FullName.EndsWith("/")) // Ignoriere Verzeichniseinträge
                 {
                     using (var entryStream = entry.Open())
-                    using (var targetStream = File.Create(entryFilePath))
+                    using (var targetStream = File.Create(canonicalDestinationPath))
                     {
                         await entryStream.CopyToAsync(targetStream);
                     }
