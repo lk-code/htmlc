@@ -66,7 +66,6 @@ static class Program
         CoconaApp? app = builder.Build();
 
         app.AddCommands<HtmlcCommand>();
-        app.AddCommands<ConfigCommand>();
         app.AddCommands<EnvironmentCommand>();
 
         app.Run();

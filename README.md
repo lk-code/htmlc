@@ -24,9 +24,6 @@ This is the HTML Compiler Tool for your cli. htmlc is a small tool with which ve
  - [commands](#commands)
    - [new-command](#new-command)
      - [options](#options)
-   - [config-command](#config-command)
-     - [build-blacklist](#build-blacklist)
-     - [template-repositories](#template-repositories)
    - [compile-command](#compile-command)
    - [watch-command](#watch-command)
  - [html files](#html-files)
@@ -97,28 +94,6 @@ you can use the following options with the new command:
 **example:** `htmlc new -l`
 
 the `vsliveserver` option creates the property `liveServer.settings.root` and sets it to the output directory in the vscode settings file
-
-### config-command
-
-With this command, the user configuration, which is located in the user directory as a .htmlc file (e.g. /Users/lk-code/.htmlc), can be edited. The file is hidden per default. all (!) html-files a always blocked, the compiler copies the result to the output-directory.
-
-#### build-blacklist
-
-With this command, a file type (e.g. *.png) can be blocked for the compilation process so that no files of this type are copied into the output directory during the asset copying process.
-
-`htmlc config build-blacklist <add|remove> {fileextensions}`
-
-#### template-repositories
-
-With this command you can add more html template repositories or remove existing ones.
-
-`htmlc config template-repositories <add|remove> {repository-url}`
-
-**examples:**
-
-`htmlc config build-blacklist add BaseRepository:https://url-to-repository.com` this command adds a block for all .png-files
-
-`htmlc config build-blacklist remove .png` this command removes the entry for .png-files so all png files are copied.
 
 ### compile-command
 
