@@ -9,6 +9,9 @@ public class ConfigModel
     
     [JsonPropertyName("template-repositories")]
     public string[] TemplateRepositories { get; set; } = Array.Empty<string>();
+    
+    [JsonPropertyName("style-commands")]
+    public Dictionary<string, string> StyleCommands { get; set; } = new();
 
     public static ConfigModel GetBasicConfig()
     {

@@ -6,6 +6,7 @@ using FluentDataBuilder.Json;
 using HtmlCompiler.Commands;
 using HtmlCompiler.Config;
 using HtmlCompiler.Core;
+using HtmlCompiler.Core.Dependencies;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +27,7 @@ static class Program
 
         // upgrade config to latest model
         UpgradeUserConfigJson(userConfigPath);
-        
+
         // ensure cache directory
         EnsureUserCacheDirectory(userCacheDirectoryPath);
 
@@ -40,12 +41,18 @@ static class Program
 
         builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
         builder.Services.AddTransient<IFileWatcher, FileWatcher>();
-        builder.Services.AddTransient<IStyleCompiler, StyleCompiler>();
+        builder.Services.AddTransient<IStyleManager, StyleManager>();
         builder.Services.AddTransient<IProjectManager, ProjectManager>();
         builder.Services.AddTransient<IFileSystemService, FileSystemService>();
         builder.Services.AddTransient<IResourceLoader, ResourceLoader>();
         builder.Services.AddTransient<ITemplateManager, TemplateManager>();
         builder.Services.AddTransient<IHttpClientService, HttpClientService>();
+        builder.Services.AddTransient<ICLIManager, CLIManager>();
+        builder.Services.AddTransient<IDependencyManager, DependencyManager>();
+
+        builder.Services.AddTransient<IDependencyObject, SassDependency>();
+        builder.Services.AddTransient<IDependencyObject, LessDependency>();
+        builder.Services.AddTransient<IDependencyObject, NodeDependency>();
 
         IDataBuilder dataBuilder = new DataBuilder();
         dataBuilder.Add("Core", new DataBuilder()
@@ -60,6 +67,7 @@ static class Program
 
         app.AddCommands<HtmlcCommand>();
         app.AddCommands<ConfigCommand>();
+        app.AddCommands<EnvironmentCommand>();
 
         app.Run();
     }

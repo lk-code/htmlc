@@ -1,7 +1,6 @@
 using Cocona;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Commands;
 

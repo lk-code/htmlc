@@ -1,4 +1,5 @@
-﻿using HtmlCompiler.Core.Extensions;
+﻿using HtmlCompiler.Core.Exceptions;
+using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 
@@ -8,7 +9,7 @@ public class FileWatcher : IFileWatcher
 {
     private readonly IConfiguration _configuration;
     private readonly IHtmlRenderer _htmlRenderer;
-    private readonly IStyleCompiler _styleCompiler;
+    private readonly IStyleManager _styleManager;
     private readonly IFileSystemService _fileSystemService;
 
     private string _sourceDirectoryPath = string.Empty;
@@ -19,12 +20,12 @@ public class FileWatcher : IFileWatcher
 
     public FileWatcher(IConfiguration configuration,
         IHtmlRenderer htmlRenderer,
-        IStyleCompiler styleCompiler,
+        IStyleManager styleManager,
         IFileSystemService fileSystemService)
     {
         this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         this._htmlRenderer = htmlRenderer ?? throw new ArgumentNullException(nameof(htmlRenderer));
-        this._styleCompiler = styleCompiler ?? throw new ArgumentNullException(nameof(styleCompiler));
+        this._styleManager = styleManager ?? throw new ArgumentNullException(nameof(styleManager));
         this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
 
@@ -157,22 +158,81 @@ public class FileWatcher : IFileWatcher
 
     private async Task CompileFilesAsync()
     {
+        IEnumerable<string> files = Enumerable.Empty<string>();
+        
         try
         {
             Console.WriteLine($"compiling...");
 
-            this._fileSystemService.GetAllFiles(this._sourceDirectoryPath);
-            IEnumerable<string> files = this._fileSystemService.GetAllFiles(this._sourceDirectoryPath);
+            files = this._fileSystemService.GetAllFiles(this._sourceDirectoryPath);
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine($"error: {err.Message}");
 
+            if (!this._watchDirectory)
+            {
+                return;
+            }
+        }
+
+        string? cssOutputFilePath = null;
+        try
+        {
             // compile style file
-            string? cssOutputFilePath = await this._styleCompiler.CompileStyleAsync(
+            cssOutputFilePath = await this._styleManager.CompileStyleAsync(
                 this._sourceDirectoryPath,
                 this._outputDirectoryPath,
                 this._styleEntryFilePath);
+        }
+        catch (StyleNotFoundException err)
+        {
+            Console.WriteLine($"error: {err.Message}");
 
+            if (!this._watchDirectory)
+            {
+                return;
+            }
+        }
+        catch (StyleCommandNotFoundException err)
+        {
+            Console.WriteLine($"error: {err.Message}");
+
+            if (!this._watchDirectory)
+            {
+                return;
+            }
+        }
+        catch (UnsupportedStyleTypeException err)
+        {
+            Console.WriteLine($"error: {err.Message}");
+
+            if (!this._watchDirectory)
+            {
+                return;
+            }
+        }
+
+        try
+        {
             // compile html
             await this.RenderHtmlFiles(files, cssOutputFilePath);
 
+            // copy additional assets (like js, css, images, etc.)
+            this.CopyAssetsToOutput(files);
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine($"error: {err.Message}");
+
+            if (!this._watchDirectory)
+            {
+                return;
+            }
+        }
+
+        try
+        {
             // copy additional assets (like js, css, images, etc.)
             this.CopyAssetsToOutput(files);
         }

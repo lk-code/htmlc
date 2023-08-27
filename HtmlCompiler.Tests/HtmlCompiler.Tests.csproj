@@ -9,15 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="6.11.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <PackageReference Include="FluentDataBuilder.Microsoft.Extensions.Configuration" Version="1.1.27" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
     <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
     <PackageReference Include="coverlet.collector" Version="6.0.0"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
     <PackageReference Include="Moq" Version="4.18.4" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.51" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.52" />
     <PackageReference Include="NSubstitute" Version="5.0.0" />
   </ItemGroup>
 
@@ -33,5 +34,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helper\" />
+    <Folder Include="Tests\Extensions\" />
   </ItemGroup>
 </Project>

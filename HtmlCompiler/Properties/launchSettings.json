@@ -1,8 +1,20 @@
 {
   "profiles": {
-    "htmlc compile": {
+    "htmlc compile without style": {
       "commandName": "Project",
-      "commandLineArgs": " D:\\Desktop\\test\\source\\demo.html D:\\Desktop\\test\\output\\"
+      "commandLineArgs": "compile /Users/larskramer/htmlc-test"
+    },
+    "htmlc compile with style": {
+      "commandName": "Project",
+      "commandLineArgs": "compile /Users/larskramer/htmlc-test -s /styles/main.scss"
+    },
+    "htmlc check": {
+      "commandName": "Project",
+      "commandLineArgs": "check"
+    },
+    "htmlc setup": {
+      "commandName": "Project",
+      "commandLineArgs": "setup"
     },
     "htmlc config add": {
       "commandName": "Project",
