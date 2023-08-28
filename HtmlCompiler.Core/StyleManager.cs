@@ -25,6 +25,8 @@ public class StyleManager : IStyleManager
 
     public async Task<string?> CompileStyleAsync(string sourceDirectoryPath, string outputDirectoryPath, string? styleSourceFilePath)
     {
+        await Task.CompletedTask;
+        
         this._sourceDirectoryPath = sourceDirectoryPath;
         this._outputDirectoryPath = outputDirectoryPath;
         

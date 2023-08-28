@@ -96,7 +96,7 @@ static class Program
     private static void UpgradeUserConfigJson(string userConfigPath)
     {
         string userConfigJson = File.ReadAllText(userConfigPath);
-        ConfigModel basicConfiguration = JsonSerializer.Deserialize<ConfigModel>(userConfigJson);
+        ConfigModel basicConfiguration = JsonSerializer.Deserialize<ConfigModel>(userConfigJson)!;
         string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
         
         using StreamWriter sw = File.CreateText(userConfigPath);

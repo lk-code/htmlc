@@ -23,14 +23,21 @@ public class ConfigurationManager : IConfigurationManager
     {
         ConfigModel userConfig = await this.EnsureAsync(await this.LoadAsync(this._userConfigPath));
 
-        PropertyInfo property = userConfig.GetType().GetProperties()
+        PropertyInfo? property = userConfig.GetType().GetProperties()
             .FirstOrDefault(prop =>
                 prop.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name == key &&
                 prop.PropertyType == typeof(string[]));
 
-        if (property != null)
+        if (property is not null)
         {
-            string[] arrayProperty = (string[])property.GetValue(userConfig);
+            object? userConfigValue = property.GetValue(userConfig);
+
+            if (userConfigValue is null)
+            {
+                throw new ArgumentException($"Property with name '{key}' not found or is not a string array with matching JSON property name.");
+            }
+            
+            string[] arrayProperty = (string[])userConfigValue;
             string[] updatedArray = new string[arrayProperty.Length + 1];
             arrayProperty.CopyTo(updatedArray, 0);
             updatedArray[arrayProperty.Length] = value;
@@ -38,8 +45,7 @@ public class ConfigurationManager : IConfigurationManager
         }
         else
         {
-            throw new ArgumentException(
-                $"Property with name '{key}' not found or is not a string array with matching JSON property name.");
+            throw new ArgumentException($"Property with name '{key}' not found or is not a string array with matching JSON property name.");
         }
 
         // write user config file
@@ -57,21 +63,27 @@ public class ConfigurationManager : IConfigurationManager
     {
         ConfigModel userConfig = await this.EnsureAsync(await this.LoadAsync(this._userConfigPath));
 
-        PropertyInfo property = userConfig.GetType().GetProperties()
+        PropertyInfo? property = userConfig.GetType().GetProperties()
             .FirstOrDefault(prop =>
                 prop.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name == key &&
                 prop.PropertyType == typeof(string[]));
 
-        if (property != null)
+        if (property is not null)
         {
-            string[] arrayProperty = (string[])property.GetValue(userConfig);
+            object? userConfigValue = property.GetValue(userConfig);
+
+            if (userConfigValue is null)
+            {
+                throw new ArgumentException($"Property with name '{key}' not found or is not a string array with matching JSON property name.");
+            }
+            
+            string[] arrayProperty = (string[])userConfigValue;
             string[] updatedArray = arrayProperty.Where(val => val != value).ToArray();
             property.SetValue(userConfig, updatedArray);
         }
         else
         {
-            throw new ArgumentException(
-                $"Property with name '{key}' not found or is not a string array with matching JSON property name.");
+            throw new ArgumentException($"Property with name '{key}' not found or is not a string array with matching JSON property name.");
         }
         
         // write user config file
@@ -94,6 +106,8 @@ public class ConfigurationManager : IConfigurationManager
 
     private async Task<ConfigModel> EnsureAsync(ConfigModel? userConfig)
     {
+        await Task.CompletedTask;
+        
         if (userConfig is null)
         {
             // no config
@@ -105,9 +119,9 @@ public class ConfigurationManager : IConfigurationManager
 
     private string GetJsonPropertyName(PropertyInfo property)
     {
-        JsonPropertyNameAttribute attribute = property.GetCustomAttribute<JsonPropertyNameAttribute>();
+        JsonPropertyNameAttribute? attribute = property.GetCustomAttribute<JsonPropertyNameAttribute>();
 
-        if (attribute != null)
+        if (attribute is not null)
         {
             return attribute.Name;
         }

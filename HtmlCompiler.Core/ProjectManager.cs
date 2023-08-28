@@ -61,7 +61,7 @@ public class ProjectManager : IProjectManager
             {
                 string entryFilePath = Path.Combine(extractPath, entry.FullName);
                 string canonicalDestinationPath = Path.GetFullPath(entryFilePath);
-                Directory.CreateDirectory(Path.GetDirectoryName(canonicalDestinationPath));
+                Directory.CreateDirectory(Path.GetDirectoryName(canonicalDestinationPath)!);
 
                 if (!entry.FullName.EndsWith("/")) // Ignoriere Verzeichniseinträge
                 {
