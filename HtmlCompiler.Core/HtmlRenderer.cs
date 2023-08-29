@@ -9,14 +9,13 @@ public class HtmlRenderer : IHtmlRenderer
 {
     private readonly Dictionary<int, Type> _renderingComponents = new()
     {
-        { 100, typeof(FileTagRenderer) },
-        { 200, typeof(LayoutRenderer) },
-        { 300, typeof(FileTagRenderer) },
-        { 400, typeof(CommentTagRenderer) },
-        { 500, typeof(HtmlEscapeBlockRenderer) },
-        { 600, typeof(StylePathRenderer) },
-        { 700, typeof(PageTitleRenderer) },
-        { 800, typeof(GlobalTagRenderer) },
+        { 100, typeof(LayoutRenderer) },
+        { 200, typeof(FileTagRenderer) },
+        { 300, typeof(CommentTagRenderer) },
+        { 400, typeof(HtmlEscapeBlockRenderer) },
+        { 500, typeof(StylePathRenderer) },
+        { 600, typeof(PageTitleRenderer) },
+        { 700, typeof(GlobalTagRenderer) },
         { 2000, typeof(MetaTagRenderer) }
     };
 
