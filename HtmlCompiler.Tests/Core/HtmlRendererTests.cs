@@ -36,7 +36,8 @@ public class HtmlRendererTests
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
-            cssOutputFilePath);
+            cssOutputFilePath,
+            null);
         
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
@@ -82,7 +83,8 @@ public class HtmlRendererTests
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
-            cssOutputFilePath);
+            cssOutputFilePath,
+            null);
         
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
@@ -132,7 +134,8 @@ public class HtmlRendererTests
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
-            cssOutputFilePath);
+            cssOutputFilePath,
+            null);
         
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
@@ -184,7 +187,8 @@ public class HtmlRendererTests
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
-            cssOutputFilePath);
+            cssOutputFilePath,
+            null);
         
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
@@ -234,7 +238,8 @@ public class HtmlRendererTests
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
-            cssOutputFilePath);
+            cssOutputFilePath,
+            null);
         
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);

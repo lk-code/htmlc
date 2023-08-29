@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace HtmlCompiler.Core.Renderer;
 
 public class RenderingConfiguration
@@ -7,4 +9,5 @@ public class RenderingConfiguration
     public string OutputDirectory { get; init; } = string.Empty;
     public string CssOutputFilePath { get; init; } = string.Empty;
     public string SourceFullFilePath { get; init; } = string.Empty;
+    public JsonElement? GlobalVariables { get; init; } = null;
 }

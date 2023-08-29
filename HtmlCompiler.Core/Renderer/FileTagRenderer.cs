@@ -5,6 +5,15 @@ namespace HtmlCompiler.Core.Renderer;
 
 public class FileTagRenderer : RenderingBase
 {
+    public FileTagRenderer(RenderingConfiguration configuration,
+        IFileSystemService fileSystemService,
+        IHtmlRenderer htmlRenderer)
+        : base(configuration,
+            fileSystemService,
+            htmlRenderer)
+    {
+    }
+
     /// <inheritdoc />
     public override async Task<string> RenderAsync(string content)
     {
@@ -20,20 +29,12 @@ public class FileTagRenderer : RenderingBase
             string fileContent = await this._htmlRenderer.RenderHtmlAsync(fullPath,
                 this._configuration.SourceDirectory,
                 this._configuration.OutputDirectory,
-                this._configuration.CssOutputFilePath);
+                this._configuration.CssOutputFilePath,
+                this._configuration.GlobalVariables);
 
             content = content.Replace(match.Value, fileContent);
         }
 
         return content;
-    }
-
-    public FileTagRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
-        IHtmlRenderer htmlRenderer)
-        : base(configuration,
-            fileSystemService,
-            htmlRenderer)
-    {
     }
 }

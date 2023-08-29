@@ -13,7 +13,7 @@ public class CLIManager : ICLIManager
 
     public string ExecuteCommand(string command)
     {
-        var processInfo = new ProcessStartInfo
+        ProcessStartInfo processInfo = new ProcessStartInfo
         {
             FileName = "bash", // Verwende eine Shell (z.B. bash) zum Ausführen des Befehls
             Arguments = $"-c \"{command}\"",
