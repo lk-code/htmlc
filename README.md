@@ -237,4 +237,4 @@ turns into
 
 this tool uses:
 * [Cocona (MIT)](https://github.com/mayuki/Cocona) for console app environment
-* [DartSassHost (MIT)](https://github.com/Taritsyn/DartSassHost) for scss compiling
+* [HtmlAgilityPack (MIT)](https://github.com/zzzprojects/html-agility-pack/) for html editing logic
