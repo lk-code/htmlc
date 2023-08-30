@@ -155,4 +155,31 @@ public class GlobalTagRendererTests
         // Assert
         Assert.AreEqual("Some content test-app and 4488 here.", result);
     }
+
+    [TestMethod]
+    public async Task RenderAsync_WithoutSpaceAfterKeyName_Returns()
+    {
+        // Arrange
+        string content = "Some content <h1>@Global:Application:Name</h1> (v@Global:Application:Version) here.";
+
+        RenderingConfiguration configuration = new RenderingConfiguration
+        {
+            BaseDirectory = "/project/src",
+            SourceDirectory = "/project/src",
+            OutputDirectory = "/project/dist",
+            CssOutputFilePath = "",
+            GlobalVariables = new DataBuilder()
+                .Add("Application", new DataBuilder()
+                    .Add("Name", "test-app")
+                    .Add("Version", "1.0")).Build().RootElement
+        };
+
+        this.CreateTestInstance(configuration);
+
+        // Act
+        string result = await this._instance.RenderAsync(content);
+
+        // Assert
+        Assert.AreEqual("Some content <h1>test-app</h1> (v1.0) here.", result);
+    }
 }
