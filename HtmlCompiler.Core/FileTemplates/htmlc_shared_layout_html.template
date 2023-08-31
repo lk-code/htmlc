@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>htmlc demo</title>
+        <title>@Global:Application:Name</title>
     </head>
     <body>
         @Body

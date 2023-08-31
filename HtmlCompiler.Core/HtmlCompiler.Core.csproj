@@ -50,5 +50,7 @@
 	  <EmbeddedResource Include="FileTemplates\htmlc_dockerfile.template" />
 	  <None Remove="FileTemplates\htmlc_vscode_settings_json.template" />
 	  <EmbeddedResource Include="FileTemplates\htmlc_vscode_settings_json.template" />
+	  <None Remove="FileTemplates\htmlc_global_json.template" />
+	  <EmbeddedResource Include="FileTemplates\htmlc_global_json.template" />
 	</ItemGroup>
 </Project>
