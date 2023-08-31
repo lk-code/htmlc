@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using FluentAssertions;
+using FluentDataBuilder;
+using FluentDataBuilder.Json;
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
 using Moq;
@@ -201,22 +203,27 @@ public class HtmlRendererTests
         string sourceDirectory = "/project/src";
         string outputDirectory = "/project/dist";
         string? cssOutputFilePath = null;
+        IDataBuilder dataBuilder = new DataBuilder()
+            .Add("Application", new DataBuilder()
+                .Add("Name", "htmlc demo")
+                .Add("Version", "v1.0.7"));
         
         var expectedHtml = new StringBuilder()
             .AppendLine("<html>")
             .AppendLine("<head>")
-            .AppendLine("<title>Demo</title>")
+            .AppendLine("<title>htmlc demo</title>")
             .AppendLine("<meta name=\"generator\" content=\"htmlc\">")
             .AppendLine("</head>")
             .AppendLine("<body>")
             .AppendLine("<h1>Hello World!</h1>")
+            .AppendLine("<pre>v1.0.7</pre>")
             .AppendLine("</body>")
             .AppendLine("</html>")
             .ToString().Trim();
 
         var indexContent = new StringBuilder()
             .AppendLine("@Layout=_layoutbase.html")
-            .AppendLine("@PageTitle=Demo")
+            .AppendLine("@PageTitle=@Global:Application:Name")
             .AppendLine("<h1>Hello World!</h1>")
             .ToString().Trim();
         this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
@@ -229,6 +236,7 @@ public class HtmlRendererTests
             .AppendLine("</head>")
             .AppendLine("<body>")
             .AppendLine("@Body")
+            .AppendLine("<pre>@Global:Application:Version</pre>")
             .AppendLine("</body>")
             .AppendLine("</html>")
             .ToString().Trim();
@@ -239,7 +247,7 @@ public class HtmlRendererTests
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
-            null);
+            dataBuilder.Build().RootElement);
         
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);

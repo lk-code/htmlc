@@ -13,9 +13,9 @@ public class HtmlRenderer : IHtmlRenderer
         { 200, typeof(FileTagRenderer) },
         { 300, typeof(CommentTagRenderer) },
         { 400, typeof(HtmlEscapeBlockRenderer) },
-        { 500, typeof(StylePathRenderer) },
-        { 600, typeof(PageTitleRenderer) },
-        { 700, typeof(GlobalTagRenderer) },
+        { 500, typeof(GlobalTagRenderer) },
+        { 600, typeof(StylePathRenderer) },
+        { 700, typeof(PageTitleRenderer) },
         { 2000, typeof(MetaTagRenderer) }
     };
 
