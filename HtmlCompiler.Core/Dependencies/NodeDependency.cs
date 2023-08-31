@@ -20,6 +20,8 @@ public class NodeDependency : IDependencyObject
 
     public async Task<bool> CheckAsync()
     {
+        await Task.CompletedTask;
+
         string result = string.Empty;
 
         try
@@ -46,6 +48,8 @@ public class NodeDependency : IDependencyObject
 
     public async Task SetupAsync()
     {
+        await Task.CompletedTask;
+
         throw new DependencySetupFailedException("Please install NodeJS from the official website and try again :)");
     }
 }

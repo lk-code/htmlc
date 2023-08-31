@@ -1,3 +1,4 @@
+using System.Text.Json;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
@@ -8,14 +9,13 @@ public class HtmlRenderer : IHtmlRenderer
 {
     private readonly Dictionary<int, Type> _renderingComponents = new()
     {
-        { 100, typeof(FileTagRenderer) },
-        { 200, typeof(LayoutRenderer) },
-        { 300, typeof(FileTagRenderer) },
-        { 400, typeof(CommentTagRenderer) },
-        { 500, typeof(HtmlEscapeBlockRenderer) },
+        { 100, typeof(LayoutRenderer) },
+        { 200, typeof(FileTagRenderer) },
+        { 300, typeof(CommentTagRenderer) },
+        { 400, typeof(HtmlEscapeBlockRenderer) },
+        { 500, typeof(GlobalTagRenderer) },
         { 600, typeof(StylePathRenderer) },
         { 700, typeof(PageTitleRenderer) },
-        { 800, typeof(GlobalTagRenderer) },
         { 2000, typeof(MetaTagRenderer) }
     };
 
@@ -30,7 +30,8 @@ public class HtmlRenderer : IHtmlRenderer
     public async Task<string> RenderHtmlAsync(string sourceFullFilePath,
         string sourceDirectory,
         string outputDirectory,
-        string? cssOutputFilePath)
+        string? cssOutputFilePath,
+        JsonElement? globalVariables)
     {
         sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
         string originalContent = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
@@ -41,7 +42,8 @@ public class HtmlRenderer : IHtmlRenderer
             SourceDirectory = sourceDirectory,
             OutputDirectory = outputDirectory,
             CssOutputFilePath = cssOutputFilePath!,
-            SourceFullFilePath = sourceFullFilePath
+            SourceFullFilePath = sourceFullFilePath,
+            GlobalVariables = globalVariables
         };
         
         IEnumerable<IRenderingComponent> renderingComponents = this._renderingComponents

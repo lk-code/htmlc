@@ -1,4 +1,5 @@
-﻿using HtmlCompiler.Core.Exceptions;
+﻿using System.Text.Json;
+using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -159,7 +160,7 @@ public class FileWatcher : IFileWatcher
     private async Task CompileFilesAsync()
     {
         IEnumerable<string> files = Enumerable.Empty<string>();
-        
+
         try
         {
             Console.WriteLine($"compiling...");
@@ -174,6 +175,24 @@ public class FileWatcher : IFileWatcher
             {
                 return;
             }
+        }
+
+        JsonElement? globalVariables = null;
+        try
+        {
+            string? configGlobalFileName = this._configuration.GetValue<string>("project-global-file");
+            string globalVariablesFilePath = $"{this._sourceDirectoryPath}/{configGlobalFileName}";
+            string? globalVariablesJsonContent =
+                await this._fileSystemService.FileReadAllTextAsync(globalVariablesFilePath);
+
+            if (!string.IsNullOrEmpty(globalVariablesJsonContent))
+            {
+                globalVariables = JsonSerializer.Deserialize<JsonElement>(globalVariablesJsonContent);
+            }
+        }
+        catch (FileNotFoundException err)
+        {
+            Console.WriteLine($"ERR: file {err.FileName} not found");
         }
 
         string? cssOutputFilePath = null;
@@ -216,7 +235,9 @@ public class FileWatcher : IFileWatcher
         try
         {
             // compile html
-            await this.RenderHtmlFiles(files, cssOutputFilePath);
+            await this.RenderHtmlFiles(files,
+                cssOutputFilePath,
+                globalVariables);
 
             // copy additional assets (like js, css, images, etc.)
             this.CopyAssetsToOutput(files);
@@ -281,7 +302,9 @@ public class FileWatcher : IFileWatcher
         }
     }
 
-    private async Task RenderHtmlFiles(IEnumerable<string> files, string? cssOutputFilePath)
+    private async Task RenderHtmlFiles(IEnumerable<string> files,
+        string? cssOutputFilePath,
+        JsonElement? globalVariables)
     {
         List<string> sourceFiles = GetHtmlFiles(files);
 
@@ -305,11 +328,12 @@ public class FileWatcher : IFileWatcher
             {
                 string renderedContent = await this._htmlRenderer.RenderHtmlAsync(
                     fileToCompile,
-                    this._sourceDirectoryPath, 
+                    this._sourceDirectoryPath,
                     this._outputDirectoryPath,
-                    cssOutputFilePath);
+                    cssOutputFilePath,
+                    globalVariables);
 
-                await this._fileSystemService.FileWriteAllTextAsync(outputFile, 
+                await this._fileSystemService.FileWriteAllTextAsync(outputFile,
                     renderedContent);
             }
             catch (FileNotFoundException err)

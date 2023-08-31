@@ -14,7 +14,7 @@ public class LessDependency : IDependencyObject
 
     public List<IDependencyObject> Dependencies { get; } = new()
     {
-        new NodeDependency(null)
+        new NodeDependency(null!)
     };
 
     public LessDependency(ICLIManager cliManager)
@@ -24,6 +24,8 @@ public class LessDependency : IDependencyObject
 
     public async Task<bool> CheckAsync()
     {
+        await Task.CompletedTask;
+
         string result = string.Empty;
 
         try
@@ -49,6 +51,8 @@ public class LessDependency : IDependencyObject
 
     public async Task SetupAsync()
     {
+        await Task.CompletedTask;
+
         try
         {
             this._cliManager.ExecuteCommand("npm install -g less");

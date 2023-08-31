@@ -25,9 +25,6 @@ static class Program
         // if not exists => create
         EnsureUserConfigFile(userConfigPath);
 
-        // upgrade config to latest model
-        UpgradeUserConfigJson(userConfigPath);
-
         // ensure cache directory
         EnsureUserCacheDirectory(userCacheDirectoryPath);
 
@@ -91,17 +88,5 @@ static class Program
 
             File.SetAttributes(userConfigPath, FileAttributes.Hidden);
         }
-    }
-
-    private static void UpgradeUserConfigJson(string userConfigPath)
-    {
-        string userConfigJson = File.ReadAllText(userConfigPath);
-        ConfigModel basicConfiguration = JsonSerializer.Deserialize<ConfigModel>(userConfigJson);
-        string basicJsonConfiguration = JsonSerializer.Serialize(basicConfiguration);
-        
-        using StreamWriter sw = File.CreateText(userConfigPath);
-        sw.WriteLine(basicJsonConfiguration);
-
-        File.SetAttributes(userConfigPath, FileAttributes.Hidden);
     }
 }

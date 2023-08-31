@@ -10,6 +10,15 @@ public class PageTitleRenderer : RenderingBase
     private static readonly Regex TitleDeclarationRegex = new Regex(PAGETITLE_TAG + @"=(.*?)(\r\n|\n|$)", RegexOptions.Compiled, TimeSpan.FromSeconds(10));
     private static readonly Regex TitleUseRegex = new Regex(PAGETITLE_TAG, RegexOptions.Compiled, TimeSpan.FromSeconds(10));
 
+    public PageTitleRenderer(RenderingConfiguration configuration,
+        IFileSystemService fileSystemService,
+        IHtmlRenderer htmlRenderer)
+        : base(configuration,
+            fileSystemService,
+            htmlRenderer)
+    {
+    }
+    
     public override async Task<string> RenderAsync(string content)
     {
         await Task.CompletedTask;
@@ -25,14 +34,5 @@ public class PageTitleRenderer : RenderingBase
         content = TitleUseRegex.Replace(content, match => pageTitle);
 
         return content;
-    }
-
-    public PageTitleRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
-        IHtmlRenderer htmlRenderer)
-        : base(configuration,
-            fileSystemService,
-            htmlRenderer)
-    {
     }
 }

@@ -1,4 +1,4 @@
-using System.Text;
+using System.Text.Json;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
 using Moq;
@@ -44,7 +44,8 @@ public class FileTagRendererTests
                 It.IsAny<string>(), 
                 It.IsAny<string>(), 
                 It.IsAny<string>(), 
-                It.IsAny<string>()))
+                It.IsAny<string>(),
+                It.IsAny<JsonElement?>()))
             .ReturnsAsync(fileContent);
 
         // Act

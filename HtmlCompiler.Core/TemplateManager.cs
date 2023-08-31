@@ -45,9 +45,9 @@ public class TemplateManager : ITemplateManager
         {
             Uri repositoryUri = new Uri($"{repository}index.json");
             string content = await this._httpClientService.GetAsync(repositoryUri);
-            TemplateIndex templateIndex = JsonSerializer.Deserialize<TemplateIndex>(content);
+            TemplateIndex? templateIndex = JsonSerializer.Deserialize<TemplateIndex>(content);
 
-            indexContents.Add(repository, templateIndex.Templates);
+            indexContents.Add(repository, templateIndex!.Templates);
         }
 
         IEnumerable<Template> templates = indexContents
@@ -86,7 +86,7 @@ public class TemplateManager : ITemplateManager
     /// <inheritdoc />
     public async Task<string> DownloadTemplateAsync(Template template)
     {
-        string userCacheDirectoryPath = this._configuration.GetValue<string>("Core:UserCacheDirectoryPath");
+        string userCacheDirectoryPath = this._configuration.GetValue<string>("Core:UserCacheDirectoryPath") ?? string.Empty;
         string templateCacheDirectory = $"{userCacheDirectoryPath}/templates";
         string outputFilePath = $"{templateCacheDirectory}/{Path.GetFileName(template.FileName)}";
         
