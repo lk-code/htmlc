@@ -18,7 +18,7 @@ public class GlobalTagRenderer : RenderingBase
 
     public override async Task<string> RenderAsync(string content)
     {
-        string pattern = @"@Global:([^ ]+)";
+        string pattern = @"@Global:([a-zA-Z0-9:]+(?![a-zA-Z0-9:]))";
         Regex regex = new Regex(pattern);
 
         MatchCollection matches = regex.Matches(content);
