@@ -32,11 +32,10 @@
 		</AssemblyAttribute>
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="FluentDataBuilder.Json" Version="1.1.27" />
+	  <PackageReference Include="FluentDataBuilder.Json" Version="1.1.33" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
 	  <PackageReference Include="HtmlAgilityPack" Version="1.11.52" />
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <PackageReference Include="System.Text.Json" Version="7.0.3" />
 	</ItemGroup>
 	<ItemGroup>
