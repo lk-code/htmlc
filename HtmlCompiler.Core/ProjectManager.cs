@@ -23,6 +23,7 @@ public class ProjectManager : IProjectManager
         {
             { ".gitignore", "htmlc_gitignore" },
             { "src/index.html", "htmlc_index_html" },
+            { "src/global.json", "htmlc_global_json" },
             { "src/shared/_layout.html", "htmlc_shared_layout_html" },
             { "dist", "" }
         };
