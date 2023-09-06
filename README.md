@@ -17,39 +17,40 @@ This is the HTML Compiler Tool for your cli. htmlc is a small tool with which ve
 
 ## content
 
- - [content](#content)
- - [installation and update](#installation-and-update)
-   - [update htmlc](#update-htmlc)
- - [usage](#usage)
- - [commands](#commands)
-   - [new-command](#new-command)
-     - [options](#options)
-   - [compile-command](#compile-command)
-   - [watch-command](#watch-command)
- - [html files](#html-files)
-   - [different html types](#different-html-types)
-     - [entry html](#entry-html)
-     - [layout](#layout)
-     - [reusable components](#reusable-components)
-   - [supported tags and its functionality](#supported-tags-and-its-functionality)
-     - [The @PageTitle-Tag](#the-pagetitle-tag)
-     - [The @Layout-Tag](#the-layout-tag)
-     - [The @Body-Tag](#the-body-tag)
-     - [The @File-Tag](#the-file-tag)
-     - [The @StylePath-Tag](#the-stylepath-tag)
-     - [The @Comment-Tag](#the-comment-tag)
-     - [The @StartHtmlSpecialChars and @EndHtmlSpecialChars-Tag](#the-starthtmlspecialchars-and-endhtmlspecialchars-tag)
+- [content](#content)
+- [installation and update](#installation-and-update)
+    - [update htmlc](#update-htmlc)
+- [usage](#usage)
+- [commands](#commands)
+    - [new-command](#new-command)
+        - [options](#options)
+    - [compile-command](#compile-command)
+    - [watch-command](#watch-command)
+- [html files](#html-files)
+    - [different html types](#different-html-types)
+        - [entry html](#entry-html)
+        - [layout](#layout)
+        - [reusable components](#reusable-components)
+    - [supported tags and its functionality](#supported-tags-and-its-functionality)
+        - [The @PageTitle-Tag](#the-pagetitle-tag)
+        - [The @Layout-Tag](#the-layout-tag)
+        - [The @Body-Tag](#the-body-tag)
+        - [The @File-Tag](#the-file-tag)
+        - [The @StylePath-Tag](#the-stylepath-tag)
+        - [The @Comment-Tag](#the-comment-tag)
+        - [The @Global-Tag](#the-global-tag)
+        - [The @StartHtmlSpecialChars and @EndHtmlSpecialChars-Tag](#the-starthtmlspecialchars-and-endhtmlspecialchars-tag)
 
 ## installation and update
 
 1.  install the .NET Runtime
-you need to install the .NET Runtime (its free and available for macos, linux and windows)
+    you need to install the .NET Runtime (its free and available for macos, linux and windows)
 * [macOS](https://learn.microsoft.com/en-us/dotnet/core/install/macos)
 * [Windows](https://learn.microsoft.com/en-us/dotnet/core/install/windows)
 * [Linux](https://learn.microsoft.com/en-us/dotnet/core/install/linux)
 
 2. install the tool
-then you can install the html-tool very simple via this command:
+   then you can install the html-tool very simple via this command:
 
 `dotnet tool install --global htmlc`
 
@@ -69,9 +70,9 @@ The new command creates a new project at the current folder location. The projec
 
 - **.gitignore** - the git ignore file
 - **/src** - the source directory for your files
-  - **/src/index.html** - the html index file
-  - **/src/shared** - the directory for alle shared components (like layout, etc.)
-    - **/src/shared/_layout.html** - the layout file for all html files  
+    - **/src/index.html** - the html index file
+    - **/src/shared** - the directory for alle shared components (like layout, etc.)
+        - **/src/shared/_layout.html** - the layout file for all html files
 - **/dist** - the output directory
 
 #### options
@@ -187,7 +188,36 @@ htmlc can also compile style files (scss or sass). the path of the compiled CSS 
 `<link rel="stylesheet" href="@StylePath">`<br />
 
 #### The @Comment-Tag
-You can generate a HTML comment tag:
+Creates an HTML comment:
+
+`@Comment=Example-Text`<br />
+
+`<!-- Example-Text -->`<br />
+
+#### The @Global-Tag
+htmlc supports Global Variables. These are loaded from a JSON file. By default, the global.json file in the root directory of the project is configured for this (Which file to load can be configured in the .htmlc file).
+
+You can load all JSON entries via the @Global tag and thus write them to the HTML.
+
+**global.json** (Global Variables File)
+
+`{`<br />
+`    "Application": {`<br />
+`        "Name": "title of website"`<br />
+`    }`<br />
+`}`<br />
+
+**index.html** (Sample HTML File)
+
+`<div>`<br />
+`    <h1>@Global:Application:Name</h1>`<br />
+`</div>`<br />
+
+**result**
+
+`<div>`<br />
+`    <h1>title of website</h1>`<br />
+`</div>`<br />
 
 #### The @StartHtmlSpecialChars and @EndHtmlSpecialChars-Tag
 You can escape special characters in a section HTML.
@@ -207,31 +237,31 @@ turns into
 2. create an initial entry file **index.html**.
 3. create a layout file **_layout.html**.
 4. write the following basic HTML structure in the **_layout.html** file.<br />
-`<html>`<br />
-`    <head>`<br />
-`    </head>`<br />
-`    <body>`<br />
-`        @Body`<br />
-`    </body>`<br />
-`</html>`<br />
+   `<html>`<br />
+   `    <head>`<br />
+   `    </head>`<br />
+   `    <body>`<br />
+   `        @Body`<br />
+   `    </body>`<br />
+   `</html>`<br />
 5. write the following example in **index.html**.<br />
-`@Layout=_layout.html`<br />
-`<section>`<br />
-`    <div>Hello again</div>`<br />
-`</section>`<br />
+   `@Layout=_layout.html`<br />
+   `<section>`<br />
+   `    <div>Hello again</div>`<br />
+   `</section>`<br />
 6. open the console of your choice and change to the project directory. (**/src** and **/dist** must be in it).
 7. type the following command:<br />
-`htmlc compile`<br />
+   `htmlc compile`<br />
 8. under **/dist** should now appear a file **index.html** with the following content:<br />
-`<html>`<br />
-`    <head>`<br />
-`    </head>`<br />
-`    <body>`<br />
-`        <section>`<br />
-`            <div>Hello again</div>`<br />
-`        </section>`<br />
-`    </body>`<br />
-`</html>`<br />
+   `<html>`<br />
+   `    <head>`<br />
+   `    </head>`<br />
+   `    <body>`<br />
+   `        <section>`<br />
+   `            <div>Hello again</div>`<br />
+   `        </section>`<br />
+   `    </body>`<br />
+   `</html>`<br />
 
 ## notices
 
