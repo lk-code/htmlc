@@ -122,8 +122,8 @@ public class ProjectManager : IProjectManager
     public async Task AddTemplateAsync(string downloadedTemplatePath, string sourcePath)
     {
         // cleanup source directoy
-        Directory.Delete(sourcePath, recursive: true);
-        Directory.CreateDirectory(sourcePath);
+        // Directory.Delete(sourcePath, recursive: true);
+        // Directory.CreateDirectory(sourcePath);
         
         // load template
         await this.ExtractZipAsync(downloadedTemplatePath, sourcePath);
