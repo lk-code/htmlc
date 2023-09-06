@@ -52,11 +52,15 @@ This is the HTML Compiler Tool for your cli. htmlc is a small tool with which ve
 2. install the tool
    then you can install the html-tool very simple via this command:
 
-`dotnet tool install --global htmlc`
+```
+dotnet tool install --global htmlc
+```
 
 ### update htmlc
 
-`dotnet tool update --global htmlc`
+```
+dotnet tool update --global htmlc
+```
 
 ## usage
 
