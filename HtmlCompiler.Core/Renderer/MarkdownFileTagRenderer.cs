@@ -1,13 +1,14 @@
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Interfaces;
+using Markdig;
 
 namespace HtmlCompiler.Core.Renderer;
 
-public class FileTagRenderer : RenderingBase
+public class MarkdownFileTagRenderer : RenderingBase
 {
-    public const string RENDERER_TAG = @"@File=([^\s]+)";
+    public const string RENDERER_TAG = @"@MarkdownFile=([^\s]+)";
 
-    public FileTagRenderer(RenderingConfiguration configuration,
+    public MarkdownFileTagRenderer(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
@@ -27,14 +28,18 @@ public class FileTagRenderer : RenderingBase
 
             string fullPath = Path.Combine(this._configuration.BaseDirectory, fileValue);
 
-            // render the new file and return the rendered content
-            string fileContent = await this._htmlRenderer.RenderHtmlAsync(fullPath,
-                this._configuration.SourceDirectory,
-                this._configuration.OutputDirectory,
-                this._configuration.CssOutputFilePath,
-                this._configuration.GlobalVariables);
+            if (this._fileSystemService.FileExists(fullPath) == false)
+            {
+                continue;
+            }
 
-            content = content.Replace(match.Value, fileContent);
+            // load content
+            string markdownContent = await this._fileSystemService.FileReadAllTextAsync(fullPath);
+            
+            // render markdown to html
+            string renderedMarkdownContent = Markdown.ToHtml(markdownContent);
+
+            content = content.Replace(match.Value, renderedMarkdownContent);
         }
 
         return content;

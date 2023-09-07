@@ -11,11 +11,12 @@ public class HtmlRenderer : IHtmlRenderer
     {
         { 100, typeof(LayoutRenderer) },
         { 200, typeof(FileTagRenderer) },
-        { 300, typeof(CommentTagRenderer) },
-        { 400, typeof(HtmlEscapeBlockRenderer) },
-        { 500, typeof(GlobalTagRenderer) },
-        { 600, typeof(StylePathRenderer) },
-        { 700, typeof(PageTitleRenderer) },
+        { 300, typeof(MarkdownFileTagRenderer) },
+        { 400, typeof(CommentTagRenderer) },
+        { 500, typeof(HtmlEscapeBlockRenderer) },
+        { 600, typeof(GlobalTagRenderer) },
+        { 700, typeof(StylePathRenderer) },
+        { 800, typeof(PageTitleRenderer) },
         { 2000, typeof(MetaTagRenderer) }
     };
 
