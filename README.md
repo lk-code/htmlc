@@ -36,6 +36,7 @@ This is the HTML Compiler Tool for your cli. htmlc is a small tool with which ve
         - [The @Layout-Tag](#the-layout-tag)
         - [The @Body-Tag](#the-body-tag)
         - [The @File-Tag](#the-file-tag)
+        - [The @MarkdownFile-Tag](#the-markdown-file-tag)
         - [The @StylePath-Tag](#the-stylepath-tag)
         - [The @Comment-Tag](#the-comment-tag)
         - [The @Global-Tag](#the-global-tag)
@@ -198,6 +199,9 @@ The **@Body** tag determines in a layout file where the content from the actual 
 
 #### The @File-Tag
 You can include another file with the **@File** tag in any HTML file (whether layout file. reusable file or entry file).
+
+#### The @MarkdownFile-Tag
+You can include markdown code from files with the **@MarkdownFile** tag in any HTML file (whether layout file. reusable file or entry file). The Markdown code will be rendered in HTML.
 
 #### The @StylePath-Tag
 htmlc can also compile style files (scss or sass). the path of the compiled CSS file can be inserted using this **@StylePath** tag. The following usage makes sense:<br />
