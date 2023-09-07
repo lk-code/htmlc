@@ -4,7 +4,7 @@ using FluentDataBuilder;
 using FluentDataBuilder.Json;
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
-using Moq;
+using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core;
 
@@ -12,14 +12,14 @@ namespace HtmlCompiler.Tests.Core;
 public class HtmlRendererTests
 {
     private HtmlRenderer _instance = null!;
-    private Mock<IFileSystemService> _fileSystemService = null!;
+    private IFileSystemService _fileSystemService = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = new Mock<IFileSystemService>();
+        this._fileSystemService = Substitute.For<IFileSystemService>();
         
-        this._instance = new HtmlRenderer(this._fileSystemService.Object);
+        this._instance = new HtmlRenderer(this._fileSystemService);
     }
 
     [TestMethod]
@@ -32,8 +32,8 @@ public class HtmlRendererTests
         
         string expectedHtml = "Hello World!";
 
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
-            .ReturnsAsync("Hello World!");
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/index.html")
+            .Returns("Hello World!");
         
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,
@@ -77,10 +77,10 @@ public class HtmlRendererTests
             .AppendLine("<h1>Hello World!</h1>")
             .ToString().Trim();
 
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
-            .ReturnsAsync(contentHtml);
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html"))
-            .ReturnsAsync(layoutHtml);
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/index.html")
+            .Returns(contentHtml);
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
+            .Returns(layoutHtml);
         
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,
@@ -117,8 +117,8 @@ public class HtmlRendererTests
             .AppendLine("@PageTitle=Demo")
             .AppendLine("<h1>Hello World!</h1>")
             .ToString().Trim();
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
-            .ReturnsAsync(indexContent);
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/index.html")
+            .Returns(indexContent);
         
         var layoutContent = new StringBuilder()
             .AppendLine("<html>")
@@ -130,8 +130,8 @@ public class HtmlRendererTests
             .AppendLine("</body>")
             .AppendLine("</html>")
             .ToString().Trim();
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html"))
-            .ReturnsAsync(layoutContent);
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
+            .Returns(layoutContent);
         
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,
@@ -169,8 +169,8 @@ public class HtmlRendererTests
             .AppendLine("@PageTitle=Demo")
             .AppendLine("<h1>Hello World!</h1>")
             .ToString().Trim();
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
-            .ReturnsAsync(indexContent);
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/index.html")
+            .Returns(indexContent);
         
         var layoutContent = new StringBuilder()
             .AppendLine("<html>")
@@ -183,8 +183,8 @@ public class HtmlRendererTests
             .AppendLine("</body>")
             .AppendLine("</html>")
             .ToString().Trim();
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html"))
-            .ReturnsAsync(layoutContent);
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
+            .Returns(layoutContent);
         
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,
@@ -226,8 +226,8 @@ public class HtmlRendererTests
             .AppendLine("@PageTitle=@Global:Application:Name")
             .AppendLine("<h1>Hello World!</h1>")
             .ToString().Trim();
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/index.html"))
-            .ReturnsAsync(indexContent);
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/index.html")
+            .Returns(indexContent);
         
         var layoutContent = new StringBuilder()
             .AppendLine("<html>")
@@ -240,8 +240,8 @@ public class HtmlRendererTests
             .AppendLine("</body>")
             .AppendLine("</html>")
             .ToString().Trim();
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html"))
-            .ReturnsAsync(layoutContent);
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
+            .Returns(layoutContent);
         
         string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
             sourceDirectory,

@@ -1,6 +1,4 @@
-using System.Text;
 using FluentDataBuilder;
-using FluentDataBuilder.Json;
 using FluentDataBuilder.Microsoft.Extensions.Configuration;
 using HtmlCompiler.Commands;
 using HtmlCompiler.Core.Interfaces;
@@ -33,6 +31,6 @@ public class EnvironmentCommandTests
         IDataBuilder dataBuilder = new DataBuilder();
         this.CreateTestInstance(dataBuilder.ToConfiguration());
 
-        this._instance.Check();
+        await this._instance.Check();
     }
 }

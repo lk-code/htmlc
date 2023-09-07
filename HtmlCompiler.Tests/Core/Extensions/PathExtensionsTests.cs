@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Tests.Helper;
 

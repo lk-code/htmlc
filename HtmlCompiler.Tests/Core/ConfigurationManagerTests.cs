@@ -2,7 +2,7 @@ using System.Text.Json;
 using HtmlCompiler.Config;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
-using Moq;
+using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core;
 
@@ -11,14 +11,15 @@ public class ConfigurationManagerTests
 {
     private string _userConfigPath = "/.htmlc";
     private ConfigurationManager _instance = null!;
-    private Mock<IFileSystemService> _fileSystemService = null!;
+    private IFileSystemService _fileSystemService = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = new Mock<IFileSystemService>();
+        this._fileSystemService = Substitute.For<IFileSystemService>();
 
-        this._instance = new ConfigurationManager(this._userConfigPath, this._fileSystemService.Object);
+        this._instance = new ConfigurationManager(this._userConfigPath,
+            this._fileSystemService);
     }
 
     [TestMethod]
@@ -29,19 +30,19 @@ public class ConfigurationManagerTests
 
         ConfigModel config = new();
         string configJson = JsonSerializer.Serialize(config);
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync(this._userConfigPath))
-            .ReturnsAsync(configJson);
+        this._fileSystemService.FileReadAllTextAsync(this._userConfigPath)
+            .Returns(configJson);
 
-        this._instance.AddAsync(key, value);
+        await this._instance.AddAsync(key, value);
 
         ConfigModel expectedConfig = new();
         expectedConfig.BuildBlackList = new string[] { ".png" };
         string expectedJson = JsonSerializer.Serialize(expectedConfig);
-        this._fileSystemService.Verify(fs =>
-            fs.FileWriteAllTextAsync(
-                this._userConfigPath,
-                It.Is<string>(content => content.Contains(expectedJson))
-            ), Times.Once);
+        await this._fileSystemService.Received(1).FileWriteAllTextAsync(
+            this._userConfigPath,
+            Arg.Is<string>(content => content.Contains(expectedJson))
+        );
+
     }
 
     [TestMethod]
@@ -53,18 +54,18 @@ public class ConfigurationManagerTests
         ConfigModel config = new();
         config.BuildBlackList = new string[] { ".png", ".jpeg", ".svg" };
         string configJson = JsonSerializer.Serialize(config);
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync(this._userConfigPath))
-            .ReturnsAsync(configJson);
+        this._fileSystemService.FileReadAllTextAsync(this._userConfigPath)
+            .Returns(configJson);
 
-        this._instance.RemoveAsync(key, value);
+        await this._instance.RemoveAsync(key, value);
 
         ConfigModel expectedConfig = new();
         expectedConfig.BuildBlackList = new string[] { ".jpeg", ".svg" };
         string expectedJson = JsonSerializer.Serialize(expectedConfig);
-        this._fileSystemService.Verify(fs =>
-            fs.FileWriteAllTextAsync(
-                this._userConfigPath,
-                It.Is<string>(content => content.Contains(expectedJson))
-            ), Times.Once);
+        await this._fileSystemService.Received(1).FileWriteAllTextAsync(
+            this._userConfigPath,
+            Arg.Is<string>(content => content.Contains(expectedJson))
+        );
+
     }
 }

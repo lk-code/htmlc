@@ -1,13 +1,11 @@
 using FluentAssertions;
 using FluentDataBuilder;
-using FluentDataBuilder.Json;
 using HtmlCompiler.Config;
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
-using System.Text;
 using FluentDataBuilder.Microsoft.Extensions.Configuration;
 
 namespace HtmlCompiler.Tests.Core;
@@ -16,7 +14,6 @@ namespace HtmlCompiler.Tests.Core;
 public class TemplateManagerTests
 {
     private TemplateManager _instance = null!;
-    private IConfiguration _configuration = null!;
     private IConfigurationManager _configurationManager = null!;
     private IHttpClientService _httpClientService = null!;
 

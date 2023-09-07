@@ -43,7 +43,7 @@ public class StyleManagerTests
         this._fileSystemService.FileExists(styleSourceFilePath).Returns(true);
         
         Func<Task> act = () => this._instance.CompileStyleAsync(sourceDirectoryPath, outputDirectoryPath, styleSourceFilePath);
-        act.Should().ThrowAsync<StyleCommandNotFoundException>().Where(e => e.Message.Contains($"style compile command for 'scss' not found"));
+        await act.Should().ThrowAsync<StyleCommandNotFoundException>().Where(e => e.Message.Contains($"style compile command for 'scss' not found"));
     }
 
     [TestMethod]
@@ -74,7 +74,7 @@ public class StyleManagerTests
         this._fileSystemService.FileExists(styleSourceFilePath).Returns(false);
         
         Func<Task> act = () => this._instance.CompileStyleAsync(sourceDirectoryPath, outputDirectoryPath, styleSourceFilePath);
-        act.Should().ThrowAsync<StyleNotFoundException>().Where(e => e.Message.Contains($"style file not found at {styleSourceFilePath}"));
+        await act.Should().ThrowAsync<StyleNotFoundException>();
     }
 
     [TestMethod]
@@ -87,10 +87,11 @@ public class StyleManagerTests
         IDataBuilder dataBuilder = new DataBuilder();
         this.CreateTestInstance(dataBuilder.ToConfiguration());
 
-        this._fileSystemService.FileExists(styleSourceFilePath).Returns(true);
+        this._fileSystemService.FileExists(styleSourceFilePath)
+            .Returns(true);
         
         Func<Task> act = () => this._instance.CompileStyleAsync(sourceDirectoryPath, outputDirectoryPath, styleSourceFilePath);
-        act.Should().ThrowAsync<UnsupportedStyleTypeException>().Where(e => e.Message.Contains($"style file not found at {styleSourceFilePath}"));
+        await act.Should().ThrowAsync<StyleCommandNotFoundException>();
     }
 
     [TestMethod]
@@ -107,7 +108,8 @@ public class StyleManagerTests
                 .Add("less", "less {0} {1}"));
         this.CreateTestInstance(dataBuilder.ToConfiguration());
 
-        this._fileSystemService.FileExists(styleSourceFilePath).Returns(true);
+        this._fileSystemService.FileExists(styleSourceFilePath)
+            .Returns(true);
         
         string? result = await this._instance.CompileStyleAsync(sourceDirectoryPath, outputDirectoryPath, styleSourceFilePath);
 

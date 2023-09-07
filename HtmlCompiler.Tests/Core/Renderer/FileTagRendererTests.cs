@@ -1,7 +1,7 @@
 using System.Text.Json;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
-using Moq;
+using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core.Renderer;
 
@@ -9,14 +9,15 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 public class FileTagRendererTests
 {
     private FileTagRenderer _instance = null!;
-    private Mock<IFileSystemService> _fileSystemService = null!;
-    private Mock<IHtmlRenderer> _htmlRenderer = null!;
+    private IFileSystemService _fileSystemService = null!;
+    private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = new Mock<IFileSystemService>();
-        this._htmlRenderer = new Mock<IHtmlRenderer>();
+        this._fileSystemService = Substitute.For<IFileSystemService>();
+        this._htmlRenderer = Substitute.For<IHtmlRenderer>();
+        
         RenderingConfiguration configuration = new RenderingConfiguration
         {
             BaseDirectory = "/project/src",
@@ -26,8 +27,8 @@ public class FileTagRendererTests
         };
 
         this._instance = new FileTagRenderer(configuration,
-            this._fileSystemService.Object,
-            this._htmlRenderer.Object);
+            this._fileSystemService,
+            this._htmlRenderer);
     }
 
     [TestMethod]
@@ -38,15 +39,15 @@ public class FileTagRendererTests
         string fileContent = "Rendered file content";
 
         // Mock the FileExists method to return true for this test
-        this._fileSystemService.Setup(f => f.FileExists(It.IsAny<string>())).Returns(true);
+        this._fileSystemService.FileExists(Arg.Any<string>()).Returns(true);
 
-        this._htmlRenderer.Setup(r => r.RenderHtmlAsync(
-                It.IsAny<string>(), 
-                It.IsAny<string>(), 
-                It.IsAny<string>(), 
-                It.IsAny<string>(),
-                It.IsAny<JsonElement?>()))
-            .ReturnsAsync(fileContent);
+        this._htmlRenderer.RenderHtmlAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<JsonElement?>())
+            .Returns(fileContent);
 
         // Act
         string result = await this._instance.RenderAsync(content);

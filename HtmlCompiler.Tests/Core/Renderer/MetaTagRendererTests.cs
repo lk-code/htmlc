@@ -2,7 +2,7 @@ using FluentAssertions;
 using HtmlAgilityPack;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
-using Moq;
+using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core.Renderer;
 
@@ -10,14 +10,15 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 public class MetaTagRendererTests
 {
     private IMetaTagRenderer _instance = null!;
-    private Mock<IFileSystemService> _fileSystemService = null!;
-    private Mock<IHtmlRenderer> _htmlRenderer = null!;
+    private IFileSystemService _fileSystemService = null!;
+    private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = new Mock<IFileSystemService>();
-        this._htmlRenderer = new Mock<IHtmlRenderer>();
+        this._fileSystemService = Substitute.For<IFileSystemService>();
+        this._htmlRenderer = Substitute.For<IHtmlRenderer>();
+        
         RenderingConfiguration configuration = new RenderingConfiguration
         {
             BaseDirectory = @"C:\",
@@ -27,8 +28,8 @@ public class MetaTagRendererTests
         };
         
         this._instance = new MetaTagRenderer(configuration,
-            this._fileSystemService.Object,
-            this._htmlRenderer.Object);
+            this._fileSystemService,
+            this._htmlRenderer);
     }
     
     [TestMethod]

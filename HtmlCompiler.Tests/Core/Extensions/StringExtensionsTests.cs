@@ -1,9 +1,5 @@
-﻿using System;
-using System.Xml.Linq;
-using FluentAssertions;
-using HtmlAgilityPack;
+﻿using FluentAssertions;
 using HtmlCompiler.Core.Extensions;
-using HtmlCompiler.Tests.Helper;
 
 namespace HtmlCompiler.Tests.Core.Extensions;
 
