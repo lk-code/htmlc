@@ -1,7 +1,7 @@
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Tests.Helper;
-using Moq;
+using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core;
 
@@ -9,17 +9,17 @@ namespace HtmlCompiler.Tests.Core;
 public class ProjectManagerTests
 {
     private ProjectManager _instance = null!;
-    private Mock<IFileSystemService> _fileSystemService = null!;
-    private Mock<IResourceLoader> _resourceLoader = null!;
+    private IFileSystemService _fileSystemService = null!;
+    private IResourceLoader _resourceLoader = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = new Mock<IFileSystemService>();
-        this._resourceLoader = new Mock<IResourceLoader>();
+        this._fileSystemService = Substitute.For<IFileSystemService>();
+        this._resourceLoader = Substitute.For<IResourceLoader>();
         
-        this._instance = new ProjectManager(this._fileSystemService.Object,
-            this._resourceLoader.Object);
+        this._instance = new ProjectManager(this._fileSystemService,
+            this._resourceLoader);
     }
 
     [TestMethod]
@@ -31,15 +31,15 @@ public class ProjectManagerTests
         string fullFilePath = Path.Combine(projectPath, filePath);
         string fileContent = @"{""liveServer.settings.root"": ""/src""}";
 
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync(fullFilePath))
-            .ReturnsAsync(fileContent);
+        this._fileSystemService.FileReadAllTextAsync(fullFilePath)
+            .Returns(fileContent);
 
         // Act
         await this._instance.AddVSCodeLiveServerConfigurationAsync(projectPath);
 
         // Assert
-        this._fileSystemService.Verify(x => x.FileReadAllTextAsync(fullFilePath), Times.Once);
-        this._fileSystemService.Verify(x => x.FileWriteAllTextAsync(fullFilePath, It.IsAny<string>()), Times.Once);
+        await this._fileSystemService.Received(1).FileReadAllTextAsync(fullFilePath);
+        await this._fileSystemService.Received(1).FileWriteAllTextAsync(fullFilePath, Arg.Any<string>());
     }
 
     [TestMethod]
@@ -51,15 +51,15 @@ public class ProjectManagerTests
         string? expectedVsDirectory = Path.GetDirectoryName(expectedFilePath);
         string template = "htmlc_vscode_settings_json";
 
-        this._resourceLoader.Setup(r => r.GetResourceContentAsync($"HtmlCompiler.Core.FileTemplates.{template}.template"))
-            .ReturnsAsync("{\"key\": \"value\"}");
+        this._resourceLoader.GetResourceContentAsync($"HtmlCompiler.Core.FileTemplates.{template}.template")
+            .Returns("{\"key\": \"value\"}");
 
         // Act
         await this._instance.AddVSCodeSupportAsync(projectPath);
 
         // Assert
-        this._fileSystemService.Verify(fs => fs.EnsurePath(expectedVsDirectory!), Times.Once);
-        this._fileSystemService.Verify(fs => fs.FileWriteAllTextAsync(expectedFilePath, "{\"key\": \"value\"}"), Times.Once);
+        this._fileSystemService.Received(1).EnsurePath(expectedVsDirectory);
+        await this._fileSystemService.Received(1).FileWriteAllTextAsync(expectedFilePath, "{\"key\": \"value\"}");
     }
 
     [TestMethod]
@@ -68,15 +68,15 @@ public class ProjectManagerTests
         // Arrange
         string projectPath = "c:\\projects\\myproject".ToSystemPath();
 
-        this._resourceLoader.Setup(r => r.GetResourceContentAsync("unknown_template"))
-            .ReturnsAsync(string.Empty);
+        this._resourceLoader.GetResourceContentAsync("unknown_template")
+            .Returns(string.Empty);
 
         // Act
         await this._instance.AddVSCodeSupportAsync(projectPath);
 
         // Assert
-        this._fileSystemService.Verify(fs => fs.EnsurePath(It.IsAny<string>()), Times.Once);
-        this._fileSystemService.Verify(fs => fs.FileWriteAllTextAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        this._fileSystemService.Received(1).EnsurePath(Arg.Any<string>());
+        await this._fileSystemService.DidNotReceive().FileWriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>());
     }
 
     [TestMethod]
@@ -87,14 +87,14 @@ public class ProjectManagerTests
         string expectedFilePath = Path.Combine(projectPath, "Dockerfile".ToSystemPath());
         string template = "htmlc_dockerfile";
 
-        this._resourceLoader.Setup(r => r.GetResourceContentAsync($"HtmlCompiler.Core.FileTemplates.{template}.template"))
-            .ReturnsAsync("{\"key\": \"value\"}");
+        this._resourceLoader.GetResourceContentAsync($"HtmlCompiler.Core.FileTemplates.{template}.template")
+            .Returns("{\"key\": \"value\"}");
 
         // Act
         await this._instance.AddDockerSupportAsync(projectPath);
 
         // Assert
-        this._fileSystemService.Verify(fs => fs.FileWriteAllTextAsync(expectedFilePath, "{\"key\": \"value\"}"), Times.Once);
+        await this._fileSystemService.Received(1).FileWriteAllTextAsync(expectedFilePath, "{\"key\": \"value\"}");
     }
 
     [TestMethod]
@@ -103,14 +103,14 @@ public class ProjectManagerTests
         // Arrange
         string projectPath = "c:\\projects\\myproject".ToSystemPath();
 
-        this._resourceLoader.Setup(r => r.GetResourceContentAsync("unknown_template"))
-            .ReturnsAsync(string.Empty);
+        this._resourceLoader.GetResourceContentAsync("unknown_template")
+            .Returns(string.Empty);
 
         // Act
         await this._instance.AddDockerSupportAsync(projectPath);
 
         // Assert
-        this._fileSystemService.Verify(fs => fs.FileWriteAllTextAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        await this._fileSystemService.DidNotReceive().FileWriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>());
     }
     
     [TestMethod]
@@ -133,18 +133,17 @@ public class ProjectManagerTests
             {
                 templateContent = "Template content for " + templateKey;
                 string resourceName = $"HtmlCompiler.Core.FileTemplates.{templateKey}.template";
-                this._resourceLoader.Setup(x => x.GetResourceContentAsync(resourceName))
-                    .ReturnsAsync(templateContent);
+                this._resourceLoader.GetResourceContentAsync(resourceName)
+                    .Returns(templateContent);
             }
 
             string? folderPath = Path.GetDirectoryName(filePath);
             if (!string.IsNullOrEmpty(folderPath))
             {
-                this._fileSystemService.Setup(x => x.EnsurePath(It.IsAny<string>()));
+                this._fileSystemService.EnsurePath(Arg.Any<string>());
             }
 
-            this._fileSystemService.Setup(x => x.FileWriteAllTextAsync(filePath, templateContent))
-                .Returns(Task.CompletedTask);
+            this._fileSystemService.FileWriteAllTextAsync(filePath, templateContent).Returns(Task.CompletedTask);
         }
 
         // Act
@@ -163,9 +162,10 @@ public class ProjectManagerTests
             }
 
             string resourceName = $"HtmlCompiler.Core.FileTemplates.{templateKey}.template";
-            this._resourceLoader.Verify(x => x.GetResourceContentAsync(resourceName));
-            this._fileSystemService.Verify(x => x.EnsurePath(It.IsAny<string>()));
-            this._fileSystemService.Verify(x => x.FileWriteAllTextAsync(filePath, expectedTemplateContent));
+            await this._resourceLoader.Received().GetResourceContentAsync(resourceName);
+            this._fileSystemService.Received().EnsurePath(Arg.Any<string>());
+            await this._fileSystemService.Received().FileWriteAllTextAsync(filePath, expectedTemplateContent);
+
         }
     }
 }

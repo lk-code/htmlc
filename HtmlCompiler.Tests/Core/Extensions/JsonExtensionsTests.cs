@@ -1,7 +1,5 @@
-using System.Text.Json.Nodes;
 using FluentAssertions;
 using HtmlCompiler.Core.Extensions;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HtmlCompiler.Tests.Core.Extensions;

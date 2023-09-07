@@ -2,7 +2,7 @@
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
-using Moq;
+using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core;
 
@@ -10,24 +10,24 @@ namespace HtmlCompiler.Tests.Core;
 public class FileWatcherTests
 {
     private FileWatcher _instance = null!;
-    private Mock<IConfiguration> _configuration = null!;
-    private Mock<IHtmlRenderer> _htmlRenderer = null!;
-    private Mock<IStyleManager> _styleCompiler = null!;
-    private Mock<IFileSystemService> _fileSystemService = null!;
+    private IConfiguration _configuration = null!;
+    private IHtmlRenderer _htmlRenderer = null!;
+    private IStyleManager _styleCompiler = null!;
+    private IFileSystemService _fileSystemService = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._configuration = new Mock<IConfiguration>();
-        this._htmlRenderer = new Mock<IHtmlRenderer>();
-        this._styleCompiler = new Mock<IStyleManager>();
-        this._fileSystemService = new Mock<IFileSystemService>();
+        this._configuration = Substitute.For<IConfiguration>();
+        this._htmlRenderer = Substitute.For<IHtmlRenderer>();
+        this._styleCompiler = Substitute.For<IStyleManager>();
+        this._fileSystemService = Substitute.For<IFileSystemService>();
 
         this._instance = new FileWatcher(
-            this._configuration.Object,
-            this._htmlRenderer.Object,
-            this._styleCompiler.Object,
-            this._fileSystemService.Object);
+            this._configuration,
+            this._htmlRenderer,
+            this._styleCompiler,
+            this._fileSystemService);
     }
 
     [TestMethod]

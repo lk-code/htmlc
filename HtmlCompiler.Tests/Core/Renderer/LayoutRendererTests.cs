@@ -1,7 +1,8 @@
 using System.Text;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
-using Moq;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 
 namespace HtmlCompiler.Tests.Core.Renderer;
 
@@ -9,14 +10,15 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 public class LayoutRendererTests
 {
     private LayoutRenderer _instance = null!;
-    private Mock<IFileSystemService> _fileSystemService = null!;
-    private Mock<IHtmlRenderer> _htmlRenderer = null!;
+    private IFileSystemService _fileSystemService = null!;
+    private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = new Mock<IFileSystemService>();
-        this._htmlRenderer = new Mock<IHtmlRenderer>();
+        this._fileSystemService = Substitute.For<IFileSystemService>();
+        this._htmlRenderer = Substitute.For<IHtmlRenderer>();
+        
         RenderingConfiguration configuration = new RenderingConfiguration
         {
             BaseDirectory = "/project/src",
@@ -26,8 +28,8 @@ public class LayoutRendererTests
         };
 
         this._instance = new LayoutRenderer(configuration,
-            this._fileSystemService.Object,
-            this._htmlRenderer.Object);
+            this._fileSystemService,
+            this._htmlRenderer);
     }
 
     [TestMethod]
@@ -38,8 +40,8 @@ public class LayoutRendererTests
             .Append("<h1>Hello World!</h1>")
             .ToString().Trim();
 
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync("/project/src/_unknownlayout.html"))
-            .Throws(new FileNotFoundException());
+        this._fileSystemService.FileReadAllTextAsync("/project/src/_unknownlayout.html")
+            .ThrowsAsync(new FileNotFoundException());
 
         Assert.ThrowsExceptionAsync<FileNotFoundException>(() => this._instance.RenderAsync(sourceHtml));
     }
@@ -52,8 +54,8 @@ public class LayoutRendererTests
             .Append("<h1>Hello World!</h1>")
             .ToString().Trim();
 
-        this._fileSystemService.Setup(x => x.FileReadAllTextAsync("/project/src/_layout.html"))
-            .ReturnsAsync("<section>Hello World!</section>");
+        this._fileSystemService.FileReadAllTextAsync("/project/src/_layout.html")
+            .Returns("<section>Hello World!</section>");
         
         string result = await this._instance.RenderAsync(sourceHtml);
         
