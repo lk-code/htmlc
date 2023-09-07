@@ -104,13 +104,17 @@ the `vsliveserver` option creates the property `liveServer.settings.root` and se
 
 This command compiles all HTML files from the /src (rekusriv) folder and writes the results to /dist.
 
-`htmlc compile <project-directory>`
+```
+htmlc compile <project-directory>
+```
 
 If only one path is specified, htmlc searches for /src and /dist in this directory. If these do not exist, then they are created. Then htmlc searches for files in /src and writes the results to the /dist directory. If no path is specified, then htmlc searches for /src and /dist in the current folder.
 
 **project-directory (optional):** the path to the project directory. for example: `/path/to/project`
 
-`htmlc compile <source-directory> <output-directory>`
+```
+htmlc compile <source-directory> <output-directory>
+```
 
 If two folders are specified, then htmlc uses the first value as the source path and the second value as the output paths.
 
@@ -118,7 +122,9 @@ If two folders are specified, then htmlc uses the first value as the source path
 
 **output-directory (optional):** The path to the output directory (equivalent to /dist). for example: `/path/to/another/directory/output`
 
-`htmlc compile [...] [-s --style {path/to/main.scss}]`
+```
+htmlc compile [...] [-s --style {path/to/main.scss}]
+```
 
 Optionally, a relative path to the style entry file can be specified with -s or -style. the path to the style file must be specified relative to the /src directory. the relative path to the final css-file is written to the @StylePath-tags.
 
@@ -126,13 +132,17 @@ Optionally, a relative path to the style entry file can be specified with -s or 
 
 This command compiles all HTML files from the /src (rekusriv) folder and writes the results to /dist. then /src is observed for changes and recompiled whenever a change is made.
 
-`htmlc watch <project-directory>`
+```
+htmlc watch <project-directory>
+```
 
 The watch command is identical to the compile command. The only difference is that the watch command observes the directory after the first compile and restarts the compile process every time a change is made.
 
 **project-directory (optional):** the path to the project directory. for example: `/path/to/project`
 
-`htmlc watch <source-directory> <output-directory>`
+```
+htmlc watch <source-directory> <output-directory>
+```
 
 If two folders are specified, then htmlc uses the first value as the source path and the second value as the output paths.
 
@@ -140,7 +150,9 @@ If two folders are specified, then htmlc uses the first value as the source path
 
 **output-directory (optional):** The path to the output directory (equivalent to /dist). for example: `/path/to/another/directory/output`
 
-`htmlc watch [...] [-s --style {/path/to/main.scss}]`
+```
+htmlc watch [...] [-s --style {/path/to/main.scss}]
+```
 
 Optionally, a relative path to the style entry file can be specified with -s or -style. the path to the style file must be specified relative to the /src directory. the relative path to the final css-file is written to the @StylePath-tags.
 
@@ -189,14 +201,21 @@ You can include another file with the **@File** tag in any HTML file (whether la
 
 #### The @StylePath-Tag
 htmlc can also compile style files (scss or sass). the path of the compiled CSS file can be inserted using this **@StylePath** tag. The following usage makes sense:<br />
-`<link rel="stylesheet" href="@StylePath">`<br />
+
+```
+<link rel="stylesheet" href="@StylePath">
+```
 
 #### The @Comment-Tag
 Creates an HTML comment:
 
-`@Comment=Example-Text`<br />
+```
+@Comment=Example-Text
+```
 
-`<!-- Example-Text -->`<br />
+```
+<!-- Example-Text -->`
+```
 
 #### The @Global-Tag
 htmlc supports Global Variables. These are loaded from a JSON file. By default, the global.json file in the root directory of the project is configured for this (Which file to load can be configured in the .htmlc file).
@@ -205,67 +224,85 @@ You can load all JSON entries via the @Global tag and thus write them to the HTM
 
 **global.json** (Global Variables File)
 
-`{`<br />
-`    "Application": {`<br />
-`        "Name": "title of website"`<br />
-`    }`<br />
-`}`<br />
+```
+{
+    "Application": {
+        "Name": "title of website"
+    }
+}
+```
 
 **index.html** (Sample HTML File)
 
-`<div>`<br />
-`    <h1>@Global:Application:Name</h1>`<br />
-`</div>`<br />
+```
+<div>
+    <h1>@Global:Application:Name</h1>
+</div>
+```
 
 **result**
 
-`<div>`<br />
-`    <h1>title of website</h1>`<br />
-`</div>`<br />
+```
+<div>
+    <h1>title of website</h1>
+</div>
+```
 
 #### The @StartHtmlSpecialChars and @EndHtmlSpecialChars-Tag
 You can escape special characters in a section HTML.
 To do this, place the following tags @StartHtmlSpecialChars and @EndHtmlSpecialChars before and after the block to be escaped:
 
-`@StartHtmlSpecialChars`<br />
-`<h1>a h1 heading</h1>`<br />
-`@EndHtmlSpecialChars`<br />
+```
+@StartHtmlSpecialChars
+<h1>a h1 heading</h1>
+@EndHtmlSpecialChars
+```
 
 turns into
 
-`&#60;h1&#62;a h1 heading&#60;/h1&#62;`<br />
+```
+&#60;h1&#62;a h1 heading&#60;/h1&#62;
+```
 
 ### getting started with your own project
 
 1. create a directory with two subdirectories **/src** and **/dist**. All project files must be stored under **/src**. The compiler writes the results under **/dist**.
 2. create an initial entry file **index.html**.
 3. create a layout file **_layout.html**.
-4. write the following basic HTML structure in the **_layout.html** file.<br />
-   `<html>`<br />
-   `    <head>`<br />
-   `    </head>`<br />
-   `    <body>`<br />
-   `        @Body`<br />
-   `    </body>`<br />
-   `</html>`<br />
-5. write the following example in **index.html**.<br />
-   `@Layout=_layout.html`<br />
-   `<section>`<br />
-   `    <div>Hello again</div>`<br />
-   `</section>`<br />
+4. write the following basic HTML structure in the **_layout.html** file.
+```
+<html>
+    <head>
+    </head>
+    <body>
+        @Body
+    </body>
+</html>
+```
+5. write the following example in **index.html**.
+```
+@Layout=_layout.html
+<section>
+    <div>Hello again</div>
+</section>
+```
 6. open the console of your choice and change to the project directory. (**/src** and **/dist** must be in it).
-7. type the following command:<br />
-   `htmlc compile`<br />
-8. under **/dist** should now appear a file **index.html** with the following content:<br />
-   `<html>`<br />
-   `    <head>`<br />
-   `    </head>`<br />
-   `    <body>`<br />
-   `        <section>`<br />
-   `            <div>Hello again</div>`<br />
-   `        </section>`<br />
-   `    </body>`<br />
-   `</html>`<br />
+7. type the following command:
+```
+htmlc compile
+```
+8. under **/dist** should now appear a file **index.html** with the following content:
+```
+<html>
+    <head>
+    </head>
+    <body>
+        <section>
+            <div>Hello again</div>
+        </section>
+     </body>
+</html>
+```
 
 ## licenses
 
