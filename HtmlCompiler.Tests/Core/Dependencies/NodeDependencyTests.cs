@@ -44,6 +44,6 @@ public class NodeDependencyTests
             .Returns(consoleResult);
         
         Func<Task> act = () => this._instance.CheckAsync();
-        act.Should().ThrowAsync<DependencyCheckFailedException>().Where(e => e.Message.Contains("Please install NodeJS"));
+        await act.Should().ThrowAsync<DependencyCheckFailedException>().Where(e => e.Message.Contains("Please install NodeJS"));
     }
 }

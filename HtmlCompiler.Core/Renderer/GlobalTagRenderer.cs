@@ -18,6 +18,8 @@ public class GlobalTagRenderer : RenderingBase
 
     public override async Task<string> RenderAsync(string content)
     {
+        await Task.CompletedTask;
+        
         string pattern = @"@Global:([a-zA-Z0-9:]+(?![a-zA-Z0-9:]))";
         Regex regex = new Regex(pattern);
 
@@ -47,7 +49,7 @@ public class GlobalTagRenderer : RenderingBase
 
                 if (currentElement != null)
                 {
-                    string globalValue = currentElement.ToString();
+                    string? globalValue = currentElement.ToString() ?? string.Empty;
 
                     StringBuilder extractedValues = new StringBuilder();
                     extractedValues.Append(globalValue);
@@ -60,7 +62,7 @@ public class GlobalTagRenderer : RenderingBase
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle exceptions as needed
             }

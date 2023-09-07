@@ -14,7 +14,6 @@ namespace HtmlCompiler.Tests.Core;
 public class TemplateManagerTests
 {
     private TemplateManager _instance = null!;
-    private IConfiguration _configuration = null!;
     private IConfigurationManager _configurationManager = null!;
     private IHttpClientService _httpClientService = null!;
 

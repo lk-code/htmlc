@@ -28,9 +28,9 @@ public class DependencyManagerTests
     {
         var dependencies = new List<IDependencyObject>
         {
-            new SassDependency(null),
-            new LessDependency(null),
-            new NodeDependency(null)
+            new SassDependency(null!),
+            new LessDependency(null!),
+            new NodeDependency(null!)
         };
 
         var resolveDependencies = DependencyManager.ResolveDependencies(dependencies).ToList();

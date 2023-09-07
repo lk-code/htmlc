@@ -33,7 +33,7 @@ public class ConfigurationManagerTests
         this._fileSystemService.FileReadAllTextAsync(this._userConfigPath)
             .Returns(configJson);
 
-        this._instance.AddAsync(key, value);
+        await this._instance.AddAsync(key, value);
 
         ConfigModel expectedConfig = new();
         expectedConfig.BuildBlackList = new string[] { ".png" };
@@ -57,7 +57,7 @@ public class ConfigurationManagerTests
         this._fileSystemService.FileReadAllTextAsync(this._userConfigPath)
             .Returns(configJson);
 
-        this._instance.RemoveAsync(key, value);
+        await this._instance.RemoveAsync(key, value);
 
         ConfigModel expectedConfig = new();
         expectedConfig.BuildBlackList = new string[] { ".jpeg", ".svg" };

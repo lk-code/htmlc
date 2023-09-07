@@ -29,10 +29,6 @@ public class HtmlcCommandTests
     [TestMethod]
     public async Task New_WithTemplateNameAndNoResult_DisplayError()
     {
-        string key = "";
-        string action = "";
-        string value = "";
-
         var indexContent = new StringBuilder()
             .AppendLine("@Layout=_layoutbase.html")
             .AppendLine("@PageTitle=Demo")
@@ -47,10 +43,6 @@ public class HtmlcCommandTests
     [TestMethod]
     public async Task New_WithTemplateNameAndMultipleResults_DisplayError()
     {
-        string key = "";
-        string action = "";
-        string value = "";
-
         var indexContent = new StringBuilder()
             .AppendLine("@Layout=_layoutbase.html")
             .AppendLine("@PageTitle=Demo")

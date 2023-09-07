@@ -31,6 +31,6 @@ public class EnvironmentCommandTests
         IDataBuilder dataBuilder = new DataBuilder();
         this.CreateTestInstance(dataBuilder.ToConfiguration());
 
-        this._instance.Check();
+        await this._instance.Check();
     }
 }
