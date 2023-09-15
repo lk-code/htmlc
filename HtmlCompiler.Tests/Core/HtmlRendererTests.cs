@@ -334,7 +334,7 @@ public class HtmlRendererTests
     }
 
     [TestMethod]
-    public async Task RenderHtmlAsync_WithVariablesFileTag_Return()
+    public async Task RenderHtmlAsync_WithVariablesTag_Return()
     {
         string sourceFullFilePath = "/project/src/index.html";
         string sourceDirectory = "/project/src";
@@ -377,6 +377,83 @@ public class HtmlRendererTests
         var sectionContent = new StringBuilder()
             .AppendLine("@Var={\"Title\":\"Section Page\"}")
             .AppendLine("<p>@Var[\"Title\"] from @Var[\"Website:Author\"]</p>")
+            .ToString().Trim();
+        this._fileSystemService.FileExists($"{sourceDirectory}/section.html")
+            .Returns(true);
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/section.html")
+            .Returns(sectionContent);
+        
+        var layoutContent = new StringBuilder()
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<title>@PageTitle</title>")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("@Body")
+            .AppendLine("<pre>@Global:Application:Version</pre>")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
+            .ToString().Trim();
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
+            .Returns(layoutContent);
+        
+        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+            sourceDirectory,
+            outputDirectory,
+            cssOutputFilePath,
+            dataBuilder.Build().RootElement);
+        
+        result.Should().NotBeNullOrEmpty();
+        result.Should().Be(expectedHtml);
+    }
+
+    [TestMethod]
+    public async Task RenderHtmlAsync_WithVariablesAndArrayTag_Return()
+    {
+        string sourceFullFilePath = "/project/src/index.html";
+        string sourceDirectory = "/project/src";
+        string outputDirectory = "/project/dist";
+        string? cssOutputFilePath = null;
+        IDataBuilder dataBuilder = new DataBuilder()
+            .Add("Application", new DataBuilder()
+                .Add("Name", "htmlc demo")
+                .Add("Version", "v1.0.7"));
+        
+        var expectedHtml = new StringBuilder()
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<title>htmlc demo</title>")
+            .AppendLine("<meta name=\"generator\" content=\"htmlc\">")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("<h1>Hello World!</h1>")
+            .AppendLine("<section>")
+            .AppendLine("<p>Section Page from htmlc</p>")
+            .AppendLine("<span>this is edited by Lisa</span>")
+            .AppendLine("</section>")
+            .AppendLine("<pre>v1.0.7</pre>")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
+            .ToString().Trim();
+
+        var indexContent = new StringBuilder()
+            .AppendLine("@Var={\"Title\":\"Hello World!\"}")
+            .AppendLine("@Var={\"Website\":{\"Author\":\"htmlc\"}}")
+            .AppendLine("@Var={\"Names\":[{\"Name\":\"Max\"}, {\"Name\":\"Lisa\"}, {\"Name\":\"Fred\"}]}")
+            .AppendLine("@Layout=_layoutbase.html")
+            .AppendLine("@PageTitle=@Global:Application:Name")
+            .AppendLine("<h1>Hello World!</h1>")
+            .AppendLine("<section>")
+            .AppendLine("@File=section.html")
+            .AppendLine("</section>")
+            .ToString().Trim();
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/index.html")
+            .Returns(indexContent);
+
+        var sectionContent = new StringBuilder()
+            .AppendLine("@Var={\"Title\":\"Section Page\"}")
+            .AppendLine("<p>@Var[\"Title\"] from @Var[\"Website:Author\"]</p>")
+            .AppendLine("<span>this is edited by @Var[\"Names:[1]:Name\"]</span>")
             .ToString().Trim();
         this._fileSystemService.FileExists($"{sourceDirectory}/section.html")
             .Returns(true);
