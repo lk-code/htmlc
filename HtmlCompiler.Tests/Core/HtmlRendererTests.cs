@@ -354,7 +354,7 @@ public class HtmlRendererTests
             .AppendLine("<body>")
             .AppendLine("<h1>Hello World!</h1>")
             .AppendLine("<section>")
-            .AppendLine("<p>Hello World! from htmlc</p>")
+            .AppendLine("<p>Section Page from htmlc</p>")
             .AppendLine("</section>")
             .AppendLine("<pre>v1.0.7</pre>")
             .AppendLine("</body>")
@@ -375,7 +375,8 @@ public class HtmlRendererTests
             .Returns(indexContent);
 
         var sectionContent = new StringBuilder()
-            .AppendLine("<p>@Var:Title from @Var:Website:Author</p>")
+            .AppendLine("@Var={\"Title\":\"Section Page\"}")
+            .AppendLine("<p>@Var[\"Title\"] from @Var[\"Website:Author\"]</p>")
             .ToString().Trim();
         this._fileSystemService.FileExists($"{sourceDirectory}/section.html")
             .Returns(true);

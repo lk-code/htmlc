@@ -11,10 +11,12 @@ public interface IHtmlRenderer
     /// <param name="sourceDirectory"></param>
     /// <param name="outputDirectory"></param>
     /// <param name="cssOutputFilePath"></param>
+    /// <param name="callLevel"></param>
     /// <returns></returns>
     Task<string> RenderHtmlAsync(string sourceFullFilePath,
         string sourceDirectory,
         string outputDirectory,
         string? cssOutputFilePath,
-        JsonElement? globalVariables);
+        JsonElement? globalVariables,
+        long callLevel);
 }

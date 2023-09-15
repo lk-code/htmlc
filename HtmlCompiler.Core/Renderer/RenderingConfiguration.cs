@@ -10,4 +10,5 @@ public class RenderingConfiguration
     public string CssOutputFilePath { get; init; } = string.Empty;
     public string SourceFullFilePath { get; init; } = string.Empty;
     public JsonElement? GlobalVariables { get; init; } = null;
+    public long CallLevel { get; init; } = 0;
 }

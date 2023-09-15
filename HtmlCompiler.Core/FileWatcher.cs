@@ -331,7 +331,8 @@ public class FileWatcher : IFileWatcher
                     this._sourceDirectoryPath,
                     this._outputDirectoryPath,
                     cssOutputFilePath,
-                    globalVariables);
+                    globalVariables,
+                    0);
 
                 await this._fileSystemService.FileWriteAllTextAsync(outputFile,
                     renderedContent);

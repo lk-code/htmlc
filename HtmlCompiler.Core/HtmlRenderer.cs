@@ -33,7 +33,8 @@ public class HtmlRenderer : IHtmlRenderer
         string sourceDirectory,
         string outputDirectory,
         string? cssOutputFilePath,
-        JsonElement? globalVariables)
+        JsonElement? globalVariables,
+        long callLevel = 0)
     {
         sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
         string originalContent = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
@@ -45,9 +46,10 @@ public class HtmlRenderer : IHtmlRenderer
             OutputDirectory = outputDirectory,
             CssOutputFilePath = cssOutputFilePath!,
             SourceFullFilePath = sourceFullFilePath,
-            GlobalVariables = globalVariables
+            GlobalVariables = globalVariables,
+            CallLevel = (callLevel + 1)
         };
-        
+
         IEnumerable<IRenderingComponent> renderingComponents = this._renderingComponents
             .OrderBy(x => x.Key)
             .Select(x => x.Value)
@@ -57,11 +59,21 @@ public class HtmlRenderer : IHtmlRenderer
                 this);
 
         string masterOutput = originalContent;
-        foreach (IRenderingComponent renderingComponent in renderingComponents)
+        foreach (IRenderingComponent renderingComponent in renderingComponents
+                     .Where(x => x.PreRenderPartialFiles == true))
         {
             masterOutput = await renderingComponent.RenderAsync(masterOutput);
         }
-        
+
+        if (callLevel == 0)
+        {
+            foreach (IRenderingComponent renderingComponent in renderingComponents
+                         .Where(x => x.PreRenderPartialFiles == false))
+            {
+                masterOutput = await renderingComponent.RenderAsync(masterOutput);
+            }
+        }
+
         return masterOutput;
     }
 }
