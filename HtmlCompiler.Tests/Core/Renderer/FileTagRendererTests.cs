@@ -46,7 +46,8 @@ public class FileTagRendererTests
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),
-                Arg.Any<JsonElement?>())
+                Arg.Any<JsonElement?>(),
+                Arg.Any<long>())
             .Returns(fileContent);
 
         // Act

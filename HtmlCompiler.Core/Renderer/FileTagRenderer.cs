@@ -32,7 +32,8 @@ public class FileTagRenderer : RenderingBase
                 this._configuration.SourceDirectory,
                 this._configuration.OutputDirectory,
                 this._configuration.CssOutputFilePath,
-                this._configuration.GlobalVariables);
+                this._configuration.GlobalVariables,
+                this._configuration.CallLevel);
 
             content = content.Replace(match.Value, fileContent);
         }

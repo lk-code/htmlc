@@ -11,6 +11,8 @@ public abstract class RenderingBase : IRenderingComponent
     /// <inheritdoc />
     public abstract Task<string> RenderAsync(string content);
 
+    public virtual bool PreRenderPartialFiles { get; } = true;
+
     protected RenderingBase(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
