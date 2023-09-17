@@ -25,6 +25,8 @@ namespace HtmlCompiler.Core.Renderer
         {
             JsonDocument json = LoadVariables(ref content);
 
+            string jsonString = json.RootElement.GetRawText();
+
             content = await ReplaceVariables(content, json);
 
             return content;
@@ -32,28 +34,50 @@ namespace HtmlCompiler.Core.Renderer
 
         private async Task<string> ReplaceVariables(string content, JsonDocument json)
         {
-            string pattern = @"@Var\[(.*?)\]";
+            string pattern = $@"{VARIABLES_TAG}\[(.*?)\];";
             Regex regex = new Regex(pattern);
 
             string result = regex.Replace(content, match =>
             {
-                string keyWithBrackets = match.Groups[1].Value;
-                string key = keyWithBrackets.Trim('[', ']', '"', '\''); // Entfernen Sie die eckigen Klammern
-                string? value = FindJsonValue(json.RootElement, key);
+                string[] keyPath = GetKeyPath(match.Value);
+
+                string? value = FindJsonValue(json.RootElement, keyPath);
                 return value ?? match.Value;
             });
 
             return result;
         }
 
-        private string FindJsonValue(JsonElement element, string keyPath)
+        private static string[] GetKeyPath(string key)
         {
-            string[] keys = keyPath.Split(':');
-            foreach (string key in keys)
+            string keyValue = key.Substring(VARIABLES_TAG.Length)
+                .TrimEnd(';')
+                .TrimStart('[')
+                .TrimStart('"')
+                .TrimEnd(']')
+                .TrimEnd('"');
+            string[] keyPath = keyValue.Split(':')
+                .Select(x => x
+                    .TrimStart('[')
+                    .TrimEnd(']'))
+                .ToArray();
+            return keyPath;
+        }
+
+        private string FindJsonValue(JsonElement element, string[] keyPath)
+        {
+            foreach (string key in keyPath)
             {
-                if (element.ValueKind == JsonValueKind.Object && element.TryGetProperty(key, out var property))
+                if (element.ValueKind == JsonValueKind.Object
+                    && element.TryGetProperty(key, out var property))
                 {
                     element = property;
+                }
+                else if (element.ValueKind == JsonValueKind.Array)
+                {
+                    long index = long.Parse(key);
+                    
+                    element = element.EnumerateArray().ElementAtOrDefault((int) index);
                 }
                 else
                 {
@@ -86,7 +110,8 @@ namespace HtmlCompiler.Core.Renderer
 
                     try
                     {
-                        Dictionary<string, object> parsedObject = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonObject);
+                        Dictionary<string, object> parsedObject =
+                            JsonSerializer.Deserialize<Dictionary<string, object>>(jsonObject);
                         foreach (KeyValuePair<string, object> kvp in parsedObject)
                         {
                             jsonData[kvp.Key] = kvp.Value;
@@ -99,13 +124,13 @@ namespace HtmlCompiler.Core.Renderer
                 }
                 else
                 {
-                    updatedLines.Add(line); // Behalte Zeilen ohne Variablen bei
+                    updatedLines.Add(line);
                 }
             }
 
             string jsonResult = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions
             {
-                WriteIndented = true
+                WriteIndented = false
             });
 
             content = string.Join('\n', updatedLines);

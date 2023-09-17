@@ -376,7 +376,7 @@ public class HtmlRendererTests
 
         var sectionContent = new StringBuilder()
             .AppendLine("@Var={\"Title\":\"Section Page\"}")
-            .AppendLine("<p>@Var[\"Title\"] from @Var[\"Website:Author\"]</p>")
+            .AppendLine("<p>@Var[\"Title\"]; from @Var[\"Website:Author\"];</p>")
             .ToString().Trim();
         this._fileSystemService.FileExists($"{sourceDirectory}/section.html")
             .Returns(true);
@@ -452,8 +452,8 @@ public class HtmlRendererTests
 
         var sectionContent = new StringBuilder()
             .AppendLine("@Var={\"Title\":\"Section Page\"}")
-            .AppendLine("<p>@Var[\"Title\"] from @Var[\"Website:Author\"]</p>")
-            .AppendLine("<span>this is edited by @Var[\"Names:[1]:Name\"]</span>")
+            .AppendLine("<p>@Var[\"Title\"]; from @Var[\"Website:Author\"];</p>")
+            .AppendLine("<span>this is edited by @Var[\"Names:[1]:Name\"];</span>")
             .ToString().Trim();
         this._fileSystemService.FileExists($"{sourceDirectory}/section.html")
             .Returns(true);
