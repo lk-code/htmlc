@@ -41,6 +41,7 @@ This is the HTML Compiler Tool for your cli. htmlc is a small tool with which ve
         - [The @Comment-Tag](#the-comment-tag)
         - [The @Global-Tag](#the-global-tag)
         - [The @StartHtmlSpecialChars and @EndHtmlSpecialChars-Tag](#the-starthtmlspecialchars-and-endhtmlspecialchars-tag)
+        - [The @Var-Tag](#the-var-tag)
 
 ## installation and update
 
@@ -267,6 +268,32 @@ turns into
 ```
 &#60;h1&#62;a h1 heading&#60;/h1&#62;
 ```
+
+#### The @Var-Tag
+htmlc supports the use of variables. JSON is always used as content. All @Var entries are merged by htmlc into a JSON object. This means that two equal @Var calls are always overwritten by the last entry.
+
+##### set a variable
+
+**NOCTICE:** a htmlc variable must **always** contain JSON!
+
+The following code is used to set a variable. htmlc merges all variables into a single JSON object.
+An htmlc variable must stand alone in a line, so there must be nothing before or after it.
+
+`@Var={"Title":"Hello World!"}`
+
+`@Var={"Data":{"Persons":[,{"Name":"Lisa Mustermann","Username":"lmustermann"},{"Name":"Fred Conrad","Username":"fconrad"}]}}`
+
+##### access a variable
+
+A call to read a variable is simple. It starts with @Var and always ends with a semicolon ";". In between the path inside the JSON object is specified. Individual levels are separated by a colon ":". Access to entries in an array are done with an index access (The numbering always starts at 0!). For example, one accesses the 4 record with [3].
+
+To access a variable, use this call:
+
+`<p>@Var["Data:Persons:[1]:Name"];</p>`
+
+**result:**
+
+`<p>Fred Conrad</p>`
 
 ### getting started with your own project
 
