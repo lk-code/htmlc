@@ -33,7 +33,7 @@ jobs:
         run: dotnet restore
 
       - name: Version Visual Studio SDK projects
-        uses: roryprimrose/set-vs-sdk-project-version@v1.0.3
+        uses: roryprimrose/set-vs-sdk-project-version@v1.0.6
         with:
           # The wildcard filter that identifies projects to version
           projectFilter: "**/HtmlCompiler.csproj"
