@@ -42,6 +42,7 @@ This is the HTML Compiler Tool for your cli. htmlc is a small tool with which ve
         - [The @Global-Tag](#the-global-tag)
         - [The @StartHtmlSpecialChars and @EndHtmlSpecialChars-Tag](#the-starthtmlspecialchars-and-endhtmlspecialchars-tag)
         - [The @Var-Tag](#the-var-tag)
+        - [The @VarFile-Tag](#the-var-file-tag)
 
 ## installation and update
 
@@ -294,6 +295,9 @@ To access a variable, use this call:
 **result:**
 
 `<p>Fred Conrad</p>`
+
+#### The @VarFile-Tag
+The @VarFile tag works the same way as the @Var tag. A file name is specified behind it. This file is called in the project and the content is loaded. This file must contain JSON. The content is then processed as with the @Var content and added to the global variable JSON object. The access to the variable is done via @Var
 
 ### getting started with your own project
 
