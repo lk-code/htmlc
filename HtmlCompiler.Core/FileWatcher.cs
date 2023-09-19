@@ -179,6 +179,11 @@ public class FileWatcher : IFileWatcher
 
         JsonElement? globalVariables = null;
         string? configGlobalFileName = this._configuration.GetValue<string>("project-global-file");
+        if (string.IsNullOrEmpty(configGlobalFileName))
+        {
+            // hardcoded fallback
+            configGlobalFileName = "global.json";
+        }
         string globalVariablesFilePath = $"{this._sourceDirectoryPath}/{configGlobalFileName}";
         try
         {
@@ -186,7 +191,6 @@ public class FileWatcher : IFileWatcher
             
             if (!string.IsNullOrEmpty(globalVariablesFilePath))
             {
-                Console.WriteLine($"load global config from '{globalVariablesFilePath}'");
                 string? globalVariablesJsonContent = await this._fileSystemService.FileReadAllTextAsync(globalVariablesFilePath);
 
                 if (!string.IsNullOrEmpty(globalVariablesJsonContent))
