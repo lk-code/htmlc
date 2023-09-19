@@ -215,13 +215,16 @@ public class FileWatcher : IFileWatcher
         string? cssOutputFilePath = null;
         try
         {
-            Console.WriteLine($"compiling styles...");
+            if (!string.IsNullOrEmpty(this._styleEntryFilePath))
+            {
+                Console.WriteLine($"compiling styles...");
             
-            // compile style file
-            cssOutputFilePath = await this._styleManager.CompileStyleAsync(
-                this._sourceDirectoryPath,
-                this._outputDirectoryPath,
-                this._styleEntryFilePath);
+                // compile style file
+                cssOutputFilePath = await this._styleManager.CompileStyleAsync(
+                    this._sourceDirectoryPath,
+                    this._outputDirectoryPath,
+                    this._styleEntryFilePath);
+            }
         }
         catch (StyleNotFoundException err)
         {
