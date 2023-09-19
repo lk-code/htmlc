@@ -205,6 +205,8 @@ public class FileWatcher : IFileWatcher
         string? cssOutputFilePath = null;
         try
         {
+            Console.WriteLine($"compiling styles...");
+            
             // compile style file
             cssOutputFilePath = await this._styleManager.CompileStyleAsync(
                 this._sourceDirectoryPath,
@@ -241,6 +243,8 @@ public class FileWatcher : IFileWatcher
 
         try
         {
+            Console.WriteLine($"compiling html files...");
+            
             // compile html
             await this.RenderHtmlFiles(files,
                 cssOutputFilePath,
