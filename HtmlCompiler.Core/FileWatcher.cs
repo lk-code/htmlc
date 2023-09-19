@@ -182,6 +182,8 @@ public class FileWatcher : IFileWatcher
         string globalVariablesFilePath = $"{this._sourceDirectoryPath}/{configGlobalFileName}";
         try
         {
+            Console.WriteLine($"load global config from '{globalVariablesFilePath}'");
+            
             if (!string.IsNullOrEmpty(globalVariablesFilePath))
             {
                 Console.WriteLine($"load global config from '{globalVariablesFilePath}'");
@@ -191,6 +193,10 @@ public class FileWatcher : IFileWatcher
                 {
                     globalVariables = JsonSerializer.Deserialize<JsonElement>(globalVariablesJsonContent);
                 }
+            }
+            else
+            {
+                Console.WriteLine($"global config not found: '{globalVariablesFilePath}'");
             }
         }
         catch (FileNotFoundException err)
@@ -265,6 +271,8 @@ public class FileWatcher : IFileWatcher
 
         try
         {
+            Console.WriteLine($"copy assets...");
+            
             // copy additional assets (like js, css, images, etc.)
             this.CopyAssetsToOutput(files);
         }
