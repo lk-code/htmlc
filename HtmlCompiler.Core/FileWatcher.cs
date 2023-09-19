@@ -178,12 +178,11 @@ public class FileWatcher : IFileWatcher
         }
 
         JsonElement? globalVariables = null;
+        string? configGlobalFileName = this._configuration.GetValue<string>("project-global-file");
+        string globalVariablesFilePath = $"{this._sourceDirectoryPath}/{configGlobalFileName}";
         try
         {
-            string? configGlobalFileName = this._configuration.GetValue<string>("project-global-file");
-            string globalVariablesFilePath = $"{this._sourceDirectoryPath}/{configGlobalFileName}";
-            string? globalVariablesJsonContent =
-                await this._fileSystemService.FileReadAllTextAsync(globalVariablesFilePath);
+            string? globalVariablesJsonContent = await this._fileSystemService.FileReadAllTextAsync(globalVariablesFilePath);
 
             if (!string.IsNullOrEmpty(globalVariablesJsonContent))
             {
@@ -193,6 +192,10 @@ public class FileWatcher : IFileWatcher
         catch (FileNotFoundException err)
         {
             Console.WriteLine($"ERR: file {err.FileName} not found");
+        }
+        catch (UnauthorizedAccessException err)
+        {
+            Console.WriteLine($"ERR: UnauthorizedAccessException: {configGlobalFileName}");
         }
 
         string? cssOutputFilePath = null;
