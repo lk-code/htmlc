@@ -1,19 +1,23 @@
 using Cocona;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Commands;
 
 public class HtmlcCommand
 {
+    private readonly ILogger<HtmlcCommand> _logger;
     private readonly IFileWatcher _fileWatcher;
     private readonly IProjectManager _projectManager;
     private readonly ITemplateManager _templateManager;
 
-    public HtmlcCommand(IFileWatcher fileWatcher,
+    public HtmlcCommand(ILogger<HtmlcCommand> logger,
+        IFileWatcher fileWatcher,
         IProjectManager projectManager,
         ITemplateManager templateManager)
     {
+        this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this._fileWatcher = fileWatcher ?? throw new ArgumentNullException(nameof(fileWatcher));
         this._projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
         this._templateManager = templateManager ?? throw new ArgumentNullException(nameof(templateManager));
@@ -32,18 +36,19 @@ public class HtmlcCommand
             List<Template> templates = (await this._templateManager.SearchTemplatesAsync(template)).ToList();
             if (!templates.Any())
             {
-                Console.WriteLine("No templates found.");
+                this._logger.LogError("No templates found.");
                 
                 return;
             }
             else if (templates.Count() > 1)
             {
-                Console.WriteLine("Multiple templates found. Please specify the full template name (with repository url).");
+                this._logger.LogError("Multiple templates found. Please specify the full template name (with repository url).");
                 
                 return;
             }
             
             // load template
+            this._logger.LogInformation($"Download template '{templates.First().Name}'");
             downloadedTemplatePath = await this._templateManager.DownloadTemplateAsync(templates.First());
         }
 

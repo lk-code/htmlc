@@ -8,6 +8,15 @@ public class LayoutRenderer : RenderingBase
     public const string LAYOUT_TAG = "@Layout";
     public const string BODY_TAG = "@Body";
 
+    public LayoutRenderer(RenderingConfiguration configuration,
+        IFileSystemService fileSystemService,
+        IHtmlRenderer htmlRenderer)
+        : base(configuration,
+            fileSystemService,
+            htmlRenderer)
+    {
+    }
+
     /// <inheritdoc />
     public override async Task<string> RenderAsync(string content)
     {
@@ -74,14 +83,5 @@ public class LayoutRenderer : RenderingBase
             );
 
         return result;
-    }
-
-    public LayoutRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
-        IHtmlRenderer htmlRenderer)
-        : base(configuration,
-            fileSystemService,
-            htmlRenderer)
-    {
     }
 }

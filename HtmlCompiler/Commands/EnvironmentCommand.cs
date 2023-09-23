@@ -1,18 +1,21 @@
 using Cocona;
-using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Commands;
 
 public class EnvironmentCommand
 {
+    private readonly ILogger<EnvironmentCommand> _logger;
     private readonly IConfiguration _configuration;
     private readonly IDependencyManager _dependencyManager;
 
-    public EnvironmentCommand(IConfiguration configuration,
+    public EnvironmentCommand(ILogger<EnvironmentCommand> logger,
+        IConfiguration configuration,
         IDependencyManager dependencyManager)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _dependencyManager = dependencyManager ?? throw new ArgumentNullException(nameof(dependencyManager));
     }
@@ -23,12 +26,11 @@ public class EnvironmentCommand
         try
         {
             string output = await this._dependencyManager.CheckEnvironmentAsync();
-            Console.WriteLine(output);
+            this._logger.LogInformation(output);
         }
         catch (Exception err)
         {
-            Console.WriteLine("Error while dependency check:");
-            Console.WriteLine(err.Message);
+            this._logger.LogError(err, "Error while dependency check");
         }
     }
 
@@ -38,12 +40,11 @@ public class EnvironmentCommand
         try
         {
             string output = await this._dependencyManager.SetupEnvironmentAsync();
-            Console.WriteLine(output);
+            this._logger.LogInformation(output);
         }
         catch (Exception err)
         {
-            Console.WriteLine("Error while dependency setup:");
-            Console.WriteLine(err.Message);
+            this._logger.LogError(err, "Error while dependency setup");
         }
     }
 }

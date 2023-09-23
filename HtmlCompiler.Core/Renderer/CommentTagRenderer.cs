@@ -6,6 +6,15 @@ public class CommentTagRenderer : RenderingBase
 {
     public const string COMMENT_TAG = "@Comment";
 
+    public CommentTagRenderer(RenderingConfiguration configuration,
+        IFileSystemService fileSystemService,
+        IHtmlRenderer htmlRenderer)
+        : base(configuration,
+            fileSystemService,
+            htmlRenderer)
+    {
+    }
+
     public override async Task<string> RenderAsync(string content)
     {
         await Task.CompletedTask;
@@ -25,14 +34,5 @@ public class CommentTagRenderer : RenderingBase
         string result = string.Join(Environment.NewLine, lines);
 
         return result;
-    }
-
-    public CommentTagRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
-        IHtmlRenderer htmlRenderer)
-        : base(configuration,
-            fileSystemService,
-            htmlRenderer)
-    {
     }
 }

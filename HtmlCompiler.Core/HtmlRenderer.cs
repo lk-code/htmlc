@@ -2,6 +2,7 @@ using System.Text.Json;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core;
 
@@ -21,10 +22,13 @@ public class HtmlRenderer : IHtmlRenderer
         { 2000, typeof(MetaTagRenderer) }
     };
 
+    private readonly ILogger<HtmlRenderer> _logger;
     private readonly IFileSystemService _fileSystemService;
 
-    public HtmlRenderer(IFileSystemService fileSystemService)
+    public HtmlRenderer(ILogger<HtmlRenderer> logger,
+        IFileSystemService fileSystemService)
     {
+        this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
 
@@ -76,4 +80,6 @@ public class HtmlRenderer : IHtmlRenderer
 
         return masterOutput;
     }
+
+    public ILogger<IHtmlRenderer> Logger => this._logger;
 }

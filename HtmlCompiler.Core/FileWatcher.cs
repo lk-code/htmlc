@@ -207,7 +207,7 @@ public class FileWatcher : IFileWatcher
         {
             Console.WriteLine($"ERR: file '{err.FileName}' not found");
         }
-        catch (UnauthorizedAccessException err)
+        catch (UnauthorizedAccessException)
         {
             Console.WriteLine($"ERR: UnauthorizedAccessException: '{configGlobalFileName}'");
         }

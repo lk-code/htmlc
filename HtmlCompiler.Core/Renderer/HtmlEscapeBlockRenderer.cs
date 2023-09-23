@@ -8,6 +8,15 @@ public class HtmlEscapeBlockRenderer : RenderingBase
     public const string START_TAG = "@StartHtmlSpecialChars";
     public const string END_TAG = "@EndHtmlSpecialChars";
 
+    public HtmlEscapeBlockRenderer(RenderingConfiguration configuration,
+        IFileSystemService fileSystemService,
+        IHtmlRenderer htmlRenderer)
+        : base(configuration,
+            fileSystemService,
+            htmlRenderer)
+    {
+    }
+
     public override async Task<string> RenderAsync(string content)
     {
         await Task.CompletedTask;
@@ -43,14 +52,5 @@ public class HtmlEscapeBlockRenderer : RenderingBase
         }
 
         return content;
-    }
-
-    public HtmlEscapeBlockRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
-        IHtmlRenderer htmlRenderer)
-        : base(configuration,
-            fileSystemService,
-            htmlRenderer)
-    {
     }
 }
