@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -11,12 +10,10 @@ public class PageTitleRenderer : RenderingBase
     private static readonly Regex TitleDeclarationRegex = new Regex(PAGETITLE_TAG + @"=(.*?)(\r\n|\n|$)", RegexOptions.Compiled, TimeSpan.FromSeconds(10));
     private static readonly Regex TitleUseRegex = new Regex(PAGETITLE_TAG, RegexOptions.Compiled, TimeSpan.FromSeconds(10));
 
-    public PageTitleRenderer(ILogger<PageTitleRenderer> logger,
-        RenderingConfiguration configuration,
+    public PageTitleRenderer(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(logger,
-            configuration,
+        : base(configuration,
             fileSystemService,
             htmlRenderer)
     {

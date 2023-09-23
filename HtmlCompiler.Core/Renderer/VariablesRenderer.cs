@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using FluentDataBuilder;
@@ -15,12 +16,10 @@ public class VariablesRenderer : RenderingBase
 
     public override bool PreRenderPartialFiles { get; } = false;
 
-    public VariablesRenderer(ILogger<VariablesRenderer> logger,
-        RenderingConfiguration configuration,
+    public VariablesRenderer(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(logger,
-            configuration,
+        : base(configuration,
             fileSystemService,
             htmlRenderer)
     {
@@ -46,6 +45,8 @@ public class VariablesRenderer : RenderingBase
 
     private async Task<string> ReplaceVariables(string content, JsonElement json)
     {
+        await Task.CompletedTask;
+        
         string pattern = $@"{VARIABLES_TAG}\[(.*?)\];";
         Regex regex = new Regex(pattern);
 
@@ -55,7 +56,7 @@ public class VariablesRenderer : RenderingBase
 
             string? value = FindJsonValue(json, keyPath);
             return value ?? match.Value;
-        });
+        }, 500);
 
         return result;
     }
@@ -76,7 +77,7 @@ public class VariablesRenderer : RenderingBase
         return keyPath;
     }
 
-    private string FindJsonValue(JsonElement element, string[] keyPath)
+    private string? FindJsonValue(JsonElement element, string[] keyPath)
     {
         foreach (string key in keyPath)
         {
@@ -122,9 +123,8 @@ public class VariablesRenderer : RenderingBase
 
                 try
                 {
-                    Dictionary<string, object> parsedObject =
-                        JsonSerializer.Deserialize<Dictionary<string, object>>(jsonObject);
-                    foreach (KeyValuePair<string, object> kvp in parsedObject)
+                    Dictionary<string, object>? parsedObject = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonObject);
+                    foreach (KeyValuePair<string, object> kvp in parsedObject??new Dictionary<string, object>())
                     {
                         jsonData[kvp.Key] = kvp.Value;
                     }

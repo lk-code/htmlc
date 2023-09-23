@@ -23,7 +23,7 @@ public class HtmlcCommandTests
         ServiceProvider serviceProvider = new ServiceCollection()
             .AddLogging()
             .BuildServiceProvider();
-        ILoggerFactory? factory = serviceProvider.GetService<ILoggerFactory>();
+        ILoggerFactory factory = serviceProvider.GetService<ILoggerFactory>()!;
 
         this._logger = factory.CreateLogger<HtmlcCommand>();
         

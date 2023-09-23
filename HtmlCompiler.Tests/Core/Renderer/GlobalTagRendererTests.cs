@@ -1,10 +1,7 @@
 using FluentDataBuilder;
 using FluentDataBuilder.Json;
-using HtmlCompiler.Commands;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core.Renderer;
@@ -12,7 +9,6 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 [TestClass]
 public class GlobalTagRendererTests
 {
-    private ILogger<GlobalTagRenderer> _logger = null!;
     private GlobalTagRenderer _instance = null!;
     private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
@@ -20,21 +16,13 @@ public class GlobalTagRendererTests
     [TestInitialize]
     public void SetUp()
     {
-        ServiceProvider serviceProvider = new ServiceCollection()
-            .AddLogging()
-            .BuildServiceProvider();
-        ILoggerFactory? factory = serviceProvider.GetService<ILoggerFactory>();
-
-        this._logger = factory.CreateLogger<GlobalTagRenderer>();
-        
         this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
     }
 
     private void CreateTestInstance(RenderingConfiguration configuration)
     {
-        this._instance = new GlobalTagRenderer(this._logger,
-            configuration,
+        this._instance = new GlobalTagRenderer(configuration,
             this._fileSystemService,
             this._htmlRenderer);
     }

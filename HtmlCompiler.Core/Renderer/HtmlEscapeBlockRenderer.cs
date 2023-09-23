@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -9,12 +8,10 @@ public class HtmlEscapeBlockRenderer : RenderingBase
     public const string START_TAG = "@StartHtmlSpecialChars";
     public const string END_TAG = "@EndHtmlSpecialChars";
 
-    public HtmlEscapeBlockRenderer(ILogger<HtmlEscapeBlockRenderer> logger,
-        RenderingConfiguration configuration,
+    public HtmlEscapeBlockRenderer(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(logger,
-            configuration,
+        : base(configuration,
             fileSystemService,
             htmlRenderer)
     {

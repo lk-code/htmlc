@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Interfaces;
 using Markdig;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -9,12 +8,10 @@ public class MarkdownFileTagRenderer : RenderingBase
 {
     public const string RENDERER_TAG = @"@MarkdownFile=([^\s]+)";
 
-    public MarkdownFileTagRenderer(ILogger<MarkdownFileTagRenderer> logger,
-        RenderingConfiguration configuration,
+    public MarkdownFileTagRenderer(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(logger,
-            configuration,
+        : base(configuration,
             fileSystemService,
             htmlRenderer)
     {

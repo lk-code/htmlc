@@ -2,18 +2,15 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
 public class GlobalTagRenderer : RenderingBase
 {
-    public GlobalTagRenderer(ILogger<GlobalTagRenderer> logger,
-        RenderingConfiguration configuration,
+    public GlobalTagRenderer(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(logger,
-            configuration,
+        : base(configuration,
             fileSystemService,
             htmlRenderer)
     {

@@ -23,15 +23,12 @@ public class HtmlRenderer : IHtmlRenderer
     };
 
     private readonly ILogger<HtmlRenderer> _logger;
-    private readonly ILogger<IRenderingComponent> _renderingLogger;
     private readonly IFileSystemService _fileSystemService;
 
     public HtmlRenderer(ILogger<HtmlRenderer> logger,
-            ILogger<IRenderingComponent> renderingLogger,
         IFileSystemService fileSystemService)
     {
         this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        this._renderingLogger = renderingLogger ?? throw new ArgumentNullException(nameof(renderingLogger));
         this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
     }
 
@@ -61,7 +58,6 @@ public class HtmlRenderer : IHtmlRenderer
             .OrderBy(x => x.Key)
             .Select(x => x.Value)
             .BuildRenderingComponents(
-                this._renderingLogger,
                 configuration,
                 this._fileSystemService,
                 this);
@@ -84,4 +80,6 @@ public class HtmlRenderer : IHtmlRenderer
 
         return masterOutput;
     }
+
+    public ILogger<IHtmlRenderer> Logger => this._logger;
 }

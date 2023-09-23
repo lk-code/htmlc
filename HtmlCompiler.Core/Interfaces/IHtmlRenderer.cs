@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Interfaces;
 
@@ -19,4 +20,9 @@ public interface IHtmlRenderer
         string? cssOutputFilePath,
         JsonElement? globalVariables,
         long callLevel);
+    
+    /// <summary>
+    /// returns the logging instance for renderer access
+    /// </summary>
+    ILogger<IHtmlRenderer> Logger { get; }
 }

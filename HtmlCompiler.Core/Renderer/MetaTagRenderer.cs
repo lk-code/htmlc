@@ -1,17 +1,14 @@
 using HtmlAgilityPack;
 using HtmlCompiler.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
 public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
 {
-    public MetaTagRenderer(ILogger<FileTagRenderer> logger,
-        RenderingConfiguration configuration,
+    public MetaTagRenderer(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(logger,
-            configuration,
+        : base(configuration,
             fileSystemService,
             htmlRenderer)
     {

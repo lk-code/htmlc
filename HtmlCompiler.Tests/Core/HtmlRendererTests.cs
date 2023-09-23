@@ -4,6 +4,8 @@ using FluentDataBuilder;
 using FluentDataBuilder.Json;
 using HtmlCompiler.Core;
 using HtmlCompiler.Core.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core;
@@ -11,15 +13,24 @@ namespace HtmlCompiler.Tests.Core;
 [TestClass]
 public class HtmlRendererTests
 {
+    private ILogger<HtmlRenderer> _logger = null!;
     private HtmlRenderer _instance = null!;
     private IFileSystemService _fileSystemService = null!;
 
     [TestInitialize]
     public void SetUp()
     {
+        ServiceProvider serviceProvider = new ServiceCollection()
+            .AddLogging()
+            .BuildServiceProvider();
+        ILoggerFactory factory = serviceProvider.GetService<ILoggerFactory>()!;
+
+        this._logger = factory.CreateLogger<HtmlRenderer>();
+        
         this._fileSystemService = Substitute.For<IFileSystemService>();
 
-        this._instance = new HtmlRenderer(this._fileSystemService);
+        this._instance = new HtmlRenderer(this._logger,
+            this._fileSystemService);
     }
 
     [TestMethod]

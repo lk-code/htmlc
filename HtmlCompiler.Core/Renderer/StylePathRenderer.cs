@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -9,12 +8,10 @@ public class StylePathRenderer : RenderingBase
 {
     public const string STYLEPATH_TAG = "@StylePath";
 
-    public StylePathRenderer(ILogger<FileTagRenderer> logger,
-        RenderingConfiguration configuration,
+    public StylePathRenderer(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(logger,
-            configuration,
+        : base(configuration,
             fileSystemService,
             htmlRenderer)
     {

@@ -1,9 +1,6 @@
 using System.Text;
-using HtmlCompiler.Commands;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -12,7 +9,6 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 [TestClass]
 public class LayoutRendererTests
 {
-    private ILogger<LayoutRenderer> _logger = null!;
     private LayoutRenderer _instance = null!;
     private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
@@ -20,13 +16,6 @@ public class LayoutRendererTests
     [TestInitialize]
     public void SetUp()
     {
-        ServiceProvider serviceProvider = new ServiceCollection()
-            .AddLogging()
-            .BuildServiceProvider();
-        ILoggerFactory? factory = serviceProvider.GetService<ILoggerFactory>();
-
-        this._logger = factory.CreateLogger<LayoutRenderer>();
-        
         this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
@@ -38,8 +27,7 @@ public class LayoutRendererTests
             CssOutputFilePath = ""
         };
 
-        this._instance = new LayoutRenderer(this._logger,
-            configuration,
+        this._instance = new LayoutRenderer(configuration,
             this._fileSystemService,
             this._htmlRenderer);
     }

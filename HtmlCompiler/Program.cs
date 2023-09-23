@@ -84,7 +84,7 @@ static class Program
         CoconaApp? app = builder.Build();
         
         // store final configuration for debug
-        string finalConfiguration = (app.Configuration as Microsoft.Extensions.Configuration.ConfigurationManager).GetDebugView();
+        string finalConfiguration = (app.Configuration as Microsoft.Extensions.Configuration.ConfigurationManager)!.GetDebugView();
         
         logger.LogTrace(finalConfiguration);
 

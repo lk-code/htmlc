@@ -1,6 +1,5 @@
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -9,12 +8,10 @@ public class LayoutRenderer : RenderingBase
     public const string LAYOUT_TAG = "@Layout";
     public const string BODY_TAG = "@Body";
 
-    public LayoutRenderer(ILogger<LayoutRenderer> logger,
-        RenderingConfiguration configuration,
+    public LayoutRenderer(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(logger,
-            configuration,
+        : base(configuration,
             fileSystemService,
             htmlRenderer)
     {

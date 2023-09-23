@@ -1,8 +1,6 @@
 using FluentAssertions;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core.Renderer;
@@ -10,7 +8,6 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 [TestClass]
 public class PageTitleRendererTests
 {
-    private ILogger<PageTitleRenderer> _logger = null!;
     private PageTitleRenderer _instance = null!;
     private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
@@ -18,13 +15,6 @@ public class PageTitleRendererTests
     [TestInitialize]
     public void SetUp()
     {
-        ServiceProvider serviceProvider = new ServiceCollection()
-            .AddLogging()
-            .BuildServiceProvider();
-        ILoggerFactory? factory = serviceProvider.GetService<ILoggerFactory>();
-
-        this._logger = factory.CreateLogger<PageTitleRenderer>();
-        
         this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
@@ -36,8 +26,7 @@ public class PageTitleRendererTests
             CssOutputFilePath = @"C:\"
         };
         
-        this._instance = new PageTitleRenderer(this._logger,
-            configuration,
+        this._instance = new PageTitleRenderer(configuration,
             this._fileSystemService,
             this._htmlRenderer);
     }

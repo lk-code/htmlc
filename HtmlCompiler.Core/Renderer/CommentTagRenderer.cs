@@ -1,5 +1,4 @@
 using HtmlCompiler.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -7,12 +6,10 @@ public class CommentTagRenderer : RenderingBase
 {
     public const string COMMENT_TAG = "@Comment";
 
-    public CommentTagRenderer(ILogger<CommentTagRenderer> logger,
-        RenderingConfiguration configuration,
+    public CommentTagRenderer(RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(logger,
-            configuration,
+        : base(configuration,
             fileSystemService,
             htmlRenderer)
     {
