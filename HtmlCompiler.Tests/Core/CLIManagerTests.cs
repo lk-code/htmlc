@@ -1,5 +1,6 @@
 using FluentAssertions;
 using HtmlCompiler.Core;
+using HtmlCompiler.Core.Exceptions;
 
 namespace HtmlCompiler.Tests.Core;
 
@@ -17,10 +18,20 @@ public class CLIManagerTests
     [TestMethod]
     public void ExecuteCommand_WithDotnetVersion_Returns()
     {
-        string command = $"dotnet --version";
+        string command = "dotnet --version";
 
         string result = _instance.ExecuteCommand(command);
         
         result.Should().NotBeNullOrEmpty();
+    }
+
+    [TestMethod]
+    public void ExecuteCommand_WithInvalidCommandDotnetVersion_Returns()
+    {
+        string command = "dotnet version";
+
+        Action action = () => _instance.ExecuteCommand(command);
+
+        action.Should().Throw<ConsoleExecutionException>();
     }
 }
