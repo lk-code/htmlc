@@ -1,6 +1,5 @@
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Extensions;
 

@@ -1,7 +1,6 @@
 using FluentAssertions;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core.Renderer;
