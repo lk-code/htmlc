@@ -39,7 +39,7 @@ public class LessDependency : IDependencyObject
             result = err.Message;
         }
 
-        if (Regex.IsMatch(result, LESS_VERSION_PATTERN))
+        if (Regex.IsMatch(result, LESS_VERSION_PATTERN, RegexOptions.None, TimeSpan.FromMilliseconds(100)))
         {
             return true;
         }

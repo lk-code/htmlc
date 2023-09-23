@@ -48,7 +48,7 @@ public class VariablesRenderer : RenderingBase
         await Task.CompletedTask;
         
         string pattern = $@"{VARIABLES_TAG}\[(.*?)\];";
-        Regex regex = new Regex(pattern);
+        Regex regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
         string result = regex.Replace(content, match =>
         {

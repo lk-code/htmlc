@@ -35,7 +35,7 @@ public class NodeDependency : IDependencyObject
 
         result = result.TrimEnd(Environment.NewLine.ToCharArray());
 
-        if (Regex.IsMatch(result, NODE_VERSION_PATTERN))
+        if (Regex.IsMatch(result, NODE_VERSION_PATTERN, RegexOptions.None, TimeSpan.FromMilliseconds(100)))
         {
             return true;
         }

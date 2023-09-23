@@ -21,7 +21,7 @@ public class GlobalTagRenderer : RenderingBase
         await Task.CompletedTask;
         
         string pattern = @"@Global:([a-zA-Z0-9:]+(?![a-zA-Z0-9:]))";
-        Regex regex = new Regex(pattern);
+        Regex regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
         MatchCollection matches = regex.Matches(content);
 
