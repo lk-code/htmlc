@@ -10,10 +10,17 @@ using HtmlCompiler.Core.Dependencies;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using ConfigurationManager = Microsoft.Extensions.Configuration.ConfigurationManager;
 
 namespace HtmlCompiler;
+
+public class ProgramLog
+{
+    
+}
 
 static class Program
 {
@@ -31,13 +38,24 @@ static class Program
 
         CoconaAppBuilder? builder = CoconaApp.CreateBuilder(args);
 
+        var logger = LoggerFactory.Create(builder => builder.AddNLog()).CreateLogger<ProgramLog>();
+        logger.LogTrace("##################################################");
+        builder.Services.AddLogging(loggingBuilder =>
+        {
+            // configure Logging with NLog
+            loggingBuilder.ClearProviders();
+            loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+            loggingBuilder.AddNLog();
+        });
+
         // add user configuration
-        Console.WriteLine($"add user configuration file: '{userConfigPath}'");
+        logger.LogTrace($"add user configuration file: '{userConfigPath}'");
         builder.Configuration.AddJsonStream(new StreamReader(userConfigPath).BaseStream);
 
         builder.Services.AddTransient<IConfigurationManager>(x =>
             new Config.ConfigurationManager(userConfigPath, x.GetRequiredService<IFileSystemService>()));
 
+        // add services
         builder.Services.AddSingleton<IHtmlRenderer, HtmlRenderer>();
         builder.Services.AddTransient<IFileWatcher, FileWatcher>();
         builder.Services.AddTransient<IStyleManager, StyleManager>();
@@ -49,10 +67,12 @@ static class Program
         builder.Services.AddTransient<ICLIManager, CLIManager>();
         builder.Services.AddTransient<IDependencyManager, DependencyManager>();
 
+        // add dependencies
         builder.Services.AddTransient<IDependencyObject, SassDependency>();
         builder.Services.AddTransient<IDependencyObject, LessDependency>();
         builder.Services.AddTransient<IDependencyObject, NodeDependency>();
 
+        // add temp variables
         IDataBuilder dataBuilder = new DataBuilder();
         dataBuilder.Add("Core", new DataBuilder()
             .Add("UserConfigPath", userConfigPath)
@@ -63,6 +83,12 @@ static class Program
         builder.Configuration.AddJsonStream(coreConfigJsonStream);
 
         CoconaApp? app = builder.Build();
+        
+        // store final configuration for debug
+        ConfigurationManager? cm = (app.Configuration as Microsoft.Extensions.Configuration.ConfigurationManager);
+        string cmdebug = cm.GetDebugView();
+        
+        logger.LogTrace(cmdebug);
 
         app.AddCommands<HtmlcCommand>();
         app.AddCommands<EnvironmentCommand>();
