@@ -13,7 +13,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using ConfigurationManager = Microsoft.Extensions.Configuration.ConfigurationManager;
 
 namespace HtmlCompiler;
 
@@ -85,10 +84,9 @@ static class Program
         CoconaApp? app = builder.Build();
         
         // store final configuration for debug
-        ConfigurationManager? cm = (app.Configuration as Microsoft.Extensions.Configuration.ConfigurationManager);
-        string cmdebug = cm.GetDebugView();
+        string finalConfiguration = (app.Configuration as Microsoft.Extensions.Configuration.ConfigurationManager).GetDebugView();
         
-        logger.LogTrace(cmdebug);
+        logger.LogTrace(finalConfiguration);
 
         app.AddCommands<HtmlcCommand>();
         app.AddCommands<EnvironmentCommand>();
