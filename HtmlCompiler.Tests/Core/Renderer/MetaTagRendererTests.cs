@@ -2,6 +2,8 @@ using FluentAssertions;
 using HtmlAgilityPack;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core.Renderer;
@@ -9,6 +11,7 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 [TestClass]
 public class MetaTagRendererTests
 {
+    private ILogger<MetaTagRenderer> _logger = null!;
     private IMetaTagRenderer _instance = null!;
     private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
@@ -16,6 +19,13 @@ public class MetaTagRendererTests
     [TestInitialize]
     public void SetUp()
     {
+        ServiceProvider serviceProvider = new ServiceCollection()
+            .AddLogging()
+            .BuildServiceProvider();
+        ILoggerFactory? factory = serviceProvider.GetService<ILoggerFactory>();
+
+        this._logger = factory.CreateLogger<MetaTagRenderer>();
+        
         this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
@@ -27,7 +37,8 @@ public class MetaTagRendererTests
             CssOutputFilePath = @"C:\"
         };
         
-        this._instance = new MetaTagRenderer(configuration,
+        this._instance = new MetaTagRenderer(this._logger,
+            configuration,
             this._fileSystemService,
             this._htmlRenderer);
     }

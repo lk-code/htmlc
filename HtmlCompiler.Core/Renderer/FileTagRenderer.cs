@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -7,10 +8,12 @@ public class FileTagRenderer : RenderingBase
 {
     public const string RENDERER_TAG = @"@File=([^\s]+)";
 
-    public FileTagRenderer(RenderingConfiguration configuration,
+    public FileTagRenderer(ILogger<FileTagRenderer> logger,
+        RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(configuration,
+        : base(logger,
+            configuration,
             fileSystemService,
             htmlRenderer)
     {

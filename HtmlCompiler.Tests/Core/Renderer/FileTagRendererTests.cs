@@ -1,6 +1,9 @@
 using System.Text.Json;
+using HtmlCompiler.Commands;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core.Renderer;
@@ -8,6 +11,7 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 [TestClass]
 public class FileTagRendererTests
 {
+    private ILogger<FileTagRenderer> _logger = null!;
     private FileTagRenderer _instance = null!;
     private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
@@ -15,6 +19,13 @@ public class FileTagRendererTests
     [TestInitialize]
     public void SetUp()
     {
+        ServiceProvider serviceProvider = new ServiceCollection()
+            .AddLogging()
+            .BuildServiceProvider();
+        ILoggerFactory? factory = serviceProvider.GetService<ILoggerFactory>();
+
+        this._logger = factory.CreateLogger<FileTagRenderer>();
+        
         this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
@@ -26,7 +37,8 @@ public class FileTagRendererTests
             CssOutputFilePath = ""
         };
 
-        this._instance = new FileTagRenderer(configuration,
+        this._instance = new FileTagRenderer(this._logger,
+            configuration,
             this._fileSystemService,
             this._htmlRenderer);
     }

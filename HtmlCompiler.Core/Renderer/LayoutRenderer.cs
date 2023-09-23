@@ -1,5 +1,6 @@
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -7,6 +8,17 @@ public class LayoutRenderer : RenderingBase
 {
     public const string LAYOUT_TAG = "@Layout";
     public const string BODY_TAG = "@Body";
+
+    public LayoutRenderer(ILogger<LayoutRenderer> logger,
+        RenderingConfiguration configuration,
+        IFileSystemService fileSystemService,
+        IHtmlRenderer htmlRenderer)
+        : base(logger,
+            configuration,
+            fileSystemService,
+            htmlRenderer)
+    {
+    }
 
     /// <inheritdoc />
     public override async Task<string> RenderAsync(string content)
@@ -74,14 +86,5 @@ public class LayoutRenderer : RenderingBase
             );
 
         return result;
-    }
-
-    public LayoutRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
-        IHtmlRenderer htmlRenderer)
-        : base(configuration,
-            fileSystemService,
-            htmlRenderer)
-    {
     }
 }

@@ -1,6 +1,9 @@
 using FluentAssertions;
+using HtmlCompiler.Commands;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace HtmlCompiler.Tests.Core.Renderer;
@@ -8,6 +11,7 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 [TestClass]
 public class CommentTagRendererTests
 {
+    private ILogger<CommentTagRenderer> _logger = null!;
     private CommentTagRenderer _instance = null!;
     private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
@@ -15,6 +19,13 @@ public class CommentTagRendererTests
     [TestInitialize]
     public void SetUp()
     {
+        ServiceProvider serviceProvider = new ServiceCollection()
+            .AddLogging()
+            .BuildServiceProvider();
+        ILoggerFactory? factory = serviceProvider.GetService<ILoggerFactory>();
+
+        this._logger = factory.CreateLogger<CommentTagRenderer>();
+        
         this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
@@ -26,7 +37,8 @@ public class CommentTagRendererTests
             CssOutputFilePath = @"C:\"
         };
         
-        this._instance = new CommentTagRenderer(configuration,
+        this._instance = new CommentTagRenderer(this._logger,
+            configuration,
             this._fileSystemService,
             this._htmlRenderer);
     }

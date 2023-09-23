@@ -1,10 +1,22 @@
 using HtmlAgilityPack;
 using HtmlCompiler.Core.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
 public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
 {
+    public MetaTagRenderer(ILogger<FileTagRenderer> logger,
+        RenderingConfiguration configuration,
+        IFileSystemService fileSystemService,
+        IHtmlRenderer htmlRenderer)
+        : base(logger,
+            configuration,
+            fileSystemService,
+            htmlRenderer)
+    {
+    }
+    
     public override async Task<string> RenderAsync(string content)
     {
         await Task.CompletedTask;
@@ -36,14 +48,5 @@ public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
         head.AppendChild(HtmlNode.CreateNode("\n"));
 
         return doc.DocumentNode.OuterHtml;
-    }
-
-    public MetaTagRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
-        IHtmlRenderer htmlRenderer)
-        : base(configuration,
-            fileSystemService,
-            htmlRenderer)
-    {
     }
 }

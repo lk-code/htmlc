@@ -3,6 +3,8 @@ using FluentDataBuilder.Microsoft.Extensions.Configuration;
 using HtmlCompiler.Commands;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace HtmlCompiler.Tests.App.Commands;
@@ -10,19 +12,26 @@ namespace HtmlCompiler.Tests.App.Commands;
 [TestClass]
 public class EnvironmentCommandTests
 {
+    private ILogger<EnvironmentCommand> _logger = null!;
     private EnvironmentCommand _instance = null!;
     private IDependencyManager _dependencyManager = null!;
 
     [TestInitialize]
     public void SetUp()
     {
+        ServiceProvider serviceProvider = new ServiceCollection()
+            .AddLogging()
+            .BuildServiceProvider();
+        ILoggerFactory? factory = serviceProvider.GetService<ILoggerFactory>();
+
+        this._logger = factory.CreateLogger<EnvironmentCommand>();
     }
 
     private void CreateTestInstance(IConfiguration configuration)
     {
         this._dependencyManager = Substitute.For<IDependencyManager>();
         
-        this._instance = new EnvironmentCommand(configuration, this._dependencyManager);
+        this._instance = new EnvironmentCommand(this._logger, configuration, this._dependencyManager);
     }
 
     [TestMethod]

@@ -1,5 +1,6 @@
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Extensions;
 
@@ -13,6 +14,7 @@ public static class ClassActivatorExtensions
     /// <param name="configuration">The rendering configuration to be passed to the constructor of the instances.</param>
     /// <returns>A list of instances of type T that implement the IRenderingComponent interface and are configured accordingly.</returns>
     public static IEnumerable<IRenderingComponent> BuildRenderingComponents(this IEnumerable<Type> renderingComponents,
+        ILogger<IRenderingComponent> logger,
         RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
@@ -24,6 +26,7 @@ public static class ClassActivatorExtensions
             if (typeof(IRenderingComponent).IsAssignableFrom(type))
             {
                 IRenderingComponent instance = (IRenderingComponent)Activator.CreateInstance(type,
+                    logger,
                     configuration,
                     fileSystemService,
                     htmlRenderer)!;

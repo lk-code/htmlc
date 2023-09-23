@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -7,6 +8,17 @@ public class HtmlEscapeBlockRenderer : RenderingBase
 {
     public const string START_TAG = "@StartHtmlSpecialChars";
     public const string END_TAG = "@EndHtmlSpecialChars";
+
+    public HtmlEscapeBlockRenderer(ILogger<HtmlEscapeBlockRenderer> logger,
+        RenderingConfiguration configuration,
+        IFileSystemService fileSystemService,
+        IHtmlRenderer htmlRenderer)
+        : base(logger,
+            configuration,
+            fileSystemService,
+            htmlRenderer)
+    {
+    }
 
     public override async Task<string> RenderAsync(string content)
     {
@@ -43,14 +55,5 @@ public class HtmlEscapeBlockRenderer : RenderingBase
         }
 
         return content;
-    }
-
-    public HtmlEscapeBlockRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
-        IHtmlRenderer htmlRenderer)
-        : base(configuration,
-            fileSystemService,
-            htmlRenderer)
-    {
     }
 }

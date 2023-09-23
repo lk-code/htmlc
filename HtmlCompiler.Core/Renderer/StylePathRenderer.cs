@@ -1,12 +1,24 @@
 using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
 public class StylePathRenderer : RenderingBase
 {
     public const string STYLEPATH_TAG = "@StylePath";
+
+    public StylePathRenderer(ILogger<FileTagRenderer> logger,
+        RenderingConfiguration configuration,
+        IFileSystemService fileSystemService,
+        IHtmlRenderer htmlRenderer)
+        : base(logger,
+            configuration,
+            fileSystemService,
+            htmlRenderer)
+    {
+    }
 
     public override async Task<string> RenderAsync(string content)
     {
@@ -35,14 +47,5 @@ public class StylePathRenderer : RenderingBase
         Regex stylePathRegex = new Regex(STYLEPATH_TAG, RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
         return stylePathRegex.Replace(content, cssPath);
-    }
-
-    public StylePathRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
-        IHtmlRenderer htmlRenderer)
-        : base(configuration,
-            fileSystemService,
-            htmlRenderer)
-    {
     }
 }

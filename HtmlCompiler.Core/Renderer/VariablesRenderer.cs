@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using FluentDataBuilder;
 using FluentDataBuilder.Json;
 using HtmlCompiler.Core.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -14,10 +15,12 @@ public class VariablesRenderer : RenderingBase
 
     public override bool PreRenderPartialFiles { get; } = false;
 
-    public VariablesRenderer(RenderingConfiguration configuration,
+    public VariablesRenderer(ILogger<VariablesRenderer> logger,
+        RenderingConfiguration configuration,
         IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
-        : base(configuration,
+        : base(logger,
+            configuration,
             fileSystemService,
             htmlRenderer)
     {
@@ -143,7 +146,7 @@ public class VariablesRenderer : RenderingBase
         });
 
         content = string.Join('\n', updatedLines);
-        var json = new DataBuilder().LoadFrom(jsonResult).Build().RootElement;
+        JsonElement json = new DataBuilder().LoadFrom(jsonResult).Build().RootElement;
         
         return (json, content);
     }

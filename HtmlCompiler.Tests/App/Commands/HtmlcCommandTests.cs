@@ -2,6 +2,8 @@ using System.Text;
 using HtmlCompiler.Commands;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace HtmlCompiler.Tests.App.Commands;
@@ -9,6 +11,7 @@ namespace HtmlCompiler.Tests.App.Commands;
 [TestClass]
 public class HtmlcCommandTests
 {
+    private ILogger<HtmlcCommand> _logger = null!;
     private HtmlcCommand _instance = null!;
     private IFileWatcher _fileWatcher = null!;
     private IProjectManager _projectManager = null!;
@@ -17,11 +20,19 @@ public class HtmlcCommandTests
     [TestInitialize]
     public void SetUp()
     {
+        ServiceProvider serviceProvider = new ServiceCollection()
+            .AddLogging()
+            .BuildServiceProvider();
+        ILoggerFactory? factory = serviceProvider.GetService<ILoggerFactory>();
+
+        this._logger = factory.CreateLogger<HtmlcCommand>();
+        
         this._fileWatcher = Substitute.For<IFileWatcher>();
         this._projectManager = Substitute.For<IProjectManager>();
         this._templateManager = Substitute.For<ITemplateManager>();
 
-        this._instance = new HtmlcCommand(this._fileWatcher,
+        this._instance = new HtmlcCommand(this._logger,
+            this._fileWatcher,
             this._projectManager,
             this._templateManager);
     }

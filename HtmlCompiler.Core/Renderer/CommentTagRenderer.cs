@@ -1,10 +1,22 @@
 using HtmlCompiler.Core.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
 public class CommentTagRenderer : RenderingBase
 {
     public const string COMMENT_TAG = "@Comment";
+
+    public CommentTagRenderer(ILogger<CommentTagRenderer> logger,
+        RenderingConfiguration configuration,
+        IFileSystemService fileSystemService,
+        IHtmlRenderer htmlRenderer)
+        : base(logger,
+            configuration,
+            fileSystemService,
+            htmlRenderer)
+    {
+    }
 
     public override async Task<string> RenderAsync(string content)
     {
@@ -25,14 +37,5 @@ public class CommentTagRenderer : RenderingBase
         string result = string.Join(Environment.NewLine, lines);
 
         return result;
-    }
-
-    public CommentTagRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
-        IHtmlRenderer htmlRenderer)
-        : base(configuration,
-            fileSystemService,
-            htmlRenderer)
-    {
     }
 }
