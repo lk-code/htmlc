@@ -10,6 +10,7 @@ using HtmlCompiler.Core.Dependencies;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HtmlCompiler;
@@ -31,6 +32,7 @@ static class Program
         CoconaAppBuilder? builder = CoconaApp.CreateBuilder(args);
 
         // add user configuration
+        Console.WriteLine($"add user configuration file: '{userConfigPath}'");
         builder.Configuration.AddJsonStream(new StreamReader(userConfigPath).BaseStream);
 
         builder.Services.AddTransient<IConfigurationManager>(x =>
