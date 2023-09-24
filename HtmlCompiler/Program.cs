@@ -46,6 +46,9 @@ static class Program
             loggingBuilder.SetMinimumLevel(LogLevel.Trace);
             loggingBuilder.AddNLog();
         });
+        
+        string logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "htmlc.log");
+        logger.LogInformation($"Log-File: {logFilePath}");
 
         // add user configuration
         logger.LogTrace($"add user configuration file: '{userConfigPath}'");
