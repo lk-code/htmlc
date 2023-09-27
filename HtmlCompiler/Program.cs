@@ -51,8 +51,8 @@ static class Program
         logger.LogInformation($"Log-File: {logFilePath}");
 
         // add user configuration
-        logger.LogTrace($"add user configuration file: '{userConfigPath}'");
-        builder.Configuration.AddJsonStream(new StreamReader(userConfigPath).BaseStream);
+        // logger.LogTrace($"add user configuration file: '{userConfigPath}'");
+        // builder.Configuration.AddJsonStream(new StreamReader(userConfigPath).BaseStream);
 
         builder.Services.AddTransient<IConfigurationManager>(x =>
             new Config.ConfigurationManager(userConfigPath, x.GetRequiredService<IFileSystemService>()));
