@@ -45,7 +45,7 @@ public class HtmlRenderer : IHtmlRenderer
 
         RenderingConfiguration configuration = new RenderingConfiguration
         {
-            BaseDirectory = sourceFullFilePath.GetBaseDirectory(),
+            BaseDirectory = sourceDirectory,
             SourceDirectory = sourceDirectory,
             OutputDirectory = outputDirectory,
             CssOutputFilePath = cssOutputFilePath!,

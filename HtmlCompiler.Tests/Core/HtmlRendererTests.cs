@@ -688,4 +688,72 @@ public class HtmlRendererTests
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
     }
+
+    [TestMethod]
+    public async Task RenderHtmlAsync_WithLayoutAndFilesInSharedDirectory_Return()
+    {
+        string sourceFullFilePath = "/project/src/index.html";
+        string sourceDirectory = "/project/src";
+        string outputDirectory = "/project/dist";
+        string? cssOutputFilePath = "/project/src/dist/css/site.scss";
+        IDataBuilder dataBuilder = new DataBuilder();
+
+        var expectedHtml = new StringBuilder()
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<meta name=\"generator\" content=\"htmlc\">")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("")
+            .AppendLine("")
+            .AppendLine("<p>LANDING</p>")
+            .AppendLine("<p>ABOUT</p>")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
+            .ToString().Trim();
+
+        var indexContent = new StringBuilder()
+            .AppendLine("@PageTitle=lk-code.dev")
+            .AppendLine("")
+            .AppendLine("@Layout=shared/_layout.html")
+            .AppendLine("")
+            .AppendLine("@File=shared/components/_landing-view.html")
+            .AppendLine("@File=shared/components/_about-view.html")
+            .ToString().Trim();
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/index.html")
+            .Returns(indexContent);
+
+        var layoutContent = new StringBuilder()
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("@Body")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
+            .ToString().Trim();
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/shared/_layout.html")
+            .Returns(layoutContent);
+
+        var landingContent = new StringBuilder()
+            .AppendLine("<p>LANDING</p>")
+            .ToString().Trim();
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/shared/components/_landing-view.html")
+            .Returns(landingContent);
+
+        var aboutContent = new StringBuilder()
+            .AppendLine("<p>ABOUT</p>")
+            .ToString().Trim();
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/shared/components/_about-view.html")
+            .Returns(aboutContent);
+
+        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+            sourceDirectory,
+            outputDirectory,
+            cssOutputFilePath,
+            dataBuilder.Build().RootElement);
+
+        result.Should().NotBeNullOrEmpty();
+        result.Should().Be(expectedHtml);
+    }
 }
