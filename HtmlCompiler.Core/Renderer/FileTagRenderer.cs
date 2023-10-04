@@ -24,8 +24,7 @@ public class FileTagRenderer : RenderingBase
         foreach (Match match in fileTagRegex.Matches(content))
         {
             string fileValue = match.Groups[1].Value;
-
-            string fullPath = Path.Combine(this._configuration.SourceDirectory, fileValue);
+            string fullPath = Path.Combine(this._configuration.BaseDirectory, fileValue);
 
             // render the new file and return the rendered content
             string fileContent = await this._htmlRenderer.RenderHtmlFromFileAsync(fullPath,
