@@ -19,7 +19,7 @@ public class FileTagRenderer : RenderingBase
     /// <inheritdoc />
     public override async Task<string> RenderAsync(string content)
     {
-        Regex fileTagRegex = new Regex(RENDERER_TAG, RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+        Regex fileTagRegex = new(RENDERER_TAG, RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
         foreach (Match match in fileTagRegex.Matches(content))
         {

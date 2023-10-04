@@ -43,7 +43,7 @@ public class LayoutRenderer : RenderingBase
         string baseDirectory = this._configuration.BaseDirectory;
         string layoutPlaceholder = $"{LAYOUT_TAG}=";
 
-        int layoutIndex = content.IndexOf(layoutPlaceholder);
+        int layoutIndex = content.IndexOf(layoutPlaceholder, StringComparison.Ordinal);
         if (layoutIndex == -1)
         {
             return content;
@@ -70,7 +70,7 @@ public class LayoutRenderer : RenderingBase
             content.AsSpan(layoutPathEnd + 1)
             );
 
-        int bodyIndex = layoutContent.IndexOf(BODY_TAG);
+        int bodyIndex = renderedLayoutContent.IndexOf(BODY_TAG, StringComparison.Ordinal);
         if (bodyIndex == -1)
         {
             return cleanedContent;
