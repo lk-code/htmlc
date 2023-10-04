@@ -39,7 +39,7 @@ public class MetaTagRendererTests
 
         string html = this._instance.AddMetaTagToContent(sourceHtml, "generator", "htmlc test");
 
-        HtmlDocument htmlDoc = new HtmlDocument();
+        HtmlDocument htmlDoc = new();
         htmlDoc.LoadHtml(html);
 
         htmlDoc.DocumentNode.SelectSingleNode("//meta[@name='generator']").Should().NotBeNull();
@@ -53,7 +53,7 @@ public class MetaTagRendererTests
 
         string html = this._instance.AddMetaTagToContent(sourceHtml, "generator", "htmlc test");
 
-        HtmlDocument htmlDoc = new HtmlDocument();
+        HtmlDocument htmlDoc = new();
         htmlDoc.LoadHtml(html);
 
         htmlDoc.DocumentNode.SelectSingleNode("//meta[@name='generator']").Should().NotBeNull();
@@ -67,7 +67,7 @@ public class MetaTagRendererTests
 
         string html = this._instance.AddMetaTagToContent(sourceHtml, "generator", "htmlc test");
 
-        HtmlDocument htmlDoc = new HtmlDocument();
+        HtmlDocument htmlDoc = new();
         htmlDoc.LoadHtml(html);
 
         htmlDoc.DocumentNode.SelectSingleNode("//meta[@name='generator']").Should().NotBeNull();
