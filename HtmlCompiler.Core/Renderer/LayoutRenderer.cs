@@ -21,21 +21,8 @@ public class LayoutRenderer : RenderingBase
     public override async Task<string> RenderAsync(string content)
     {
         string result = await this.RenderContentWithLayout(content);
-        this.AdjustBaseDirectoryToLayoutFile(content);
 
         return result;
-    }
-
-    private void AdjustBaseDirectoryToLayoutFile(string content)
-    {
-        string baseDirectory = this._configuration.BaseDirectory;
-        string? layoutPath = content.GetLayoutFilePath();
-        if (string.IsNullOrEmpty(layoutPath))
-        {
-            return;
-        }
-
-        this._configuration.BaseDirectory = Path.Combine(baseDirectory, Path.GetDirectoryName(layoutPath)!);
     }
 
     private async Task<string> RenderContentWithLayout(string content)
@@ -43,7 +30,7 @@ public class LayoutRenderer : RenderingBase
         string baseDirectory = this._configuration.BaseDirectory;
         string layoutPlaceholder = $"{LAYOUT_TAG}=";
 
-        int layoutIndex = content.IndexOf(layoutPlaceholder);
+        int layoutIndex = content.IndexOf(layoutPlaceholder, StringComparison.Ordinal);
         if (layoutIndex == -1)
         {
             return content;
@@ -65,21 +52,31 @@ public class LayoutRenderer : RenderingBase
             throw new FileNotFoundException($"Layout file not found or couldn't be read: {fullPath}", ex);
         }
 
+        string layoutDirectoryPath = fullPath.GetBaseDirectory() + "/";
+        string renderedLayoutContent = await this._htmlRenderer.RenderHtmlStringAsync(
+            layoutContent,
+            layoutDirectoryPath,
+            this._configuration.SourceDirectory,
+            this._configuration.OutputDirectory,
+            this._configuration.CssOutputFilePath,
+            this._configuration.GlobalVariables,
+            0);
+
         string cleanedContent = string.Concat(
             content.AsSpan(0, layoutIndex),
             content.AsSpan(layoutPathEnd + 1)
             );
 
-        int bodyIndex = layoutContent.IndexOf(BODY_TAG);
+        int bodyIndex = renderedLayoutContent.IndexOf(BODY_TAG, StringComparison.Ordinal);
         if (bodyIndex == -1)
         {
             return cleanedContent;
         }
 
         string result = string.Concat(
-            layoutContent.AsSpan(0, bodyIndex),
+            renderedLayoutContent.AsSpan(0, bodyIndex),
             cleanedContent,
-            layoutContent.AsSpan(bodyIndex + BODY_TAG.Length)
+            renderedLayoutContent.AsSpan(bodyIndex + BODY_TAG.Length)
             );
 
         return result;

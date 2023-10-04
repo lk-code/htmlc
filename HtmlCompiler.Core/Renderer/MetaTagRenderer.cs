@@ -13,11 +13,11 @@ public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
             htmlRenderer)
     {
     }
-    
+
     public override async Task<string> RenderAsync(string content)
     {
         await Task.CompletedTask;
-        
+
         content = this.AddMetaTagToContent(content, "generator", "htmlc");
 
         return content;
@@ -25,11 +25,11 @@ public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
 
     public string AddMetaTagToContent(string html, string name, string content)
     {
-        HtmlDocument doc = new HtmlDocument();
+        HtmlDocument doc = new();
         doc.LoadHtml(html);
 
         HtmlNode? head = doc.DocumentNode.SelectSingleNode("//head");
-        if (head == null)
+        if (head is null)
         {
             HtmlNode? htmlNode = doc.DocumentNode.SelectSingleNode("html");
             head = doc.CreateElement("head");
@@ -38,11 +38,18 @@ public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
             head.AppendChild(HtmlNode.CreateNode("\n"));
         }
 
-        HtmlNode? metaTag = doc.CreateElement("meta");
-        metaTag.SetAttributeValue("name", name);
-        metaTag.SetAttributeValue("content", content);
-        head.AppendChild(metaTag);
-        head.AppendChild(HtmlNode.CreateNode("\n"));
+        HtmlNode? existingMetaTag = head.SelectSingleNode($"meta[@name='{name}']");
+        if (existingMetaTag is null)
+        {
+            // Wenn das Meta-Tag nicht existiert, erstelle ein neues
+            HtmlNode? metaTag = doc.CreateElement("meta");
+            metaTag.SetAttributeValue("name", name);
+            head.AppendChild(metaTag);
+            head.AppendChild(HtmlNode.CreateNode("\n"));
+        }
+
+        HtmlNode? updatedMetaTag = head.SelectSingleNode($"meta[@name='{name}']");
+        updatedMetaTag?.SetAttributeValue("content", content);
 
         return doc.DocumentNode.OuterHtml;
     }

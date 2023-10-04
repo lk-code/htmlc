@@ -12,9 +12,29 @@ public interface IHtmlRenderer
     /// <param name="sourceDirectory"></param>
     /// <param name="outputDirectory"></param>
     /// <param name="cssOutputFilePath"></param>
+    /// <param name="globalVariables"></param>
     /// <param name="callLevel"></param>
     /// <returns></returns>
-    Task<string> RenderHtmlAsync(string sourceFullFilePath,
+    Task<string> RenderHtmlFromFileAsync(string sourceFullFilePath,
+        string sourceDirectory,
+        string outputDirectory,
+        string? cssOutputFilePath,
+        JsonElement? globalVariables,
+        long callLevel);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="htmlString"></param>
+    /// <param name="sourceFullFilePath"></param>
+    /// <param name="sourceDirectory"></param>
+    /// <param name="outputDirectory"></param>
+    /// <param name="cssOutputFilePath"></param>
+    /// <param name="globalVariables"></param>
+    /// <param name="callLevel"></param>
+    /// <returns></returns>
+    Task<string> RenderHtmlStringAsync(string htmlString,
+        string sourceFullFilePath,
         string sourceDirectory,
         string outputDirectory,
         string? cssOutputFilePath,

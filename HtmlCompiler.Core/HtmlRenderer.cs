@@ -33,19 +33,16 @@ public class HtmlRenderer : IHtmlRenderer
     }
 
     /// <inheritdoc />
-    public async Task<string> RenderHtmlAsync(string sourceFullFilePath,
+    public async Task<string> RenderHtmlStringAsync(string htmlString,
+        string sourceFullFilePath,
         string sourceDirectory,
         string outputDirectory,
         string? cssOutputFilePath,
-        JsonElement? globalVariables,
-        long callLevel = 0)
+        JsonElement? globalVariables, long callLevel)
     {
-        sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
-        string originalContent = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
-
         RenderingConfiguration configuration = new RenderingConfiguration
         {
-            BaseDirectory = sourceDirectory,
+            BaseDirectory = sourceFullFilePath.GetBaseDirectory(),
             SourceDirectory = sourceDirectory,
             OutputDirectory = outputDirectory,
             CssOutputFilePath = cssOutputFilePath!,
@@ -54,15 +51,16 @@ public class HtmlRenderer : IHtmlRenderer
             CallLevel = (callLevel + 1)
         };
 
-        IEnumerable<IRenderingComponent> renderingComponents = this._renderingComponents
+        IRenderingComponent[] renderingComponents = this._renderingComponents
             .OrderBy(x => x.Key)
             .Select(x => x.Value)
             .BuildRenderingComponents(
                 configuration,
                 this._fileSystemService,
-                this);
+                this)
+            .ToArray();
 
-        string masterOutput = originalContent;
+        string masterOutput = htmlString;
         foreach (IRenderingComponent renderingComponent in renderingComponents
                      .Where(x => x.PreRenderPartialFiles == true))
         {
@@ -78,6 +76,29 @@ public class HtmlRenderer : IHtmlRenderer
             }
         }
 
+        return masterOutput;
+    }
+
+    /// <inheritdoc />
+    public async Task<string> RenderHtmlFromFileAsync(string sourceFullFilePath,
+        string sourceDirectory,
+        string outputDirectory,
+        string? cssOutputFilePath,
+        JsonElement? globalVariables,
+        long callLevel = 0)
+    {
+        sourceFullFilePath = Path.GetFullPath(sourceFullFilePath);
+        string originalContent = await this._fileSystemService.FileReadAllTextAsync(sourceFullFilePath);
+
+        string masterOutput = await this.RenderHtmlStringAsync(
+            originalContent,
+            sourceFullFilePath,
+            sourceDirectory,
+            outputDirectory,
+            cssOutputFilePath,
+            globalVariables,
+            callLevel);
+        
         return masterOutput;
     }
 

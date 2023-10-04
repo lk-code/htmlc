@@ -352,7 +352,7 @@ public class FileWatcher : IFileWatcher
 
             try
             {
-                string renderedContent = await this._htmlRenderer.RenderHtmlAsync(
+                string renderedContent = await this._htmlRenderer.RenderHtmlFromFileAsync(
                     fileToCompile,
                     this._sourceDirectoryPath,
                     this._outputDirectoryPath,

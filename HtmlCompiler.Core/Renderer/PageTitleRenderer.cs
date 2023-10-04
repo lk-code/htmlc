@@ -31,7 +31,10 @@ public class PageTitleRenderer : RenderingBase
             return string.Empty;
         });
 
-        content = TitleUseRegex.Replace(content, match => pageTitle);
+        if (!string.IsNullOrEmpty(pageTitle))
+        {
+            content = TitleUseRegex.Replace(content, match => pageTitle);
+        }
 
         return content;
     }
