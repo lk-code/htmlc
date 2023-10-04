@@ -41,7 +41,7 @@ public class FileTagRendererTests
         // Mock the FileExists method to return true for this test
         this._fileSystemService.FileExists(Arg.Any<string>()).Returns(true);
 
-        this._htmlRenderer.RenderHtmlAsync(
+        this._htmlRenderer.RenderHtmlFromFileAsync(
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 Arg.Any<string>(),

@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using FluentAssertions;
 using FluentDataBuilder;
 using FluentDataBuilder.Json;
@@ -46,7 +46,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/index.html")
             .Returns("Hello World!");
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
@@ -93,7 +93,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
             .Returns(layoutHtml);
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
@@ -144,7 +144,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
             .Returns(layoutContent);
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
@@ -197,7 +197,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
             .Returns(layoutContent);
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
@@ -254,7 +254,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
             .Returns(layoutContent);
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
@@ -334,7 +334,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
             .Returns(layoutContent);
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
@@ -408,7 +408,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
             .Returns(layoutContent);
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
@@ -485,7 +485,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
             .Returns(layoutContent);
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
@@ -586,7 +586,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
             .Returns(layoutContent);
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
@@ -679,7 +679,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/_layoutbase.html")
             .Returns(layoutContent);
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
@@ -747,7 +747,7 @@ public class HtmlRendererTests
         this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/shared/components/_about-view.html")
             .Returns(aboutContent);
 
-        string result = await this._instance.RenderHtmlAsync(sourceFullFilePath,
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
             sourceDirectory,
             outputDirectory,
             cssOutputFilePath,
