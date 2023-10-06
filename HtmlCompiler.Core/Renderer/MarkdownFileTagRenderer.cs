@@ -6,6 +6,8 @@ namespace HtmlCompiler.Core.Renderer;
 
 public class MarkdownFileTagRenderer : RenderingBase
 {
+    private readonly MarkdownPipeline _pipeline;
+    
     public const string RENDERER_TAG = @"@MarkdownFile=([^\s]+)";
 
     public MarkdownFileTagRenderer(RenderingConfiguration configuration,
@@ -15,6 +17,7 @@ public class MarkdownFileTagRenderer : RenderingBase
             fileSystemService,
             htmlRenderer)
     {
+        _pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
     }
 
     /// <inheritdoc />
@@ -38,7 +41,7 @@ public class MarkdownFileTagRenderer : RenderingBase
             string markdownContent = await this._fileSystemService.FileReadAllTextAsync(fullPath);
             
             // render markdown to html
-            string renderedMarkdownContent = Markdown.ToHtml(markdownContent);
+            string renderedMarkdownContent = Markdown.ToHtml(markdownContent, _pipeline);
 
             content = content.Replace(match.Value, renderedMarkdownContent);
         }
