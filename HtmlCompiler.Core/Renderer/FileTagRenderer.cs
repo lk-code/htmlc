@@ -25,6 +25,7 @@ public class FileTagRenderer : RenderingBase
         {
             string fileValue = match.Groups[1].Value;
             string fullPath = Path.Combine(this._configuration.BaseDirectory, fileValue);
+            fullPath = Path.GetFullPath(fullPath);
 
             // render the new file and return the rendered content
             string fileContent = await this._htmlRenderer.RenderHtmlFromFileAsync(fullPath,
