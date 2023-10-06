@@ -144,4 +144,42 @@ public class MarkdownFileTagRendererTests
         htmlDoc.DocumentNode.SelectSingleNode("//section/h1").Should().NotBeNull();
         htmlDoc.DocumentNode.SelectSingleNode("//section/h1").GetDirectInnerText().Should().Be("Hello World");
     }
+
+    [TestMethod]
+    public async Task RenderAsync_WithMarkdownTable_Returns()
+    {
+        // Arrange
+        var markdownContent = new StringBuilder()
+            .AppendLine("| Package | Target | NuGet |")
+            .AppendLine("|-|-|-|")
+            .AppendLine("| Package | Target | NuGet |")
+            .ToString().Trim();
+        this._fileSystemService.FileReadAllTextAsync("/project/markdown.md")
+            .Returns(markdownContent);
+
+        var content = new StringBuilder()
+            .AppendLine("<section><p>this is markdown</p> @MarkdownFile=../markdown.md <p>here.</p></section>")
+            .ToString().Trim();
+
+        // Mock the FileExists method to return true for this test
+        this._fileSystemService.FileExists("/project/markdown.md")
+            .Returns(true);
+
+        // Act
+        string result = await this._instance.RenderAsync(content);
+
+        // Assert
+        HtmlDocument htmlDoc = new();
+        htmlDoc.LoadHtml(result);
+        
+        htmlDoc.DocumentNode.SelectSingleNode("section").Should().NotBeNull();
+        
+        htmlDoc.DocumentNode.SelectSingleNode("//section/p[1]").Should().NotBeNull();
+        htmlDoc.DocumentNode.SelectSingleNode("//section/p[1]").GetDirectInnerText().Should().Be("this is markdown");
+        
+        htmlDoc.DocumentNode.SelectSingleNode("//section/p[2]").Should().NotBeNull();
+        htmlDoc.DocumentNode.SelectSingleNode("//section/p[2]").GetDirectInnerText().Should().Be("here.");
+        
+        htmlDoc.DocumentNode.SelectSingleNode("//section/table").Should().NotBeNull();
+    }
 }
