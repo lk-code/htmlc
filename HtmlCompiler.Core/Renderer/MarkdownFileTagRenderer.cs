@@ -27,6 +27,7 @@ public class MarkdownFileTagRenderer : RenderingBase
             string fileValue = match.Groups[1].Value;
 
             string fullPath = Path.Combine(this._configuration.BaseDirectory, fileValue);
+            fullPath = Path.GetFullPath(fullPath);
 
             if (this._fileSystemService.FileExists(fullPath) == false)
             {
