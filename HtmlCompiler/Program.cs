@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text.Json;
 using Cocona;
 using Cocona.Builder;
@@ -18,12 +18,7 @@ using NLog.Extensions.Logging;
 
 namespace HtmlCompiler;
 
-public class ProgramLog
-{
-    
-}
-
-static class Program
+class Program
 {
     static void Main(string[] args)
     {
@@ -37,7 +32,10 @@ static class Program
         // ensure cache directory
         EnsureUserCacheDirectory(userCacheDirectoryPath);
 
-        CoconaAppBuilder? builder = CoconaApp.CreateBuilder(args);
+        CoconaAppBuilder? builder = CoconaApp.CreateBuilder(args, options =>
+        {
+            
+        });
         IDataBuilder configBuilder = new DataBuilder();
 
         // load appsettings
@@ -46,7 +44,7 @@ static class Program
         string appsettingsJson = appsettingsReader.ReadToEnd();
         configBuilder = DataBuilder.Merge(configBuilder, new DataBuilder().LoadFrom(appsettingsJson));
 
-        ILogger<ProgramLog> logger = LoggerFactory.Create(builder => builder.AddNLog()).CreateLogger<ProgramLog>();
+        ILogger<Program> logger = LoggerFactory.Create(builder => builder.AddNLog()).CreateLogger<Program>();
         logger.LogTrace("##################################################");
         builder.Services.AddLogging(loggingBuilder =>
         {
@@ -97,7 +95,7 @@ static class Program
         logger.LogTrace(finalConfiguration);
 
         app.AddCommands<HtmlcCommand>();
-        app.AddCommands<EnvironmentCommand>();
+        app.AddCommands<EnvironmentRootCommand>();
 
         app.Run();
     }
