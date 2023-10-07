@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
 using Cocona;
 using Cocona.Builder;
@@ -96,6 +96,7 @@ class Program
 
         app.AddCommands<HtmlcCommand>();
         app.AddCommands<EnvironmentRootCommand>();
+        app.AddCommands<TemplateRootCommand>();
 
         app.Run();
     }
