@@ -74,6 +74,7 @@ class Program
         builder.Services.AddTransient<IHttpClientService, HttpClientService>();
         builder.Services.AddTransient<ICLIManager, CLIManager>();
         builder.Services.AddTransient<IDependencyManager, DependencyManager>();
+        builder.Services.AddTransient<ITemplatePackagingService, TemplatePackagingService>();
 
         // add dependencies
         builder.Services.AddTransient<IDependencyObject, SassDependency>();
