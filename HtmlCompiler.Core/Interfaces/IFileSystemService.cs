@@ -13,4 +13,5 @@ public interface IFileSystemService
     string[] GetFiles(string path);
     IEnumerable<string> GetAllFiles(string path);
     string GetCurrentDirectory();
+    void Delete(string filePath);
 }

@@ -1,4 +1,5 @@
 using Cocona;
+using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -35,6 +36,14 @@ public class TemplateCommands
         try
         {
             await _templatePackagingService.CreateAsync(sourcePath, outputPath);
+        }
+        catch (TemplateFileException err)
+        {
+            _logger.LogError(err, "An error occurred while add files to the template:");
+            foreach (string error in err.Errors)
+            {
+                _logger.LogError(error);
+            }
         }
         catch (Exception err)
         {
