@@ -12,8 +12,8 @@ namespace HtmlCompiler.Tests.App.Commands;
 [TestClass]
 public class EnvironmentCommandTests
 {
-    private ILogger<EnvironmentCommand> _logger = null!;
-    private EnvironmentCommand _instance = null!;
+    private ILogger<EnvironmentCommands> _logger = null!;
+    private EnvironmentCommands _instance = null!;
     private IDependencyManager _dependencyManager = null!;
 
     [TestInitialize]
@@ -24,14 +24,14 @@ public class EnvironmentCommandTests
             .BuildServiceProvider();
         ILoggerFactory factory = serviceProvider.GetService<ILoggerFactory>()!;
 
-        this._logger = factory.CreateLogger<EnvironmentCommand>();
+        this._logger = factory.CreateLogger<EnvironmentCommands>();
     }
 
     private void CreateTestInstance(IConfiguration configuration)
     {
         this._dependencyManager = Substitute.For<IDependencyManager>();
         
-        this._instance = new EnvironmentCommand(this._logger, configuration, this._dependencyManager);
+        this._instance = new EnvironmentCommands(this._logger, configuration, this._dependencyManager);
     }
 
     [TestMethod]

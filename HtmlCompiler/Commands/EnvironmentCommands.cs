@@ -5,13 +5,18 @@ using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Commands;
 
-public class EnvironmentCommand
+[HasSubCommands(typeof(EnvironmentCommands), "environment", Description = "commands for htmlc environment")]
+public class EnvironmentRootCommand
 {
-    private readonly ILogger<EnvironmentCommand> _logger;
+}
+
+public class EnvironmentCommands
+{
+    private readonly ILogger<EnvironmentCommands> _logger;
     private readonly IConfiguration _configuration;
     private readonly IDependencyManager _dependencyManager;
 
-    public EnvironmentCommand(ILogger<EnvironmentCommand> logger,
+    public EnvironmentCommands(ILogger<EnvironmentCommands> logger,
         IConfiguration configuration,
         IDependencyManager dependencyManager)
     {

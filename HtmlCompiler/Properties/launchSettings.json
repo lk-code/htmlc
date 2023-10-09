@@ -10,11 +10,11 @@
     },
     "htmlc check": {
       "commandName": "Project",
-      "commandLineArgs": "check"
+      "commandLineArgs": "environment check"
     },
     "htmlc setup": {
       "commandName": "Project",
-      "commandLineArgs": "setup"
+      "commandLineArgs": "environment setup"
     },
     "htmlc config add": {
       "commandName": "Project",
