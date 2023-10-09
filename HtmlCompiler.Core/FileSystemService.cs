@@ -75,8 +75,10 @@ public class FileSystemService : IFileSystemService
 	    return Directory.GetCurrentDirectory();
     }
 
-    public void Delete(string filePath)
+    public bool Delete(string filePath)
     {
 	    File.Delete(filePath);
+
+	    return true;
     }
 }

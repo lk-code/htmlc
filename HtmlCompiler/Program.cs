@@ -75,6 +75,7 @@ class Program
         builder.Services.AddTransient<ICLIManager, CLIManager>();
         builder.Services.AddTransient<IDependencyManager, DependencyManager>();
         builder.Services.AddTransient<ITemplatePackagingService, TemplatePackagingService>();
+        builder.Services.AddTransient<IZipArchiveProvider, ZipArchiveProvider>();
 
         // add dependencies
         builder.Services.AddTransient<IDependencyObject, SassDependency>();

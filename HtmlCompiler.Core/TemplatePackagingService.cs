@@ -1,4 +1,3 @@
-using System.IO.Compression;
 using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -11,14 +10,17 @@ public class TemplatePackagingService : ITemplatePackagingService
     private readonly ILogger<TemplatePackagingService> _logger;
     private readonly IConfiguration _configuration;
     private readonly IFileSystemService _fileSystemService;
+    private readonly IZipArchiveProvider _zipArchiveProvider;
 
     public TemplatePackagingService(ILogger<TemplatePackagingService> logger,
         IConfiguration configuration,
-        IFileSystemService fileSystemService)
+        IFileSystemService fileSystemService,
+        IZipArchiveProvider zipArchiveProvider)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+        _zipArchiveProvider = zipArchiveProvider ?? throw new ArgumentNullException(nameof(zipArchiveProvider));
     }
 
     public async Task CreateAsync(string sourcePath, string? outputPath = null)
@@ -38,7 +40,9 @@ public class TemplatePackagingService : ITemplatePackagingService
             this._fileSystemService.Delete(fullOutputFilePath);
         }
 
-        IReadOnlyCollection<string> errors = this.CreateZipFile(files, fullSourcePath, fullOutputFilePath);
+        IReadOnlyCollection<string> errors = this._zipArchiveProvider.CreateZipFile(files, 
+            fullSourcePath,
+            fullOutputFilePath);
 
         this._logger.LogInformation($"Template created at {fullOutputFilePath}.");
 
@@ -46,37 +50,6 @@ public class TemplatePackagingService : ITemplatePackagingService
         {
             throw new TemplateFileException(errors);
         }
-    }
-
-    private IReadOnlyCollection<string> CreateZipFile(IEnumerable<string> files, string rootDirectory, string outputFilePath)
-    {
-        List<string> errors = new();
-        using ZipArchive zipArchive = ZipFile.Open(outputFilePath, ZipArchiveMode.Create);
-
-        foreach (string file in files)
-        {
-            try
-            {
-                string relativePath = Path.GetRelativePath(rootDirectory, file);
-                relativePath = relativePath.Replace(Path.DirectorySeparatorChar, '/');
-
-                ZipArchiveEntry entry = zipArchive.CreateEntry(relativePath);
-
-                using Stream entryStream = entry.Open();
-                using FileStream fileStream = File.OpenRead(file);
-
-                fileStream.CopyTo(entryStream);
-
-                this._logger.LogDebug("Add file {File}", file);
-            }
-            catch (Exception err)
-            {
-                this._logger.LogError(err, "An error occurred while adding file '{file}'", file);
-                errors.Add($"An error occurred while adding file '{file}': {err.Message}");
-            }
-        }
-
-        return errors;
     }
 
     private static string GetOutputFilePath(string sourcePath, string? outputPath = null)
