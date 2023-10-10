@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using HtmlCompiler.Core.Interfaces;
 
 namespace HtmlCompiler.Core.Renderer;
@@ -17,6 +18,14 @@ public class BuildDateRenderer : RenderingBase
     {
         DateTime now = this._htmlRenderer.DateTimeProvider.Now();
         
-        return content;
+        string pattern = $@"{BUILDDATE_TAG}(\(""([^""]+)""\)?)?";
+    
+        string result = Regex.Replace(content, pattern, match =>
+        {
+            string format = match.Groups.Count > 2 ? match.Groups[2].Value : "G";
+            return now.ToString(format);
+        });
+
+        return result;
     }
 }

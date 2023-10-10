@@ -1,3 +1,4 @@
+using System.Globalization;
 using FluentAssertions;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
@@ -31,10 +32,16 @@ public class BuildDateRendererTests
     }
 
     [TestMethod]
-    [DataRow("Copyright @BuildDate(\"yyyy\")", "Copyright 2023")]
-    [DataRow("current: @BuildDate(\"dd.MM.yyyy\")", "current: 07.04.2023")]
-    public async Task RenderBuildDate_WithValidHtml_Returns(string html, string expectedHtml)
+    [DataRow("Copyright @BuildDate(\"yyyy\")", "Copyright 2023", "en-US")]
+    [DataRow("current: <span>@BuildDate(\"dd.MM.yyyy\")</span>", "current: <span>07.04.2023</span>", "en-US")]
+    [DataRow("@BuildDate", "4/7/2023 4:37:41PM", "en-US")]
+    [DataRow("@BuildDate", "07.04.2023 16:37:41", "de-DE")]
+    [DataRow("<pre>@BuildDate</pre>", "<pre>4/7/2023 4:37:41PM</pre>", "en-US")]
+    public async Task RenderBuildDate_WithValidHtml_Returns(string html, string expectedHtml, string culture)
     {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(culture);
+        Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(culture);
+
         string result = await this._instance.RenderAsync(html);
 
         result.Should().NotBeNullOrEmpty();
