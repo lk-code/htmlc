@@ -11,10 +11,8 @@ public class MarkdownFileTagRenderer : RenderingBase
     public const string RENDERER_TAG = @"@MarkdownFile=([^\s]+)";
 
     public MarkdownFileTagRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
-            fileSystemService,
             htmlRenderer)
     {
         _pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
@@ -23,7 +21,7 @@ public class MarkdownFileTagRenderer : RenderingBase
     /// <inheritdoc />
     public override async Task<string> RenderAsync(string content)
     {
-        Regex fileTagRegex = new Regex(RENDERER_TAG, RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+        Regex fileTagRegex = new(RENDERER_TAG, RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
         foreach (Match match in fileTagRegex.Matches(content))
         {
@@ -32,13 +30,13 @@ public class MarkdownFileTagRenderer : RenderingBase
             string fullPath = Path.Combine(this._configuration.BaseDirectory, fileValue);
             fullPath = Path.GetFullPath(fullPath);
 
-            if (this._fileSystemService.FileExists(fullPath) == false)
+            if (this.FileSystemService.FileExists(fullPath) == false)
             {
                 continue;
             }
 
             // load content
-            string markdownContent = await this._fileSystemService.FileReadAllTextAsync(fullPath);
+            string markdownContent = await this.FileSystemService.FileReadAllTextAsync(fullPath);
             
             // render markdown to html
             string renderedMarkdownContent = Markdown.ToHtml(markdownContent, _pipeline);

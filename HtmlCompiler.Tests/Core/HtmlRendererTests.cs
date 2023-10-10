@@ -16,6 +16,7 @@ public class HtmlRendererTests
     private ILogger<HtmlRenderer> _logger = null!;
     private HtmlRenderer _instance = null!;
     private IFileSystemService _fileSystemService = null!;
+    private IDateTimeProvider _dateTimeProvider = null!;
 
     [TestInitialize]
     public void SetUp()
@@ -28,9 +29,11 @@ public class HtmlRendererTests
         this._logger = factory.CreateLogger<HtmlRenderer>();
         
         this._fileSystemService = Substitute.For<IFileSystemService>();
+        this._dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
         this._instance = new HtmlRenderer(this._logger,
-            this._fileSystemService);
+            this._fileSystemService,
+            this._dateTimeProvider);
     }
 
     [TestMethod]

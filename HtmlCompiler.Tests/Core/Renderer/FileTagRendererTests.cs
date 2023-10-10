@@ -9,13 +9,11 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 public class FileTagRendererTests
 {
     private FileTagRenderer _instance = null!;
-    private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
         RenderingConfiguration configuration = new RenderingConfiguration
@@ -27,7 +25,6 @@ public class FileTagRendererTests
         };
 
         this._instance = new FileTagRenderer(configuration,
-            this._fileSystemService,
             this._htmlRenderer);
     }
 
@@ -39,7 +36,7 @@ public class FileTagRendererTests
         string fileContent = "Rendered file content";
 
         // Mock the FileExists method to return true for this test
-        this._fileSystemService.FileExists(Arg.Any<string>()).Returns(true);
+        // this._htmlRenderer.FileSystemService.FileExists(Arg.Any<string>()).Returns(true);
 
         this._htmlRenderer.RenderHtmlFromFileAsync(
                 Arg.Any<string>(),

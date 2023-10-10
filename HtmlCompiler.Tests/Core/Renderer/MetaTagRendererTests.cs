@@ -10,13 +10,11 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 public class MetaTagRendererTests
 {
     private IMetaTagRenderer _instance = null!;
-    private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
         RenderingConfiguration configuration = new RenderingConfiguration
@@ -28,7 +26,6 @@ public class MetaTagRendererTests
         };
         
         this._instance = new MetaTagRenderer(configuration,
-            this._fileSystemService,
             this._htmlRenderer);
     }
     

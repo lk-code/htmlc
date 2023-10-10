@@ -8,10 +8,8 @@ public class FileTagRenderer : RenderingBase
     public const string RENDERER_TAG = @"@File=([^\s]+)";
 
     public FileTagRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
-            fileSystemService,
             htmlRenderer)
     {
     }

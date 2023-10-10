@@ -5,8 +5,10 @@ namespace HtmlCompiler.Core.Renderer;
 public abstract class RenderingBase : IRenderingComponent
 {
     protected readonly RenderingConfiguration _configuration;
-    protected readonly IFileSystemService _fileSystemService;
     protected readonly IHtmlRenderer _htmlRenderer;
+    
+    public IFileSystemService FileSystemService => this._htmlRenderer.FileSystemService;
+    public IDateTimeProvider DateTimeProvider => this._htmlRenderer.DateTimeProvider;
 
     /// <inheritdoc />
     public abstract Task<string> RenderAsync(string content);
@@ -14,11 +16,9 @@ public abstract class RenderingBase : IRenderingComponent
     public virtual bool PreRenderPartialFiles { get; } = true;
 
     protected RenderingBase(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
         _htmlRenderer = htmlRenderer ?? throw new ArgumentNullException(nameof(htmlRenderer));
     }
 }

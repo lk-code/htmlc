@@ -11,10 +11,8 @@ public class PageTitleRenderer : RenderingBase
     private static readonly Regex TitleUseRegex = new Regex(PAGETITLE_TAG, RegexOptions.Compiled, TimeSpan.FromSeconds(10));
 
     public PageTitleRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
-            fileSystemService,
             htmlRenderer)
     {
     }

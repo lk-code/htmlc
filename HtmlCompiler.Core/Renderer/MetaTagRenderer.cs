@@ -6,10 +6,8 @@ namespace HtmlCompiler.Core.Renderer;
 public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
 {
     public MetaTagRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
-            fileSystemService,
             htmlRenderer)
     {
     }
@@ -41,7 +39,6 @@ public class MetaTagRenderer : RenderingBase, IMetaTagRenderer
         HtmlNode? existingMetaTag = head.SelectSingleNode($"meta[@name='{name}']");
         if (existingMetaTag is null)
         {
-            // Wenn das Meta-Tag nicht existiert, erstelle ein neues
             HtmlNode? metaTag = doc.CreateElement("meta");
             metaTag.SetAttributeValue("name", name);
             head.AppendChild(metaTag);

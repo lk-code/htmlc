@@ -9,13 +9,11 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 public class PageTitleRendererTests
 {
     private PageTitleRenderer _instance = null!;
-    private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
         RenderingConfiguration configuration = new RenderingConfiguration
@@ -27,7 +25,6 @@ public class PageTitleRendererTests
         };
         
         this._instance = new PageTitleRenderer(configuration,
-            this._fileSystemService,
             this._htmlRenderer);
     }
 

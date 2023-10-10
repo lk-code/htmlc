@@ -1,10 +1,8 @@
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using FluentDataBuilder;
 using FluentDataBuilder.Json;
 using HtmlCompiler.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core.Renderer;
 
@@ -17,10 +15,8 @@ public class VariablesRenderer : RenderingBase
     public override bool PreRenderPartialFiles { get; } = false;
 
     public VariablesRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
-            fileSystemService,
             htmlRenderer)
     {
     }
@@ -165,13 +161,13 @@ public class VariablesRenderer : RenderingBase
                 string variableFileName = line.Trim().Substring(VARIABLES_FILE_TAG.Length).Trim();
                 string fullPath = Path.Combine(this._configuration.BaseDirectory, variableFileName);
 
-                if (!this._fileSystemService.FileExists(fullPath))
+                if (!this.FileSystemService.FileExists(fullPath))
                 {
                     updatedLines.Add(line);
                     continue;
                 }
 
-                string variableFileContent = await this._fileSystemService.FileReadAllTextAsync(fullPath);
+                string variableFileContent = await this.FileSystemService.FileReadAllTextAsync(fullPath);
                 JsonElement element = new DataBuilder().LoadFrom(variableFileContent)
                     .Build().RootElement;
 

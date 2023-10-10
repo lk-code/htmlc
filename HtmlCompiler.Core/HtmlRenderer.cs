@@ -19,17 +19,25 @@ public class HtmlRenderer : IHtmlRenderer
         { 700, typeof(GlobalTagRenderer) },
         { 800, typeof(StylePathRenderer) },
         { 900, typeof(PageTitleRenderer) },
+        { 1000, typeof(BuildDateRenderer) },
         { 2000, typeof(MetaTagRenderer) }
     };
 
     private readonly ILogger<HtmlRenderer> _logger;
     private readonly IFileSystemService _fileSystemService;
+    private readonly IDateTimeProvider _dateTimeProvider;
+
+    public ILogger<IHtmlRenderer> Logger => this._logger;
+    public IFileSystemService FileSystemService => this._fileSystemService;
+    public IDateTimeProvider DateTimeProvider => this._dateTimeProvider;
 
     public HtmlRenderer(ILogger<HtmlRenderer> logger,
-        IFileSystemService fileSystemService)
+        IFileSystemService fileSystemService,
+        IDateTimeProvider dateTimeProvider)
     {
         this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this._fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+        this._dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
     }
 
     /// <inheritdoc />
@@ -56,7 +64,6 @@ public class HtmlRenderer : IHtmlRenderer
             .Select(x => x.Value)
             .BuildRenderingComponents(
                 configuration,
-                this._fileSystemService,
                 this)
             .ToArray();
 
@@ -101,6 +108,4 @@ public class HtmlRenderer : IHtmlRenderer
         
         return masterOutput;
     }
-
-    public ILogger<IHtmlRenderer> Logger => this._logger;
 }

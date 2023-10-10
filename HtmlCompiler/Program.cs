@@ -76,6 +76,7 @@ class Program
         builder.Services.AddTransient<IDependencyManager, DependencyManager>();
         builder.Services.AddTransient<ITemplatePackagingService, TemplatePackagingService>();
         builder.Services.AddTransient<IZipArchiveProvider, ZipArchiveProvider>();
+        builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
         // add dependencies
         builder.Services.AddTransient<IDependencyObject, SassDependency>();

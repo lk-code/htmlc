@@ -10,20 +10,17 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 public class GlobalTagRendererTests
 {
     private GlobalTagRenderer _instance = null!;
-    private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
     }
 
     private void CreateTestInstance(RenderingConfiguration configuration)
     {
         this._instance = new GlobalTagRenderer(configuration,
-            this._fileSystemService,
             this._htmlRenderer);
     }
 
