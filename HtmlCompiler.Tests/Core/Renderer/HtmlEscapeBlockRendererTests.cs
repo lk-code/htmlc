@@ -9,13 +9,11 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 public class HtmlEscapeBlockRendererTests
 {
     private HtmlEscapeBlockRenderer _instance = null!;
-    private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
         RenderingConfiguration configuration = new RenderingConfiguration
@@ -27,7 +25,6 @@ public class HtmlEscapeBlockRendererTests
         };
         
         this._instance = new HtmlEscapeBlockRenderer(configuration,
-            this._fileSystemService,
             this._htmlRenderer);
     }
 
@@ -87,7 +84,7 @@ public class HtmlEscapeBlockRendererTests
                               "" + Environment.NewLine +
                               "</section>";
 
-        string result =await this._instance.RenderAsync(html);
+        string result = await this._instance.RenderAsync(html);
 
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);

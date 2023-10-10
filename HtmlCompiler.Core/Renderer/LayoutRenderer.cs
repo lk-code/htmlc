@@ -9,10 +9,8 @@ public class LayoutRenderer : RenderingBase
     public const string BODY_TAG = "@Body";
 
     public LayoutRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
-            fileSystemService,
             htmlRenderer)
     {
     }
@@ -45,7 +43,7 @@ public class LayoutRenderer : RenderingBase
         string layoutContent;
         try
         {
-            layoutContent = await this._fileSystemService.FileReadAllTextAsync(fullPath);
+            layoutContent = await this.FileSystemService.FileReadAllTextAsync(fullPath);
         }
         catch (Exception ex)
         {

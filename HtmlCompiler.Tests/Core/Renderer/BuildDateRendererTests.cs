@@ -6,9 +6,9 @@ using NSubstitute;
 namespace HtmlCompiler.Tests.Core.Renderer;
 
 [TestClass]
-public class PageTitleRendererTests
+public class BuildDateRendererTests
 {
-    private PageTitleRenderer _instance = null!;
+    private BuildDateRenderer _instance = null!;
     private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
@@ -24,21 +24,17 @@ public class PageTitleRendererTests
             CssOutputFilePath = @"C:\"
         };
         
-        this._instance = new PageTitleRenderer(configuration,
+        this._instance = new BuildDateRenderer(configuration,
             this._htmlRenderer);
+        
+        this._instance.DateTimeProvider.Now().Returns(new DateTime(2023, 4, 7, 16, 37, 41, 25));
     }
 
     [TestMethod]
-    public async Task RenderPageTitle_WithDefault_Returns()
+    [DataRow("Copyright @BuildDate(\"yyyy\")", "Copyright 2023")]
+    [DataRow("current: @BuildDate(\"dd.MM.yyyy\")", "current: 07.04.2023")]
+    public async Task RenderBuildDate_WithValidHtml_Returns(string html, string expectedHtml)
     {
-        string html = "@PageTitle=Test Page :D" + Environment.NewLine +
-                      "<section>" + Environment.NewLine +
-                      "<h1>@PageTitle</h1>" + Environment.NewLine +
-                      "</section>";
-        string expectedHtml = "<section>" + Environment.NewLine +
-                              "<h1>Test Page :D</h1>" + Environment.NewLine +
-                              "</section>";
-
         string result = await this._instance.RenderAsync(html);
 
         result.Should().NotBeNullOrEmpty();

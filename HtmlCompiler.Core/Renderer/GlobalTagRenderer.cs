@@ -8,10 +8,8 @@ namespace HtmlCompiler.Core.Renderer;
 public class GlobalTagRenderer : RenderingBase
 {
     public GlobalTagRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
-            fileSystemService,
             htmlRenderer)
     {
     }
@@ -51,7 +49,7 @@ public class GlobalTagRenderer : RenderingBase
                 {
                     string? globalValue = currentElement.ToString() ?? string.Empty;
 
-                    StringBuilder extractedValues = new StringBuilder();
+                    StringBuilder extractedValues = new();
                     extractedValues.Append(globalValue);
                     extractedValues.Append(" ");
 

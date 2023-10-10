@@ -11,13 +11,11 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 public class MarkdownFileTagRendererTests
 {
     private MarkdownFileTagRenderer _instance = null!;
-    private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
         RenderingConfiguration configuration = new RenderingConfiguration
@@ -29,7 +27,6 @@ public class MarkdownFileTagRendererTests
         };
 
         this._instance = new MarkdownFileTagRenderer(configuration,
-            this._fileSystemService,
             this._htmlRenderer);
     }
 
@@ -49,10 +46,10 @@ public class MarkdownFileTagRendererTests
             .ToString().Trim();
 
         // Mock the FileExists method to return true for this test
-        this._fileSystemService.FileExists(Arg.Any<string>())
+        this._htmlRenderer.FileSystemService.FileExists(Arg.Any<string>())
             .Returns(true);
         
-        this._fileSystemService.FileReadAllTextAsync("/project/src/mark-down.md")
+        this._htmlRenderer.FileSystemService.FileReadAllTextAsync("/project/src/mark-down.md")
             .Returns(markdownContent);
 
         // Act
@@ -98,13 +95,15 @@ public class MarkdownFileTagRendererTests
             .ToString().Trim();
 
         // Mock the FileExists method to return true for this test
-        this._fileSystemService.FileExists(Arg.Any<string>())
+        this._htmlRenderer.FileSystemService.FileExists(Arg.Any<string>())
             .Returns(false);
 
         // Act
         string result = await this._instance.RenderAsync(content);
 
         // Assert
+        this._htmlRenderer.FileSystemService.Received(1)
+            .FileExists(Arg.Any<string>());
         result.Should().Be(content);
     }
 
@@ -115,7 +114,7 @@ public class MarkdownFileTagRendererTests
         var markdownContent = new StringBuilder()
             .AppendLine("# Hello World")
             .ToString().Trim();
-        this._fileSystemService.FileReadAllTextAsync("/project/markdown.md")
+        this._htmlRenderer.FileSystemService.FileReadAllTextAsync("/project/markdown.md")
             .Returns(markdownContent);
 
         var content = new StringBuilder()
@@ -123,7 +122,7 @@ public class MarkdownFileTagRendererTests
             .ToString().Trim();
 
         // Mock the FileExists method to return true for this test
-        this._fileSystemService.FileExists("/project/markdown.md")
+        this._htmlRenderer.FileSystemService.FileExists("/project/markdown.md")
             .Returns(true);
 
         // Act
@@ -154,7 +153,7 @@ public class MarkdownFileTagRendererTests
             .AppendLine("|-|-|-|")
             .AppendLine("| Package | Target | NuGet |")
             .ToString().Trim();
-        this._fileSystemService.FileReadAllTextAsync("/project/markdown.md")
+        this._htmlRenderer.FileSystemService.FileReadAllTextAsync("/project/markdown.md")
             .Returns(markdownContent);
 
         var content = new StringBuilder()
@@ -162,7 +161,7 @@ public class MarkdownFileTagRendererTests
             .ToString().Trim();
 
         // Mock the FileExists method to return true for this test
-        this._fileSystemService.FileExists("/project/markdown.md")
+        this._htmlRenderer.FileSystemService.FileExists("/project/markdown.md")
             .Returns(true);
 
         // Act

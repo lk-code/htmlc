@@ -7,10 +7,8 @@ public class CommentTagRenderer : RenderingBase
     public const string COMMENT_TAG = "@Comment";
 
     public CommentTagRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
-            fileSystemService,
             htmlRenderer)
     {
     }

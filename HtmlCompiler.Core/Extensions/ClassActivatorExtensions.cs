@@ -14,7 +14,6 @@ public static class ClassActivatorExtensions
     /// <returns>A list of instances of type T that implement the IRenderingComponent interface and are configured accordingly.</returns>
     public static IEnumerable<IRenderingComponent> BuildRenderingComponents(this IEnumerable<Type> renderingComponents,
         RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
     {
         List<IRenderingComponent> instances = new List<IRenderingComponent>();
@@ -25,7 +24,6 @@ public static class ClassActivatorExtensions
             {
                 IRenderingComponent instance = (IRenderingComponent)Activator.CreateInstance(type,
                     configuration,
-                    fileSystemService,
                     htmlRenderer)!;
                 instances.Add(instance);
             }

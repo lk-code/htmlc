@@ -9,10 +9,8 @@ public class HtmlEscapeBlockRenderer : RenderingBase
     public const string END_TAG = "@EndHtmlSpecialChars";
 
     public HtmlEscapeBlockRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
-            fileSystemService,
             htmlRenderer)
     {
     }

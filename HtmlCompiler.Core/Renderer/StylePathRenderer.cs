@@ -9,10 +9,8 @@ public class StylePathRenderer : RenderingBase
     public const string STYLEPATH_TAG = "@StylePath";
 
     public StylePathRenderer(RenderingConfiguration configuration,
-        IFileSystemService fileSystemService,
         IHtmlRenderer htmlRenderer)
         : base(configuration,
-            fileSystemService,
             htmlRenderer)
     {
     }

@@ -10,13 +10,11 @@ namespace HtmlCompiler.Tests.Core.Renderer;
 public class LayoutRendererTests
 {
     private LayoutRenderer _instance = null!;
-    private IFileSystemService _fileSystemService = null!;
     private IHtmlRenderer _htmlRenderer = null!;
 
     [TestInitialize]
     public void SetUp()
     {
-        this._fileSystemService = Substitute.For<IFileSystemService>();
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
         
         RenderingConfiguration configuration = new RenderingConfiguration
@@ -28,7 +26,6 @@ public class LayoutRendererTests
         };
 
         this._instance = new LayoutRenderer(configuration,
-            this._fileSystemService,
             this._htmlRenderer);
     }
 
@@ -40,7 +37,7 @@ public class LayoutRendererTests
             .Append("<h1>Hello World!</h1>")
             .ToString().Trim();
 
-        this._fileSystemService.FileReadAllTextAsync("/project/src/_unknownlayout.html")
+        this._htmlRenderer.FileSystemService.FileReadAllTextAsync("/project/src/_unknownlayout.html")
             .ThrowsAsync(new FileNotFoundException());
 
         Assert.ThrowsExceptionAsync<FileNotFoundException>(() => this._instance.RenderAsync(sourceHtml));
@@ -54,7 +51,7 @@ public class LayoutRendererTests
             .Append("<h1>Hello World!</h1>")
             .ToString().Trim();
 
-        this._fileSystemService.FileReadAllTextAsync("/project/src/_layout.html")
+        this._htmlRenderer.FileSystemService.FileReadAllTextAsync("/project/src/_layout.html")
             .Returns("<section>Hello World!</section>");
         
         string result = await this._instance.RenderAsync(sourceHtml);
