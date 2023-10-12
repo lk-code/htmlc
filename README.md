@@ -1,4 +1,4 @@
-# html-compiler-tool
+# htmlc - HTML Compiler
 
 ![html-compiler-tool](https://raw.githubusercontent.com/lk-code/html-compiler-tool/main/icon_128.png)
 
