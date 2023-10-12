@@ -773,4 +773,69 @@ public class HtmlRendererTests
         result.Should().NotBeNullOrEmpty();
         result.Should().Be(expectedHtml);
     }
+
+    [TestMethod]
+    public async Task RenderHtmlAsync_WithMarkdownAndPageTitleTagInContent_Return()
+    {
+        string sourceFullFilePath = "/project/src/index.html";
+        string sourceDirectory = "/project/src";
+        string outputDirectory = "/project/dist";
+        string? cssOutputFilePath = "/project/src/dist/css/site.scss";
+        IDataBuilder dataBuilder = new DataBuilder();
+
+        var expectedHtml = new StringBuilder()
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<title>lk-code.dev</title>")
+            .AppendLine("<meta name=\"generator\" content=\"htmlc\">")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("")
+            .AppendLine("")
+            .AppendLine("<p>@PageTitle</p>")
+            .AppendLine("")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
+            .ToString().Trim();
+
+        var indexContent = new StringBuilder()
+            .AppendLine("@PageTitle=lk-code.dev")
+            .AppendLine("")
+            .AppendLine("@Layout=shared/_layout.html")
+            .AppendLine("")
+            .AppendLine("@MarkdownFile=file.md")
+            .ToString().Trim();
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/index.html")
+            .Returns(indexContent);
+
+        var layoutContent = new StringBuilder()
+            .AppendLine("<html>")
+            .AppendLine("<head>")
+            .AppendLine("<title>@PageTitle</title>")
+            .AppendLine("</head>")
+            .AppendLine("<body>")
+            .AppendLine("@Body")
+            .AppendLine("</body>")
+            .AppendLine("</html>")
+            .ToString().Trim();
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/shared/_layout.html")
+            .Returns(layoutContent);
+
+        var footerContent = new StringBuilder()
+            .AppendLine("@PageTitle")
+            .ToString().Trim();
+        this._fileSystemService.FileExists($"{sourceDirectory}/file.md")
+            .Returns(true);
+        this._fileSystemService.FileReadAllTextAsync($"{sourceDirectory}/file.md")
+            .Returns(footerContent);
+
+        string result = await this._instance.RenderHtmlFromFileAsync(sourceFullFilePath,
+            sourceDirectory,
+            outputDirectory,
+            cssOutputFilePath,
+            dataBuilder.Build().RootElement);
+
+        result.Should().NotBeNullOrEmpty();
+        result.Should().Be(expectedHtml);
+    }
 }
