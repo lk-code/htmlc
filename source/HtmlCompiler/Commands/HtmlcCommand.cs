@@ -48,7 +48,6 @@ public class HtmlcCommand
             }
             
             // load template
-            this._logger.LogInformation($"Download template '{templates.First().Name}'");
             downloadedTemplatePath = await this._templateManager.DownloadTemplateAsync(templates.First());
         }
 

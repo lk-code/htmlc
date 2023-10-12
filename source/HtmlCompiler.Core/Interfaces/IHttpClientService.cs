@@ -14,5 +14,7 @@ public interface IHttpClientService
     /// </summary>
     /// <param name="uri"></param>
     /// <param name="targetFilePath"></param>
-    Task DownloadFileAsync(Uri uri, string targetFilePath);
+    /// <param name="progressCallback"></param>
+    /// <returns></returns>
+    Task DownloadFileAsync(Uri uri, string targetFilePath, Action<long, long> progressCallback);
 }

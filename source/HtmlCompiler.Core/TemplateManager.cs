@@ -3,6 +3,7 @@ using HtmlCompiler.Config;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core;
 
@@ -11,14 +12,17 @@ public class TemplateManager : ITemplateManager
     public const string DEFAULT_TEMPLATE_REPOSITORY = "https://github.com/lk-code/htmlc-templates/raw/main/";
     public const string APPSETTINGS_KEY = "template-repositories";
 
+    private readonly ILogger<TemplateManager> _logger;
     private readonly IConfiguration _configuration;
     private readonly IConfigurationManager _configurationManager;
     private readonly IHttpClientService _httpClientService;
 
-    public TemplateManager(IConfiguration configuration,
+    public TemplateManager(ILogger<TemplateManager> logger,
+        IConfiguration configuration,
         IConfigurationManager configurationManager,
         IHttpClientService httpClientService)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
         _httpClientService = httpClientService ?? throw new ArgumentNullException(nameof(httpClientService));
@@ -40,10 +44,10 @@ public class TemplateManager : ITemplateManager
 
         // load all index-files
         // hostname => index-content
-        Dictionary<string, List<TemplateIndexEntry>> indexContents = new Dictionary<string, List<TemplateIndexEntry>>();
+        Dictionary<string, List<TemplateIndexEntry>> indexContents = new();
         foreach (string repository in repositories)
         {
-            Uri repositoryUri = new Uri($"{repository}index.json");
+            Uri repositoryUri = new($"{repository}index.json");
             string content = await this._httpClientService.GetAsync(repositoryUri);
             TemplateIndex? templateIndex = JsonSerializer.Deserialize<TemplateIndex>(content);
 
@@ -56,14 +60,16 @@ public class TemplateManager : ITemplateManager
             ));
 
         // search for template via name
-        IEnumerable<Template> searchNameResults = templates.Where(template => template.Name.ToLowerInvariant().Contains(templateName.ToLowerInvariant() ?? string.Empty));
+        IEnumerable<Template> searchNameResults = templates.Where(template =>
+            template.Name.ToLowerInvariant().Contains(templateName.ToLowerInvariant() ?? string.Empty));
         if (searchNameResults.Count() == 1)
         {
             return searchNameResults;
         }
-        
+
         // search for template via complete url
-        IEnumerable<Template> searchUrlResults = templates.Where(template => template.Url.ToLowerInvariant() == templateName.ToLowerInvariant());
+        IEnumerable<Template> searchUrlResults =
+            templates.Where(template => template.Url.ToLowerInvariant() == templateName.ToLowerInvariant());
         if (searchUrlResults.Count() == 1)
         {
             return searchUrlResults;
@@ -86,16 +92,34 @@ public class TemplateManager : ITemplateManager
     /// <inheritdoc />
     public async Task<string> DownloadTemplateAsync(Template template)
     {
-        string userCacheDirectoryPath = this._configuration.GetValue<string>("Core:UserCacheDirectoryPath") ?? string.Empty;
+        string userCacheDirectoryPath =
+            this._configuration.GetValue<string>("Core:UserCacheDirectoryPath") ?? string.Empty;
         string templateCacheDirectory = $"{userCacheDirectoryPath}/templates";
         string outputFilePath = $"{templateCacheDirectory}/{Path.GetFileName(template.FileName)}";
-        
+
         // create template directory in cache directory
         Directory.CreateDirectory(templateCacheDirectory);
+
+        this._logger.LogInformation($"Download template '{Path.GetFileName(template.FileName)}'");
         
-        Console.WriteLine($"Download template '{Path.GetFileName(template.FileName)}'");
-        await this._httpClientService.DownloadFileAsync(new Uri(template.Url), outputFilePath);
-        Console.WriteLine($"Download finished :)");
+        long lastProgress = 0;
+        DateTime lastProgressRefresh = DateTime.MinValue;
+        await this._httpClientService.DownloadFileAsync(new Uri(template.Url),
+            outputFilePath,
+            (bytesRead, totalBytes) =>
+            {
+                long currentProgress = (bytesRead * 100) / totalBytes;
+
+                if ((DateTime.Now - lastProgressRefresh).TotalSeconds > 5
+                    || lastProgress != currentProgress)
+                {
+                    lastProgressRefresh = DateTime.Now;
+                    lastProgress = currentProgress;
+                    this._logger.LogInformation($"Downloaded {bytesRead}/{totalBytes} bytes ({currentProgress}%)");
+                }
+            });
+        
+        this._logger.LogInformation("Download finished :)");
 
         return outputFilePath;
     }
