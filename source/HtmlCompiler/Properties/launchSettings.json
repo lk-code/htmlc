@@ -27,6 +27,14 @@
     "htmlc compile from src to dist": {
       "commandName": "Project",
       "commandLineArgs": "compile /Users/larskramer/Projects/lk-code/fluent-data-builder/docs/src /Users/larskramer/Projects/lk-code/fluent-data-builder/docs/dist"
+    },
+    "htmlc compile lk-code": {
+      "commandName": "Project",
+      "commandLineArgs": "compile /Users/larskramer/Projects/lk-code/lk-code-dev -s /css/site.scss"
+    },
+    "htmlc template create FluentDataBuilder": {
+      "commandName": "Project",
+      "commandLineArgs": "template create /Users/larskramer/Projects/lk-code/fluent-data-builder/docs"
     }
   }
 }
