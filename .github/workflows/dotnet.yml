@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore source/
 
       - name: Version Visual Studio SDK projects
         uses: roryprimrose/set-vs-sdk-project-version@v1.0.6
@@ -76,7 +76,7 @@ jobs:
         shell: pwsh
         run: |
           dotnet-sonarscanner begin /k:"lk-code_html-compiler-tool" /o:"lk-code-github" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
-          dotnet build --configuration Release --no-restore -p:PackageVersion=${{ env.VERSION }}
+          dotnet build --configuration Release --no-restore -p:PackageVersion=${{ env.VERSION }} source/
           dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
           reportgenerator "-reports:coverage.xml" "-targetdir:sonarqubecoverage" "-reporttypes:SonarQube"
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
