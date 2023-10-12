@@ -11,12 +11,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmlCompiler.Tests", "HtmlC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{91E9535A-2D7B-4E57-951B-0FDC1C50904F}"
 	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-		.gitignore = .gitignore
-		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
-		.github\workflows\nuget-deploy.yml = .github\workflows\nuget-deploy.yml
-		.github\workflows\pull-request.yml = .github\workflows\pull-request.yml
-		.github\FUNDING.yml = .github\FUNDING.yml
+		..\.gitignore = ..\.gitignore
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
+		..\.github\FUNDING.yml = ..\.github\FUNDING.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{49845AD0-3A78-4417-9736-C35F53798D25}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
+		..\.github\workflows\github-pages.yml = ..\.github\workflows\github-pages.yml
+		..\.github\workflows\nuget-deploy.yml = ..\.github\workflows\nuget-deploy.yml
+		..\.github\workflows\pull-request.yml = ..\.github\workflows\pull-request.yml
 	EndProjectSection
 EndProject
 Global
@@ -43,5 +49,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {83563909-D19F-4673-98C8-957B2C6D3111}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{49845AD0-3A78-4417-9736-C35F53798D25} = {91E9535A-2D7B-4E57-951B-0FDC1C50904F}
 	EndGlobalSection
 EndGlobal
