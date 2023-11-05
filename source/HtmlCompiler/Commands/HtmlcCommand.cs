@@ -32,6 +32,12 @@ public class HtmlcCommand
         string? downloadedTemplatePath = null;
         if (template is not null)
         {
+            // is local path?
+            if ()
+            {
+                
+            }
+            
             // search for template
             List<Template> templates = (await this._templateManager.SearchTemplatesAsync(template)).ToList();
             if (!templates.Any())
