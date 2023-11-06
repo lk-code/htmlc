@@ -18,10 +18,10 @@ public class HtmlRenderer : IHtmlRenderer
         { 600, typeof(GlobalTagRenderer) },
         { 700, typeof(StylePathRenderer) },
         { 800, typeof(PageTitleRenderer) },
-        { 900, typeof(MarkdownFileTagRenderer) },
-        { 1000, typeof(BuildDateRenderer) },
-        { 1100, typeof(ImageStringRenderer) },
-        { 2000, typeof(MetaTagRenderer) }
+        { 900, typeof(BuildDateRenderer) },
+        { 1000, typeof(ImageStringRenderer) },
+        { 2000, typeof(MetaTagRenderer) },
+        { 3000, typeof(MarkdownFileTagRenderer) },
     };
 
     private readonly ILogger<HtmlRenderer> _logger;
