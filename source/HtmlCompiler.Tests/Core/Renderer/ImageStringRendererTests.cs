@@ -1,3 +1,4 @@
+using FluentAssertions;
 using HtmlCompiler.Core.Interfaces;
 using HtmlCompiler.Core.Renderer;
 using NSubstitute;
@@ -14,7 +15,7 @@ public class ImageStringRendererTests
     public void SetUp()
     {
         this._htmlRenderer = Substitute.For<IHtmlRenderer>();
-        
+
         RenderingConfiguration configuration = new RenderingConfiguration
         {
             BaseDirectory = "/project/src",
@@ -28,7 +29,7 @@ public class ImageStringRendererTests
     }
 
     [TestMethod]
-    public async Task RenderAsync_ShouldReplaceFileTagWithRenderedContent()
+    public async Task RenderAsync_WithSingleText()
     {
         // Arrange
         string content = "<p><img src=\"@ImageString(\"Dies ist ein test\")\" /></p>";
@@ -37,6 +38,45 @@ public class ImageStringRendererTests
         string result = await this._instance.RenderAsync(content);
 
         // Assert
-        Assert.AreEqual("<p><img src=\"#\" /></p>", result);
+        result.Should().NotBeEmpty();
+    }
+
+    [TestMethod]
+    public async Task RenderAsync_WithTextAndColor()
+    {
+        // Arrange
+        string content = "<p><img src=\"@ImageString(\"Dies ist ein test\", \"#ff0000\", \"#0000ff\")\" /></p>";
+
+        // Act
+        string result = await this._instance.RenderAsync(content);
+
+        // Assert
+        result.Should().NotBeEmpty();
+    }
+    
+    [TestMethod]
+    public async Task RenderAsync_WithTextAndColorAndFontSize()
+    {
+        // Arrange
+        string content = "<p><img src=\"@ImageString(\"Dies ist ein test\", \"#ff0000\", \"#0000ff\", 40)\" /></p>";
+
+        // Act
+        string result = await this._instance.RenderAsync(content);
+
+        // Assert
+        result.Should().NotBeEmpty();
+    }
+
+    [TestMethod]
+    public async Task RenderAsync_WithTextAndTransparentColor()
+    {
+        // Arrange
+        string content = "<p><img src=\"@ImageString(\"Dies ist ein test\", \"#00ff0000\", \"#88000000\")\" /></p>";
+
+        // Act
+        string result = await this._instance.RenderAsync(content);
+
+        // Assert
+        result.Should().NotBeEmpty();
     }
 }

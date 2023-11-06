@@ -52,6 +52,7 @@ generated CSS file is then written into the HTML file). In the end you don't hav
         - [The @Var-Tag](#the-var-tag)
         - [The @VarFile-Tag](#the-varfile-tag)
         - [The @BuildDate-Tag](#the-builddate-tag)
+        - [The @ImageString-Tag](#the-imagestring-tag)
 
 ## installation and update
 
@@ -462,6 +463,27 @@ htmlc build date: 10/09/2023 23:10:25 (Depending on the language setting of the 
 CopyRight 2023 - My Website
 Format Date 2023-10-09
 ```
+
+#### The @ImageString-Tag
+
+The ImageString tag can be used to protect sensitive information from bots and similar tools (does not guarantee 100% protection).
+The transferred text is returned as a simple base64 PNG graphic string, which can be displayed in HTML.
+
+**example:**
+```
+<p><img src="@ImageString("This is a secure string", "#ff0000", "#0000ff", 20)" /></p>
+```
+
+**result:**
+```
+<p><img src="data:image/png;base64, **************" /></p>
+```
+
+##### parameters:
+* **text** - the text to be displayed in the image
+* **background (optional - default: white)** - the background color of the image
+* **foreground (optional - default: black)** - the foreground color of the image
+* **font-size (optional - default: 20px)** - the size of the displayed text
 
 ## licenses
 
