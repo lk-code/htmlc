@@ -25,6 +25,10 @@ public class NodeDependencyTests
     [DataRow("v14.17.0")]
     [DataRow("v18.1.9\n")]
     [DataRow("v20.4.0\n")]
+    [DataRow("v20.9.0\n")]
+    [DataRow("v18.1.9\r\n")]
+    [DataRow("v20.4.0\r\n")]
+    [DataRow("v20.9.0\r\n")]
     public async Task CheckAsync_WithValidVersions_Return(string consoleResult)
     {
         this._cliManager.ExecuteCommand(Arg.Any<string>())
