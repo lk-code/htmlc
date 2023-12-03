@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Interfaces;
@@ -15,7 +16,7 @@ public class CLIManager : ICLIManager
     {
         ProcessStartInfo processInfo = new ProcessStartInfo
         {
-            FileName = "bash", // Verwende eine Shell (z.B. bash) zum Ausführen des Befehls
+            FileName = ((RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) ? "pwsh" : "bash"),
             Arguments = $"-c \"{command}\"",
             RedirectStandardOutput = true,
             RedirectStandardError = true,

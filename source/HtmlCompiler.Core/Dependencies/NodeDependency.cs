@@ -33,7 +33,7 @@ public class NodeDependency : IDependencyObject
             result = err.Message;
         }
 
-        result = result.TrimEnd(Environment.NewLine.ToCharArray());
+        result = result.TrimEnd('\n', '\r');
 
         if (Regex.IsMatch(result, NODE_VERSION_PATTERN, RegexOptions.None, TimeSpan.FromMilliseconds(100)))
         {
