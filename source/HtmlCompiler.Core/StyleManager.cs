@@ -2,11 +2,13 @@ using HtmlCompiler.Core.Exceptions;
 using HtmlCompiler.Core.Extensions;
 using HtmlCompiler.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Core;
 
 public class StyleManager : IStyleManager
 {
+    private readonly ILogger<StyleManager> _logger;
     private readonly IConfiguration _configuration;
     private readonly IFileSystemService _fileSystemService;
     private readonly ICLIManager _cliManager;
@@ -14,10 +16,12 @@ public class StyleManager : IStyleManager
     private string _sourceDirectoryPath = null!;
     private string _outputDirectoryPath = null!;
 
-    public StyleManager(IConfiguration configuration,
+    public StyleManager(ILogger<StyleManager> logger,
+        IConfiguration configuration,
         IFileSystemService fileSystemService,
         ICLIManager cliManager)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
         _cliManager = cliManager ?? throw new ArgumentNullException(nameof(cliManager));
@@ -57,8 +61,14 @@ public class StyleManager : IStyleManager
         }
         
         string styleCompileCommand = string.Format(styleCompileCommandTemplate, $"\"{sourceFilePath}\"", $"\"{outputFilePath}\"");
-        
-        this._cliManager.ExecuteCommand(styleCompileCommand);
+
+        try
+        {
+            this._cliManager.ExecuteCommand(styleCompileCommand);
+        } catch (Exception e)
+        {
+            this._logger.LogError(e, $"error while executing style compile command '{styleCompileCommand}'");
+        }
 
         return outputFilePath;
     }
