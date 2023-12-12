@@ -1,5 +1,6 @@
 {
     "Application": {
-        "Name": "htmlc"
+        "Name": "htmlc",
+        "Teaser": "HTML Compiler"
     }
 }
