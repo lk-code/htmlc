@@ -32,6 +32,12 @@ public class HtmlcCommand
         string? downloadedTemplatePath = null;
         if (template is not null)
         {
+            // is local path?
+            if ()
+            {
+                
+            }
+            
             // search for template
             List<Template> templates = (await this._templateManager.SearchTemplatesAsync(template)).ToList();
             if (!templates.Any())
@@ -48,7 +54,6 @@ public class HtmlcCommand
             }
             
             // load template
-            this._logger.LogInformation($"Download template '{templates.First().Name}'");
             downloadedTemplatePath = await this._templateManager.DownloadTemplateAsync(templates.First());
         }
 

@@ -18,18 +18,29 @@ public class HttpClientService : IHttpClientService
         return await response.Content.ReadAsStringAsync();
     }
 
-    public async Task DownloadFileAsync(Uri uri, string targetFilePath)
+    /// <inheritdoc />
+    public async Task DownloadFileAsync(Uri uri, string targetFilePath, Action<long, long> progressCallback)
     {
-        using HttpClient httpClient = new HttpClient();
+        using HttpClient client = new();
+        using HttpResponseMessage response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
 
-        using HttpResponseMessage response = await httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
-        if (!response.IsSuccessStatusCode)
+        response.EnsureSuccessStatusCode();
+
+        await using Stream streamToReadFrom = await response.Content.ReadAsStreamAsync();
+
+        long totalBytes = response.Content.Headers.ContentLength ?? -1;
+        long bytesRead = 0;
+        byte[] buffer = new byte[8192];
+        int read;
+
+        using Stream streamToWriteTo = File.Open(targetFilePath, FileMode.Create);
+        while ((read = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length)) > 0)
         {
-            throw new HttpRequestException($"HTTP request failed with status code {response.StatusCode}");
-        }
+            await streamToWriteTo.WriteAsync(buffer, 0, read);
+            bytesRead += read;
 
-        await using FileStream fileStream = File.Create(targetFilePath);
-        
-        await response.Content.CopyToAsync(fileStream);
+            // Fortschritt mithilfe des Callbacks melden
+            progressCallback?.Invoke(bytesRead, totalBytes);
+        }
     }
 }

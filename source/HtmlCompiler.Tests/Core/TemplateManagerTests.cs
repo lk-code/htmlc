@@ -7,6 +7,8 @@ using HtmlCompiler.Core.Models;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
 using FluentDataBuilder.Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace HtmlCompiler.Tests.Core;
 
@@ -14,6 +16,7 @@ namespace HtmlCompiler.Tests.Core;
 public class TemplateManagerTests
 {
     private TemplateManager _instance = null!;
+    private ILogger<TemplateManager> _logger = null!;
     private IConfigurationManager _configurationManager = null!;
     private IHttpClientService _httpClientService = null!;
 
@@ -24,10 +27,19 @@ public class TemplateManagerTests
 
     private void CreateTestInstance(IConfiguration configuration)
     {
+        ServiceProvider serviceProvider = new ServiceCollection()
+            .AddLogging()
+            .BuildServiceProvider();
+        ILoggerFactory factory = serviceProvider.GetService<ILoggerFactory>()!;
+
+        this._logger = factory.CreateLogger<TemplateManager>();
+
         this._configurationManager = Substitute.For<IConfigurationManager>();
         this._httpClientService = Substitute.For<IHttpClientService>();
 
-        this._instance = new TemplateManager(configuration,
+        this._instance = new TemplateManager(
+            this._logger,
+            configuration,
             this._configurationManager,
             this._httpClientService);
     }
